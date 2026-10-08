@@ -38,4 +38,8 @@ __screenshots__/
 # Vite
 *.timestamp-*-*.mjs
 
+# Entorno virtual de Python
 api/.venv
+
+# Variables de entorno
+.env
