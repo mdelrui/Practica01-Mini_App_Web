@@ -35,6 +35,12 @@ npm install
 npm run dev
 ```
 
+### Ejecutar la API de Python
+
+```sh
+npm run dev:api
+```
+
 ### Type-Check, Compile and Minify for Production
 
 ```sh
