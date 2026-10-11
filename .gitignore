@@ -39,7 +39,7 @@ __screenshots__/
 *.timestamp-*-*.mjs
 
 # Entorno virtual de Python
-api/.venv
+.venv
 
 # Variables de entorno
 .env
