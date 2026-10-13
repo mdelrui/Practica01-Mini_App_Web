@@ -12,7 +12,15 @@ async function connectToAPI(): Promise<void> {
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-900"></div>
+  <div class="min-h-screen bg-slate-900">
+    <h1 class="text-amber-50">Resumidor Automático</h1>
+
+    <input
+      class="border border-[#ffffff86] rounded-sm text-white px-4 py-2 h-min-40"
+      type="text"
+      placeholder="Escribe o pega tu texto aquí..."
+    />
+  </div>
 </template>
 
 <style scoped></style>
