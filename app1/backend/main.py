@@ -1,7 +1,7 @@
 from openrouter import preguntar_ia
 
 
-def main():
+def app():
     historial = []
 
     print("=== CHAT CON INTELIGENCIA ARTIFICIAL ===")
@@ -37,4 +37,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    app()
