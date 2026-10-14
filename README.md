@@ -1,3 +1,7 @@
+## Autores
+* Francisco Luis Cara García
+* Mario Delgado Ruiz
+
 # Práctica 01 - Mini aplicación web
 
 Este repositorio está organizado por aplicaciones y entregables, con la parte funcional principal en `app1` y el trabajo complementario en `app2`, `docs`, `infra` y `presentation`.

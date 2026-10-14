@@ -1,7 +1,6 @@
 import requests
 from config import API_KEY, URL, MODELO
 
-
 def preguntar_ia(historial):
     cabeceras = {
         "Authorization": "Bearer " + API_KEY,
