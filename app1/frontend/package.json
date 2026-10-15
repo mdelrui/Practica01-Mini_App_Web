@@ -13,8 +13,7 @@
     "lint": "run-s \"lint:*\"",
     "lint:oxlint": "oxlint . --fix",
     "lint:eslint": "eslint . --fix --cache",
-    "format": "prettier --write --experimental-cli src/",
-    "dev:api": "uv run --directory ../backend uvicorn main:app --reload"
+    "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",

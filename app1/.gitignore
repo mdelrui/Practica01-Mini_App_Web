@@ -1,1 +1,11 @@
-.vercel
+# Archivos privados y entornos locales.
+.env
+.venv/
+
+# Archivos generados por Python.
+__pycache__/
+*.py[cod]
+
+# Archivos generados por el frontend.
+node_modules/
+frontend/dist/
