@@ -40,6 +40,9 @@ __screenshots__/
 
 # Entorno virtual de Python
 .venv
+__pycache__
+__pycache__/
+__pycache__/*
 
 # Variables de entorno
 .env
