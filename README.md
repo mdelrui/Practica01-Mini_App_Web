@@ -65,7 +65,7 @@ Comandos habituales:
 ```bash
 cd app1/backend
 uv sync
-uv run uvicorn main:app --reload
+uv run fastapi dev
 ```
 
 La API queda disponible en:
