@@ -5,13 +5,9 @@ description = "Mini aplicación web para resumir textos"
 readme = "../../README.md"
 requires-python = ">=3.12"
 dependencies = [
-<<<<<<< HEAD:app1/pyproject.toml
-    "fastapi>=0.143.0",
-    "python-dotenv>=1.2.4",
-=======
+
     "dotenv>=0.9.9",
     "fastapi[standard]>=0.143.0",
->>>>>>> main:app1/backend/pyproject.toml
     "requests>=2.34.2",
     "uvicorn>=0.54.0",
 ]
