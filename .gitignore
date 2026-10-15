@@ -83,3 +83,26 @@ Thumbs.db
 *.temp
 *.bak
 *~
+
+*.tsbuildinfo
+
+.eslintcache
+
+# Cypress
+/cypress/videos/
+/cypress/screenshots/
+
+# Vitest
+__screenshots__/
+
+# Vite
+*.timestamp-*-*.mjs
+
+# Entorno virtual de Python
+.venv
+__pycache__
+__pycache__/
+__pycache__/*
+
+# Variables de entorno
+.env
