@@ -1,18 +1,12 @@
-# ==============================
 # Python
-# ==============================
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-
-# Entornos virtuales (incluido el creado por uv)
 .venv/
 venv/
 env/
 ENV/
-
-# Cachés y herramientas de Python
 .python-version.local
 .pytest_cache/
 .mypy_cache/
@@ -23,20 +17,16 @@ ENV/
 .coverage
 .coverage.*
 htmlcov/
-
-# Caché local de uv (si se configura dentro del proyecto)
 .uv_cache/
 .uv-cache/
 
-# Variables y secretos: mantener los ejemplos versionados
+# Variables y secretos
 .env
 .env.*
 !.env.example
 !.env.*.example
 
-# ==============================
-# Node.js / frontend (Vue, Vite, etc.)
-# ==============================
+# Node.js / frontend
 node_modules/
 dist/
 dist-ssr/
@@ -54,19 +44,18 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Pruebas de frontend
+# Pruebas y herramientas frontend
 /cypress/videos/
 /cypress/screenshots/
 __screenshots__/
+*.timestamp-*-*.mjs
 
 # Archivos generados y bases de datos locales
 *.sqlite
 *.sqlite3
 *.db
 
-# ==============================
 # Editores y sistema operativo
-# ==============================
 .DS_Store
 Thumbs.db
 .idea/
@@ -83,26 +72,3 @@ Thumbs.db
 *.temp
 *.bak
 *~
-
-*.tsbuildinfo
-
-.eslintcache
-
-# Cypress
-/cypress/videos/
-/cypress/screenshots/
-
-# Vitest
-__screenshots__/
-
-# Vite
-*.timestamp-*-*.mjs
-
-# Entorno virtual de Python
-.venv
-__pycache__
-__pycache__/
-__pycache__/*
-
-# Variables de entorno
-.env

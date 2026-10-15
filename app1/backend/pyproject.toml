@@ -2,15 +2,11 @@
 name = "backend"
 version = "0.1.0"
 description = "Add your description here"
-readme = "README.md"
+readme = "../../README.md"
 entrypoint = "main:app"
-authors = [
-    { name = "Mario Delgado Ruiz", email = "mdelrui987@g.educaand.es" }
-]
 requires-python = ">=3.12"
 dependencies = [
     "fastapi[standard]>=0.143.0",
     "requests>=2.34.2",
     "uvicorn>=0.54.0",
 ]
-
