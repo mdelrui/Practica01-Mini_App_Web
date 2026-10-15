@@ -2,7 +2,9 @@
 import axios from 'axios'
 import { computed, ref } from 'vue'
 import { FilePlusCorner, MoveDown, Trash } from 'lucide-vue-next'
+import type { Summary, UserText } from './types/types'
 
+const URL = 'http://127.0.0.1:8000/resumir'
 const MAX_WORDS = 5000
 const MAX_FILE_SIZE = 1024 * 1024
 const ALLOWED_EXTENSIONS = ['.txt', '.md']
@@ -12,6 +14,7 @@ const loading = ref(false)
 const summary = ref<string | null>(null)
 const isDragging = ref(false)
 const fileError = ref('')
+const reqError = ref<string | null>(null)
 
 const words = computed(() => {
   const trimmed = text.value.trim()
@@ -58,26 +61,24 @@ function deleteText() {
   text.value = ''
 }
 
-
-async function getSummary() {
-  // Comprobamos que haya texto
-  if (!text.value.trim()) return
-
+async function getSummary(): Promise<void> {
   loading.value = true
+  reqError.value = null
+
   try {
-    // Enviamos el texto a Python y guardamos el resumen
-    const res = await axios.post(
-      `${import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'}/api/resumir`,
-      { texto: text.value }
-    )
-    summary.value = res.data.resumen
-  } catch {
-    summary.value = 'Error al generar el resumen'
+    const fullText: UserText = { text: text.value.trim().replaceAll('\n', '') }
+    const response = await axios.post(URL, fullText)
+    const data: Summary = { summary: response.data['resumen'] }
+
+    summary.value = data.summary
+    deleteText()
+  } catch (e) {
+    reqError.value =
+      'Ha ocurrido un error al contactar con el servicio. Por favor, inténtelo de nuevo.'
+  } finally {
+    loading.value = false
   }
-  loading.value = false
 }
-
-
 </script>
 <!-- Fondo #17212B · Panel #263746 · Acento #67C4D0 · Texto #E8F1F5 -->
 <template>
@@ -91,72 +92,45 @@ async function getSummary() {
       <div class="flex justify-between pb-4 px-1">
         <div class="flex gap-2 items-center">
           <span
-            class="flex justify-center items-center text-[#67C4D0] font-semibold text-sm px-4 py-0.5 tabular-nums"
-            >01</span
-          >
+            class="flex justify-center items-center text-[#67C4D0] font-semibold text-sm px-4 py-0.5 tabular-nums">01</span>
           <p class="text-[#e8f1f5]">Tu texto</p>
         </div>
 
-        <button
-          type="button"
-          variant="ghost"
-          size="icon"
-          aria-label="Borrar texto"
-          title="Borrar texto"
+        <button type="button" variant="ghost" size="icon" aria-label="Borrar texto" title="Borrar texto"
           v-on:click="deleteText()"
           class="rounded-full p-1.5 transition-colors text-[#e8f1f5]/50 not-disabled:cursor-pointer hover:not-disabled:bg-red-400/10 hover:not-disabled:text-red-40 disabled:text-[#e8f1f5]/20 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-red-400"
-          :disabled="text.length == 0"
-        >
+          :disabled="text.length == 0">
           <Trash :size="16" />
         </button>
       </div>
 
       <form @submit.prevent="getSummary">
-        <div
-          @dragover.prevent="isDragging = true"
-          @dragleave="onDragLeaveFile"
-          @drop.prevent="onDropFile"
-          @dragenter="onDragEnter = true"
-          :class="isDragging"
-          class="relative w-full mb-4 border border-[#e8f1f59f] rounded-lg bg-[#263746] focus-within:border focus-within:border-[#67C4D0] focus-within:ring-1"
-        >
-          <div
-            v-if="onDragEnter"
-            class="absolute size-full bg-white/20 flex flex-col justify-center rounded-lg items-center gap-2"
-          >
+        <div @dragover.prevent="isDragging = true" @dragleave="onDragLeaveFile" @drop.prevent="onDropFile"
+          @dragenter="onDragEnter = true" :class="isDragging"
+          class="relative w-full mb-4 border border-[#e8f1f59f] rounded-lg bg-[#263746] focus-within:border focus-within:border-[#67C4D0] focus-within:ring-1">
+          <div v-if="onDragEnter"
+            class="absolute size-full bg-white/20 flex flex-col justify-center rounded-lg items-center gap-2">
             <span class="text-[#E8F1F5]">Suelta aquí tu archivo</span>
 
             <FilePlusCorner class="text-[#E8F1F5]" />
           </div>
 
-          <textarea
-            class="text-[#e8f1f5] w-full min-h-36 rounded-t-lg px-4 py-3 outline-none bg-transparent"
-            placeholder="Escribe o pega tu texto aquí… o arrastra tu archivo (.md o .txt)"
-            :maxlength="MAX_WORDS"
-            v-model="text"
-          ></textarea>
+          <textarea class="text-[#e8f1f5] w-full min-h-36 rounded-t-lg px-4 py-3 outline-none bg-transparent"
+            placeholder="Escribe o pega tu texto aquí… o arrastra tu archivo (.md o .txt)" :maxlength="MAX_WORDS"
+            v-model="text"></textarea>
 
           <div class="flex justify-between px-4 py-3 border-t border-[#e8f1f59f]">
-            <span class="text-xs text-[#e8f1f593]"
-              >{{ words }} {{ words === 1 ? 'palabra' : 'palabras' }}</span
-            >
+            <span class="text-xs text-[#e8f1f593]">{{ words }} {{ words === 1 ? 'palabra' : 'palabras' }}</span>
             <span class="text-xs text-[#e8f1f593]">{{ text.length }} / {{ MAX_WORDS }}</span>
           </div>
         </div>
 
-        <button
-          type="submit"
+        <button type="submit"
           class="w-full flex justify-center items-center gap-4 py-3 rounded-lg border border-transparent font-semibold text-lg transition-all bg-[#67C4D0] text-[#17212B] not-disabled:cursor-pointer hover:not-disabled:bg-[#55a2ac] hover:not-disabled:scale-[102%] disabled:bg-transparent disabled:text-[#e8f1f5]/40 disabled:border-[#e8f1f5]/25 disabled:cursor-not-allowed"
-          :disabled="!text || loading"
-          v-on:click="getSummary()"
-        >
+          :disabled="!text || loading" v-on:click="getSummary">
           <span>{{ loading ? 'Resumiendo...' : 'Resumir Texto' }}</span>
-          <div
-            v-if="loading"
-            class="size-5 animate-spin rounded-full border-2 border-[#e8f1f5]/30 border-t-[#e8f1f5]"
-            role="status"
-            aria-label="Cargando"
-          ></div>
+          <div v-if="loading" class="size-5 animate-spin rounded-full border-2 border-[#e8f1f5]/30 border-t-[#e8f1f5]"
+            role="status" aria-label="Cargando"></div>
         </button>
       </form>
 
@@ -183,6 +157,12 @@ async function getSummary() {
         <div v-else-if="summary" class="bg-[#263746] border border-[#e8f1f5]/50 rounded-lg p-4">
           <p class="text-[#e8f1f5] leading-relaxed whitespace-pre-line">
             {{ summary }}
+          </p>
+        </div>
+
+        <div v-if="reqError" class="bg-[#ff7979]/20 border border-[#ff9292] rounded-lg p-4">
+          <p class="text-[#cc4f4f] font-semibold leading-relaxed whitespace-pre-line">
+            {{ reqError }}
           </p>
         </div>
       </section>
