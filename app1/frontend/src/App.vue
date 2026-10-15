@@ -3,7 +3,6 @@ import axios from 'axios'
 import { computed, ref } from 'vue'
 import { FilePlusCorner, MoveDown, Trash } from 'lucide-vue-next'
 
-const URL = 'http://127.0.0.1/nombre_endpoint' // nombre_endpoint sustituir por el nombre adecuadao
 const MAX_WORDS = 5000
 const MAX_FILE_SIZE = 1024 * 1024
 const ALLOWED_EXTENSIONS = ['.txt', '.md']
@@ -59,21 +58,26 @@ function deleteText() {
   text.value = ''
 }
 
-function getSummary() {
+
+async function getSummary() {
+  // Comprobamos que haya texto
+  if (!text.value.trim()) return
+
   loading.value = true
-
-  setTimeout(() => {
-    loading.value = false
-    deleteText()
-    summary.value = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vestibulum faucibus magna, at gravida mauris bibendum non. Pellentesque gravida sollicitudin odio vitae fermentum. Pellentesque tempus orci accumsan, efficitur nulla eget, tempus sapien. Pellentesque sed urna metus. Sed rhoncus eu metus ut iaculis. In varius orci non sem gravida bibendum. Vivamus lacinia risus quis augue dignissim, non sodales orci bibendum.
-
-  Cras aliquet mauris urna, eu aliquam ex lacinia eget. Pellentesque consectetur purus at tellus vulputate ornare. Maecenas blandit pharetra dictum. Aenean dapibus, arcu aliquam fringilla placerat, nibh magna euismod leo, quis sagittis sem ipsum ut mauris. Maecenas ullamcorper congue sapien, sed cursus nunc iaculis et. Curabitur tincidunt sodales augue, id facilisis sapien congue quis. Nam vel porttitor libero. Sed sit amet velit orci. Nulla pellentesque mi a nunc auctor scelerisque. Quisque eu dolor pellentesque, rutrum orci malesuada, iaculis eros. Sed tempus eros a mi lobortis, at sagittis purus ultricies. Curabitur nec velit augue.`
-  }, 2000)
+  try {
+    // Enviamos el texto a Python y guardamos el resumen
+    const res = await axios.post(
+      `${import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'}/api/resumir`,
+      { texto: text.value }
+    )
+    summary.value = res.data.resumen
+  } catch {
+    summary.value = 'Error al generar el resumen'
+  }
+  loading.value = false
 }
 
-async function connectToAPI(): Promise<void> {
-  return await axios.post(URL, text) // Terminar y agregar lo necesario
-}
+
 </script>
 <!-- Fondo #17212B · Panel #263746 · Acento #67C4D0 · Texto #E8F1F5 -->
 <template>
@@ -107,7 +111,7 @@ async function connectToAPI(): Promise<void> {
         </button>
       </div>
 
-      <form>
+      <form @submit.prevent="getSummary">
         <div
           @dragover.prevent="isDragging = true"
           @dragleave="onDragLeaveFile"
