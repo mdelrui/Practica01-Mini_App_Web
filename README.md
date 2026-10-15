@@ -23,9 +23,7 @@ Este repositorio está organizado por aplicaciones y entregables, con la parte f
 
 ## app1: aplicación principal
 
-`app1` contiene el proyecto web funcional base de la práctica. El backend está separado
-por módulos y sirve el frontend compilado, por lo que la aplicación se puede iniciar
-con un solo comando.
+`app1` contiene el proyecto web funcional base de la práctica. El backend está separado por módulos y sirve el frontend compilado, por lo que la aplicación se puede iniciar con un solo comando.
 
 ### Estructura de app1
 
