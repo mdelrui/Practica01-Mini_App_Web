@@ -2,8 +2,9 @@
 import axios from 'axios'
 import { computed, ref } from 'vue'
 import { FilePlusCorner, MoveDown, Trash } from 'lucide-vue-next'
+import type { Summary, UserText } from './types/types'
 
-const URL = 'http://127.0.0.1/nombre_endpoint' // nombre_endpoint sustituir por el nombre adecuadao
+const URL = 'http://127.0.0.1:8000/resumir'
 const MAX_WORDS = 5000
 const MAX_FILE_SIZE = 1024 * 1024
 const ALLOWED_EXTENSIONS = ['.txt', '.md']
@@ -13,6 +14,7 @@ const loading = ref(false)
 const summary = ref<string | null>(null)
 const isDragging = ref(false)
 const fileError = ref('')
+const reqError = ref<string | null>(null)
 
 const words = computed(() => {
   const trimmed = text.value.trim()
@@ -59,20 +61,23 @@ function deleteText() {
   text.value = ''
 }
 
-function getSummary() {
+async function getSummary(): Promise<void> {
   loading.value = true
+  reqError.value = null
 
-  setTimeout(() => {
-    loading.value = false
+  try {
+    const fullText: UserText = { text: text.value.trim().replaceAll('\n', '') }
+    const response = await axios.post(URL, fullText)
+    const data: Summary = { summary: response.data['resumen'] }
+
+    summary.value = data.summary
     deleteText()
-    summary.value = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vestibulum faucibus magna, at gravida mauris bibendum non. Pellentesque gravida sollicitudin odio vitae fermentum. Pellentesque tempus orci accumsan, efficitur nulla eget, tempus sapien. Pellentesque sed urna metus. Sed rhoncus eu metus ut iaculis. In varius orci non sem gravida bibendum. Vivamus lacinia risus quis augue dignissim, non sodales orci bibendum.
-
-  Cras aliquet mauris urna, eu aliquam ex lacinia eget. Pellentesque consectetur purus at tellus vulputate ornare. Maecenas blandit pharetra dictum. Aenean dapibus, arcu aliquam fringilla placerat, nibh magna euismod leo, quis sagittis sem ipsum ut mauris. Maecenas ullamcorper congue sapien, sed cursus nunc iaculis et. Curabitur tincidunt sodales augue, id facilisis sapien congue quis. Nam vel porttitor libero. Sed sit amet velit orci. Nulla pellentesque mi a nunc auctor scelerisque. Quisque eu dolor pellentesque, rutrum orci malesuada, iaculis eros. Sed tempus eros a mi lobortis, at sagittis purus ultricies. Curabitur nec velit augue.`
-  }, 2000)
-}
-
-async function connectToAPI(): Promise<void> {
-  return await axios.post(URL, text) // Terminar y agregar lo necesario
+  } catch (e) {
+    reqError.value =
+      'Ha ocurrido un error al contactar con el servicio. Por favor, inténtelo de nuevo.'
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 <!-- Fondo #17212B · Panel #263746 · Acento #67C4D0 · Texto #E8F1F5 -->
@@ -144,7 +149,7 @@ async function connectToAPI(): Promise<void> {
           type="submit"
           class="w-full flex justify-center items-center gap-4 py-3 rounded-lg border border-transparent font-semibold text-lg transition-all bg-[#67C4D0] text-[#17212B] not-disabled:cursor-pointer hover:not-disabled:bg-[#55a2ac] hover:not-disabled:scale-[102%] disabled:bg-transparent disabled:text-[#e8f1f5]/40 disabled:border-[#e8f1f5]/25 disabled:cursor-not-allowed"
           :disabled="!text || loading"
-          v-on:click="getSummary()"
+          v-on:click="getSummary"
         >
           <span>{{ loading ? 'Resumiendo...' : 'Resumir Texto' }}</span>
           <div
@@ -179,6 +184,12 @@ async function connectToAPI(): Promise<void> {
         <div v-else-if="summary" class="bg-[#263746] border border-[#e8f1f5]/50 rounded-lg p-4">
           <p class="text-[#e8f1f5] leading-relaxed whitespace-pre-line">
             {{ summary }}
+          </p>
+        </div>
+
+        <div v-if="reqError" class="bg-[#ff7979]/20 border border-[#ff9292] rounded-lg p-4">
+          <p class="text-[#cc4f4f] font-semibold leading-relaxed whitespace-pre-line">
+            {{ reqError }}
           </p>
         </div>
       </section>
