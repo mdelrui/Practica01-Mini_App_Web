@@ -1,4 +1,4 @@
-from app1.backend.openroute import preguntar_ia
+from openrouter import preguntar_ia
 
 
 def app():
