@@ -9,7 +9,8 @@ def preguntar_ia(historial):
 
     datos = {
         "model": MODELO,
-        "messages": historial
+        "messages": historial,
+        "reasoning": {"enabled": True}
     }
 
     respuesta = requests.post(

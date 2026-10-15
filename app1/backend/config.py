@@ -11,4 +11,4 @@ API_KEY = os.getenv("OPENROUTER_API_KEY")
 URL = "https://openrouter.ai/api/v1/chat/completions"
 
 # Modelo de inteligencia artificial
-MODELO = "apodex/apodex-1.1-mini:free"
+MODELO = "liquid/lfm-2.5-2.6b:free"

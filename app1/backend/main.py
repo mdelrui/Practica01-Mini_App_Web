@@ -2,38 +2,27 @@ from openrouter import preguntar_ia
 
 
 def app():
-    historial = []
+    print("=== RESUMEN DE TEXTO ===")
 
-    print("=== CHAT CON INTELIGENCIA ARTIFICIAL ===")
-    print("Escribe 'salir' para terminar.")
+    texto = input("\nTexto: ").strip()
 
-    while True:
-        pregunta = input("\nTú: ").strip()
+    if not texto:
+        print("No has escrito ningún texto.")
+        return
 
-        if pregunta.lower() == "salir":
-            print("¡Hasta luego!")
-            break
+    historial = [{
+        "role": "user",
+        "content": (
+            "Resume el siguiente texto de forma clara y breve. "
+            "Devuelve únicamente el resumen, sin explicaciones adicionales e intentado usar lo que sale en el texto:\n\n"
+            + texto
+        )
+    }]
 
-        if not pregunta:
-            continue
+    respuesta = preguntar_ia(historial)
 
-        historial.append({
-            "role": "user",
-            "content": pregunta
-        })
-
-        respuesta = preguntar_ia(historial)
-
-        if respuesta is not None:
-            print("\nIA:", respuesta)
-
-            historial.append({
-                "role": "assistant",
-                "content": respuesta
-            })
-        else:
-            # Eliminar la pregunta si ha fallado la conexión
-            historial.pop()
+    if respuesta is not None:
+        print("\nResumen:", respuesta)
 
 
 if __name__ == "__main__":
