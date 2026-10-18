@@ -73,3 +73,6 @@ Thumbs.db
 *.bak
 *~
 *.zip
+.vercel
+.env*
+!.env.example

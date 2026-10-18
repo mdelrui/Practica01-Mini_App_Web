@@ -4,7 +4,6 @@ import { computed, ref } from 'vue'
 import { FilePlusCorner, MoveDown, Trash } from 'lucide-vue-next'
 import type { Summary, UserText } from './types/types'
 
-const URL = 'http://127.0.0.1:8000/resumir'
 const MAX_WORDS = 5000
 const MAX_FILE_SIZE = 1024 * 1024
 const ALLOWED_EXTENSIONS = ['.txt', '.md']
@@ -61,24 +60,23 @@ function deleteText() {
   text.value = ''
 }
 
-async function getSummary(): Promise<void> {
+
+async function getSummary() {
+  // Comprobamos que haya texto
+  if (!text.value.trim()) return
+
   loading.value = true
-  reqError.value = null
-
   try {
-    const fullText: UserText = { text: text.value.trim().replaceAll('\n', '') }
-    const response = await axios.post(URL, fullText)
-    const data: Summary = { summary: response.data['resumen'] }
-
-    summary.value = data.summary
-    deleteText()
-  } catch (e) {
-    reqError.value =
-      'Ha ocurrido un error al contactar con el servicio. Por favor, inténtelo de nuevo.'
-  } finally {
-    loading.value = false
+    // Enviamos el texto a Python y guardamos el resumen
+    const res = await axios.post('/api/resumir', { texto: text.value })
+    summary.value = res.data.resumen
+  } catch {
+    summary.value = 'Error al generar el resumen'
   }
+  loading.value = false
 }
+
+
 </script>
 
 <template>
@@ -105,33 +103,42 @@ async function getSummary(): Promise<void> {
       </div>
 
       <form @submit.prevent="getSummary">
-        <div @dragover.prevent="isDragging = true" @dragleave="onDragLeaveFile" @drop.prevent="onDropFile"
+        <<<<<<< HEAD <div @dragover.prevent="isDragging = true" @dragleave="onDragLeaveFile" @drop.prevent="onDropFile"
           @dragenter="onDragEnter = true" :class="isDragging"
           class="relative w-full mb-4 border border-on-primary/60 rounded-lg bg-bg-secondary focus-within:border focus-within:border-primary focus-within:ring-1">
           <div v-if="onDragEnter"
             class="absolute size-full bg-white/20 flex flex-col justify-center rounded-lg items-center gap-2">
             <span class="text-on-primary">Suelta aquí tu archivo</span>
+            =======
+            <div @dragover.prevent="isDragging = true" @dragleave="onDragLeaveFile" @drop.prevent="onDropFile"
+              @dragenter="onDragEnter = true" :class="isDragging"
+              class="relative w-full mb-4 border border-[#e8f1f59f] rounded-lg bg-[#263746] focus-within:border focus-within:border-[#67C4D0] focus-within:ring-1">
+              <div v-if="onDragEnter"
+                class="absolute size-full bg-white/20 flex flex-col justify-center rounded-lg items-center gap-2">
+                <span class="text-[#E8F1F5]">Suelta aquí tu archivo</span>
+                >>>>>>> 480b42016342d98de51ea4d78aa5396e5a9b66e3
 
-            <FilePlusCorner class="text-on-primary" />
-          </div>
+                <FilePlusCorner class="text-on-primary" />
+              </div>
 
-          <textarea class="text-on-primary w-full min-h-36 rounded-t-lg px-4 py-3 outline-none bg-transparent"
-            placeholder="Escribe o pega tu texto aquí… o arrastra tu archivo (.md o .txt)" :maxlength="MAX_WORDS"
-            v-model="text"></textarea>
+              <textarea class="text-on-primary w-full min-h-36 rounded-t-lg px-4 py-3 outline-none bg-transparent"
+                placeholder="Escribe o pega tu texto aquí… o arrastra tu archivo (.md o .txt)" :maxlength="MAX_WORDS"
+                v-model="text"></textarea>
 
-          <div class="flex justify-between px-4 py-3 border-t border-on-primary/60">
-            <span class="text-xs text-on-primary/60">{{ words }} {{ words === 1 ? 'palabra' : 'palabras' }}</span>
-            <span class="text-xs text-on-primary/60">{{ text.length }} / {{ MAX_WORDS }}</span>
-          </div>
-        </div>
+              <div class="flex justify-between px-4 py-3 border-t border-on-primary/60">
+                <span class="text-xs text-on-primary/60">{{ words }} {{ words === 1 ? 'palabra' : 'palabras' }}</span>
+                <span class="text-xs text-on-primary/60">{{ text.length }} / {{ MAX_WORDS }}</span>
+              </div>
+            </div>
 
-        <button type="submit"
-          class="w-full flex justify-center items-center gap-4 py-3 rounded-lg border border-transparent font-semibold text-lg transition-all bg-primary text-bg-primary not-disabled:cursor-pointer hover:not-disabled:bg-[#55a2ac] hover:not-disabled:scale-[102%] disabled:bg-transparent disabled:text-on-primary/40 disabled:border-on-primary/25 disabled:cursor-not-allowed"
-          :disabled="!text || loading" v-on:click="getSummary">
-          <span>{{ loading ? 'Resumiendo...' : 'Resumir Texto' }}</span>
-          <div v-if="loading" class="size-5 animate-spin rounded-full border-2 border-on-primary/30 border-t-on-primary"
-            role="status" aria-label="Cargando"></div>
-        </button>
+            <button type="submit"
+              class="w-full flex justify-center items-center gap-4 py-3 rounded-lg border border-transparent font-semibold text-lg transition-all bg-primary text-bg-primary not-disabled:cursor-pointer hover:not-disabled:bg-[#55a2ac] hover:not-disabled:scale-[102%] disabled:bg-transparent disabled:text-on-primary/40 disabled:border-on-primary/25 disabled:cursor-not-allowed"
+              :disabled="!text || loading" v-on:click="getSummary">
+              <span>{{ loading ? 'Resumiendo...' : 'Resumir Texto' }}</span>
+              <div v-if="loading"
+                class="size-5 animate-spin rounded-full border-2 border-on-primary/30 border-t-on-primary" role="status"
+                aria-label="Cargando"></div>
+            </button>
       </form>
 
       <section aria-live="polite">
