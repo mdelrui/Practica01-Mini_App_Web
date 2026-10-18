@@ -1,6 +1,7 @@
 ## Autores
-* Francisco Luis Cara García
-* Mario Delgado Ruiz
+
+- Francisco Luis Cara García
+- Mario Delgado Ruiz
 
 # Práctica 01 - Mini aplicación web
 
@@ -136,6 +137,71 @@ POST http://127.0.0.1:8000/api/resumir
 ## app2
 
 La carpeta `app2/` aparece como trabajo o segunda app en curso, con documentación y estado pendiente del proyecto.
+
+### Estructura de app1
+
+```text
+app2/
+├── main.py                 # Punto de entrada de la aplicación
+├── pyproject.toml          # Dependencias de Python
+├── requirements.txt        # Dependencias directas de Python
+├── backend/
+│   ├── main.py           #
+│   ├── services.py           #
+└── frontend/
+    ├── package.json        # Dependencias y comandos de Vue
+    └── src/                # Código de la interfaz
+```
+
+### Frontend
+
+Ubicación: `app2/frontend`
+
+Tecnologías:
+
+- Vue 3
+- TypeScript
+- Vite
+- Vitest
+
+Primera instalación y compilación:
+
+```bash
+cd app2/frontend
+npm install
+```
+
+El frontend se sirve desde el backend después de compilarlo.
+
+### Backend
+
+Ubicación: `app2/backend`
+
+Tecnologías:
+
+- Python 3.12+
+- FastAPI
+- Uvicorn
+- OpenRouter
+
+El backend está organizado en módulos:
+
+- `main.py`:
+- `services.py`:
+
+El archivo `.env` debe estar en `app2/backend/.env` y contener:
+
+```env
+OPENROUTER_API_KEY=tu_clave_de_openrouter
+```
+
+Para ejecutar únicamente el backend:
+
+```bash
+python -m uvicorn main:app --reload
+```
+
+No se debe subir el archivo `.env` al repositorio.
 
 ## Documentación
 

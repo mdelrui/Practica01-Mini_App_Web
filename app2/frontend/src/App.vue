@@ -12,6 +12,7 @@ const ALLOWED_EXTENSIONS = ['.txt', '.md']
 const text = ref('')
 const loading = ref(false)
 const APIResponse = ref<Summary | null>(null)
+const summary = ref<string | null>(null)
 const isDragging = ref(false)
 const fileError = ref('')
 const reqError = ref<string | null>(null)
@@ -70,12 +71,22 @@ async function getSummary(): Promise<void> {
   try {
     const userInput: UserInput = {
       text: text.value.trim().replaceAll('\n', ''),
-      main_ideas: mainIdeasEnabled.value,
+      main_ideas: mainIdeasEnabled.value
     }
     const response = await axios.post(URL, userInput)
+    const payload = response.data ?? {}
     const data: Summary = {
-      summary: response.data['summary'],
-      mainIdeas: response.data['main_ideas'],
+      summary:
+        typeof payload.summary === 'string'
+          ? payload.summary
+          : typeof payload.resumen === 'string'
+            ? payload.resumen
+            : '',
+      mainIdeas: Array.isArray(payload.mainIdeas)
+        ? payload.mainIdeas
+        : Array.isArray(payload.main_ideas)
+          ? payload.main_ideas
+          : null,
     }
 
     APIResponse.value = data
@@ -88,25 +99,25 @@ async function getSummary(): Promise<void> {
   }
 }
 </script>
-<!-- Fondo #17212B · Panel #263746 · Acento #67C4D0 · Texto #E8F1F5 -->
+
 <template>
-  <div class="min-h-screen bg-[#17212B] flex flex-col items-center py-8 gap-10">
+  <div class="min-h-screen bg-bg-primary flex flex-col items-center py-8 gap-10">
     <header>
-      <h1 class="text-[#67C4D0] text-2xl font-semibold mb-2">RESUMIDOR AUTOMÁTICO</h1>
-      <h3 class="text-[#e8f1f5c5]">Convierte textos extensos en ideas claras.</h3>
+      <h1 class="text-primary text-2xl font-semibold mb-2">RESUMIDOR AUTOMÁTICO</h1>
+      <h3 class="text-on-primary/70">Convierte textos extensos en ideas claras.</h3>
     </header>
 
     <div class="w-full max-w-3xl flex-col justify-center items-center px-10 md:px-0">
       <div class="flex justify-between pb-4 px-1">
         <div class="flex gap-2 items-center">
           <span
-            class="flex justify-center items-center text-[#67C4D0] font-semibold text-sm px-4 py-0.5 tabular-nums">01</span>
-          <p class="text-[#e8f1f5]">Tu texto</p>
+            class="flex justify-center items-center text-primary font-semibold text-sm px-4 py-0.5 tabular-nums">01</span>
+          <p class="text-on-primary">Tu texto</p>
         </div>
 
         <button type="button" variant="ghost" size="icon" aria-label="Borrar texto" title="Borrar texto"
           v-on:click="deleteText()"
-          class="rounded-full p-1.5 transition-colors text-[#e8f1f5]/50 not-disabled:cursor-pointer hover:not-disabled:bg-red-400/10 hover:not-disabled:text-red-40 disabled:text-[#e8f1f5]/20 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-red-400"
+          class="rounded-full p-1.5 transition-colors text-on-primary/50 not-disabled:cursor-pointer hover:not-disabled:bg-red-400/10 hover:not-disabled:text-red-40 disabled:text-on-primary/20 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-red-400"
           :disabled="text.length == 0">
           <Trash :size="16" />
         </button>
@@ -115,15 +126,15 @@ async function getSummary(): Promise<void> {
       <form>
         <div @dragover.prevent="isDragging = true" @dragleave="onDragLeaveFile" @drop.prevent="onDropFile"
           @dragenter="onDragEnter = true" :class="isDragging"
-          class="relative w-full mb-4 border border-[#e8f1f59f] rounded-lg bg-[#263746] focus-within:border focus-within:border-[#67C4D0] focus-within:ring-1">
+          class="relative w-full mb-4 border border-[#e8f1f59f] rounded-lg bg-bg-secondary focus-within:border focus-within:border-primary focus-within:ring-1">
           <div v-if="onDragEnter"
             class="absolute size-full bg-white/20 flex flex-col justify-center rounded-lg items-center gap-2">
-            <span class="text-[#E8F1F5]">Suelta aquí tu archivo</span>
+            <span class="text-on-primary">Suelta aquí tu archivo</span>
 
-            <FilePlusCorner class="text-[#E8F1F5]" />
+            <FilePlusCorner class="text-on-primary" />
           </div>
 
-          <textarea class="text-[#e8f1f5] w-full min-h-36 rounded-t-lg px-4 py-3 outline-none bg-transparent"
+          <textarea class="text-on-primary w-full min-h-36 rounded-t-lg px-4 py-3 outline-none bg-transparent"
             placeholder="Escribe o pega tu texto aquí… o arrastra tu archivo (.md o .txt)" :maxlength="MAX_WORDS"
             v-model="text"></textarea>
 
@@ -138,7 +149,7 @@ async function getSummary(): Promise<void> {
             :aria-label="mainIdeasEnabled ? 'Desactivar opción' : 'Activar opción'"
             @click="mainIdeasEnabled = !mainIdeasEnabled" :class="mainIdeasEnabled ? 'bg-[#e8f1f9]' : 'bg-transparent'"
             class="relative flex h-6 w-10 items-center rounded-xl border border-[#e8f1f9]/50 transition-colors cursor-pointer">
-            <span :class="mainIdeasEnabled ? 'bg-[#67C4D0] translate-x-4' : 'bg-[#e8f1f9] translate-x-0'
+            <span :class="mainIdeasEnabled ? 'bg-primary translate-x-4' : 'bg-[#e8f1f9] translate-x-0'
               " class="absolute left-0.5 size-5 rounded-full transition-transform duration-200 ease-in-out"></span>
           </button>
 
@@ -146,10 +157,10 @@ async function getSummary(): Promise<void> {
         </div>
 
         <button type="submit"
-          class="w-full flex justify-center items-center gap-4 py-3 rounded-lg border border-transparent font-semibold text-lg transition-all bg-[#67C4D0] text-[#17212B] not-disabled:cursor-pointer hover:not-disabled:bg-[#55a2ac] hover:not-disabled:scale-[102%] disabled:bg-transparent disabled:text-[#e8f1f5]/40 disabled:border-[#e8f1f5]/25 disabled:cursor-not-allowed"
+          class="w-full flex justify-center items-center gap-4 py-3 rounded-lg border border-transparent font-semibold text-lg transition-all bg-primary text-bg-primary not-disabled:cursor-pointer hover:not-disabled:bg-[#55a2ac] hover:not-disabled:scale-[102%] disabled:bg-transparent disabled:text-on-primary/40 disabled:border-on-primary/25 disabled:cursor-not-allowed"
           :disabled="!text || loading" v-on:click="getSummary">
           <span>{{ loading ? 'Resumiendo...' : 'Resumir Texto' }}</span>
-          <div v-if="loading" class="size-5 animate-spin rounded-full border-2 border-[#e8f1f5]/30 border-t-[#e8f1f5]"
+          <div v-if="loading" class="size-5 animate-spin rounded-full border-2 border-on-primary/30 border-t-on-primary"
             role="status" aria-label="Cargando"></div>
         </button>
       </form>
@@ -157,36 +168,36 @@ async function getSummary(): Promise<void> {
       <section aria-live="polite">
         <div class="flex justify-evenly items-center my-8">
           <div class="flex flex-1 justify-evenly items-center gap-2">
-            <div class="flex-1 border-t border-[#67C4D0]/50"></div>
+            <div class="flex-1 border-t border-primary/50"></div>
 
-            <MoveDown class="text-[#67C4D0]" />
+            <MoveDown class="text-primary" />
           </div>
 
-          <p class="flex-1 text-sm text-[#e8f1f5] text-center">Tu resumen aparecerá aquí debajo</p>
+          <p class="flex-1 text-sm text-on-primary text-center">Tu resumen aparecerá aquí debajo</p>
 
           <div class="flex flex-1 justify-evenly items-center gap-2">
-            <MoveDown class="text-[#67C4D0]" />
+            <MoveDown class="text-primary" />
 
-            <div class="flex-1 border-t border-[#67C4D0]/50"></div>
+            <div class="flex-1 border-t border-primary/50"></div>
           </div>
         </div>
 
         <div v-if="APIResponse && APIResponse.summary"
-          class="bg-[#263746] border border-[#e8f1f5]/50 rounded-lg p-4 mb-6">
-          <h2 class="text-lg font-semibold text-[#e8f1f5] mb-3">Resumen</h2>
+          class="bg-bg-secondary border border-on-primary/50 rounded-lg p-4 mb-6">
+          <h2 class="text-lg font-semibold text-on-primary mb-3">Resumen</h2>
 
-          <p class="text-[#e8f1f5] leading-relaxed whitespace-pre-line">
+          <p class="text-on-primary leading-relaxed whitespace-pre-line">
             {{ APIResponse.summary }}
           </p>
         </div>
 
         <div v-if="APIResponse && APIResponse.mainIdeas"
-          class="bg-[#263746] border border-[#e8f1f5]/50 rounded-lg p-4 ps-8">
-          <h2 class="text-lg font-semibold text-[#e8f1f5] mb-3">Ideas Principales</h2>
+          class="bg-bg-secondary border border-on-primary/50 rounded-lg p-4 ps-8">
+          <h2 class="text-lg font-semibold text-on-primary mb-3">Ideas Principales</h2>
 
           <ol>
             <li v-for="idea in APIResponse.mainIdeas"
-              class="text-[#e8f1f5] list-decimal leading-relaxed whitespace-pre-line">
+              class="text-on-primary list-decimal leading-relaxed whitespace-pre-line">
               {{ idea }}
             </li>
           </ol>
