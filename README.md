@@ -149,6 +149,18 @@ La carpeta `infra/` contiene la configuración de despliegue y contenedores:
 - `Dockerfile.backend`
 - `Dockerfile.frontend`
 
+## Despliegue en Vercel
+
+Configura el directorio `app1` como raíz del proyecto en Vercel. Su `vercel.json`
+define dos servicios: `backend` (FastAPI, raíz `.`) y `frontend` (Vite, raíz
+`frontend`). Las peticiones `/api/*` se enrutan al backend y el resto al
+frontend. La aplicación web llama a la API con la ruta relativa `/api/resumir`,
+por lo que ambas usan el mismo dominio.
+
+Define `OPENROUTER_API_KEY` en las variables de entorno de Vercel para el
+servicio backend. No es necesaria una binding entre frontend y backend: el
+navegador accede al endpoint mediante la ruta pública `/api/*`.
+
 ## Uso recomendado
 
 1. Configurar `app1/backend/.env` con la clave de OpenRouter.
