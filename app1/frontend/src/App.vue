@@ -66,10 +66,7 @@ async function getSummary() {
   loading.value = true
   try {
     // Enviamos el texto a Python y guardamos el resumen
-    const res = await axios.post(
-      `${import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'}/api/resumir`,
-      { texto: text.value }
-    )
+    const res = await axios.post('/api/resumir', { texto: text.value })
     summary.value = res.data.resumen
   } catch {
     summary.value = 'Error al generar el resumen'
