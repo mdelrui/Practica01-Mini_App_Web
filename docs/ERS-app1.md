@@ -4,9 +4,9 @@
 
 | Campo               | Valor                                                                      |
 | ------------------- | -------------------------------------------------------------------------- |
-| Nombre del proyecto | [PENDIENTE DE DEFINIR]                                                     |
+| Nombre del proyecto | ResumidorIA                                                                |
 | Autores             | Francisco Luis Cara García & Mario Delgado Ruiz                            |
-| Curso y grupo       | Aprendizaje Automático: Gestión de Datos y Entrenamiento                   |
+| Curso y grupo       | Aprendizaje Automático: Gestión de Datos y Entrenamiento - Grupo 4         |
 | Asignatura o módulo | Desarrollo de Componentes Software para Sistemas de Aprendizaje Automático |
 | Docente             | Francisco Manuel Matías Prados                                             |
 | Fecha               | 08/10/2026                                                                 |

@@ -60,16 +60,14 @@ function deleteText() {
 
 
 async function getSummary() {
-  // Comprobamos que haya texto
+  // Comprobamos que el texto no esté vacío.
   if (!text.value.trim()) return
 
   loading.value = true
   try {
-    // Enviamos el texto a Python y guardamos el resumen
-    const res = await axios.post(
-      `${import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'}/api/resumir`,
-      { texto: text.value }
-    )
+    // Enviamos el texto al backend y guardamos el resumen.
+    const apiUrl = import.meta.env.VITE_API_URL || ''
+    const res = await axios.post(`${apiUrl}/api/resumir`, { texto: text.value })
     summary.value = res.data.resumen
   } catch {
     summary.value = 'Error al generar el resumen'
@@ -79,7 +77,7 @@ async function getSummary() {
 
 
 </script>
-<!-- Fondo #17212B · Panel #263746 · Acento #67C4D0 · Texto #E8F1F5 -->
+<!-- Colores de la interfaz: fondo oscuro, panel, acento turquesa y texto claro. -->
 <template>
   <div class="min-h-screen bg-[#17212B] flex flex-col items-center py-8 gap-10">
     <header>
@@ -176,7 +174,6 @@ async function getSummary() {
             <div class="flex-1 border-t border-[#67C4D0]/50"></div>
           </div>
         </div>
-        <!-- <h2 class="text-sm font-semibold text-[#e8f1f5] mb-3">Resumen</h2> -->
 
         <p v-if="loading" class="text-sm font-semibold text-[#e8f1f5]/60">Generando resumen…</p>
 

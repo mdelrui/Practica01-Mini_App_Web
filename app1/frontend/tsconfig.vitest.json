@@ -1,19 +1,19 @@
 {
   "extends": "./tsconfig.app.json",
 
-  // Override to include only test files and clear exclusions.
-  // Application code imported in tests is automatically included via module resolution.
+  // Incluye los archivos de pruebas y elimina exclusiones anteriores.
+  // El código de la aplicación usado por las pruebas se incluye automáticamente.
   "include": ["src/**/__tests__/*", "env.d.ts"],
   "exclude": [],
 
   "compilerOptions": {
-    // Vitest runs in a different environment than the application code.
-    // Adjust lib and types accordingly.
+    // Vitest ejecuta las pruebas en un entorno diferente al de la aplicación.
+    // Ajusta las bibliotecas y los tipos para ese entorno.
     "lib": [],
     "types": ["node", "jsdom"],
 
-    // `vue-tsc --build` produces a .tsbuildinfo file for incremental type-checking.
-    // Specified here to keep it out of the root directory.
+    // vue-tsc crea un archivo de información para comprobar cambios más rápido.
+    // Guardamos ese archivo fuera de la carpeta principal.
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.vitest.tsbuildinfo"
   }
 }

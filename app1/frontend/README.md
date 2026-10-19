@@ -1,62 +1,49 @@
-# .
+# Frontend del resumidor de textos
 
-This template should help get you started developing with Vue 3 in Vite.
+Interfaz creada con Vue 3 y Vite.
 
-## Recommended IDE Setup
+## Requisitos
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+Instala Node.js y npm antes de continuar.
 
-## Recommended Browser Setup
+## Instalar dependencias
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
+Desde esta carpeta, ejecuta:
 
 ```sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+## Iniciar el frontend
 
 ```sh
 npm run dev
 ```
 
-### Ejecutar Backend (API - Python)
-
-**Debe ejecutarse desde el directorio:** `/app1/frontend`
-
-```sh
-npm run dev:api
-```
-
-### Type-Check, Compile and Minify for Production
+## Comprobar y preparar para producción
 
 ```sh
 npm run build
 ```
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
+## Ejecutar las pruebas
 
 ```sh
 npm run test:unit
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+## Revisar el código
 
 ```sh
 npm run lint
 ```
+
+## Conectar con el backend
+
+Si el backend está desplegado en otro dominio, crea un archivo `.env` en esta carpeta y añade la dirección de tu API:
+
+```env
+VITE_API_URL=https://tu-backend.vercel.app
+```
+
+Cambia el ejemplo por la dirección real del backend. No pongas claves secretas en variables que empiecen por `VITE_`, porque se muestran en el navegador.

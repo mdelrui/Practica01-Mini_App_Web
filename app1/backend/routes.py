@@ -1,36 +1,26 @@
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
-from .openrouter import preguntar_ia
-
+from .openrouter import OpenRouterError, resumir_con_ia
 
 router = APIRouter()
 
 
-class Texto(BaseModel):
-    texto: str
+class TextoEntrada(BaseModel):
+    # Limitamos el tamaño para no enviar textos demasiado largos.
+    texto: str = Field(min_length=1, max_length=5000)
 
 
 @router.post("/api/resumir")
-def resumir(datos: Texto):
-    # Comprobamos que el usuario haya escrito algún texto.
-    if not datos.texto.strip():
-        raise HTTPException(status_code=400, detail="Escribe un texto")
+def resumir(datos: TextoEntrada):
+    texto = datos.texto.strip()
 
-    # Preparamos la pregunta para la inteligencia artificial.
-    historial = [
-        {
-            "role": "user",
-            "content": "Resume este texto de forma clara y breve:\n" + datos.texto,
-        }
-    ]
-    respuesta = preguntar_ia(historial)
+    if not texto:
+        raise HTTPException(status_code=400, detail="Escribe un texto para resumir.")
 
-    # Avisamos si OpenRouter no devuelve ningún resumen.
-    if respuesta is None:
-        raise HTTPException(
-            status_code=502,
-            detail="No se pudo obtener el resumen",
-        )
+    try:
+        resumen = resumir_con_ia(texto)
+    except OpenRouterError as error:
+        raise HTTPException(status_code=502, detail=str(error)) from error
 
-    return {"resumen": respuesta}
+    return {"resumen": resumen}
