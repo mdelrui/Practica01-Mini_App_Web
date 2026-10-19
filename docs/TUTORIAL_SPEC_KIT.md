@@ -90,6 +90,10 @@ Abr id el proyecto en VS Code y probad en el chat de GitHub Copilot:
 
 No hace falta que lo ejecutéis todavía con instrucciones definitivas. Primero comprobad que Copilot reconoce el comando y puede acceder a los archivos del repositorio. Si no lo reconoce, comprobad los archivos de integración y recargad VS Code antes de seguir.
 
+Si Spec Kit está instalado en una subcarpeta (por ejemplo, `app2/`) pero abrís en VS Code la carpeta padre del repositorio para tener también la documentación a mano, Copilot puede no detectar las skills porque están dentro de `app2/.github/skills/`. En este repositorio ya están añadidas en la raíz las skills puente de `.github/skills/`: exponen los mismos comandos y les indican que ejecuten el flujo original usando `app2` como raíz de Spec Kit. Así podéis seguir trabajando desde una sola ventana y consultar el resto del repositorio; los artefactos de Spec Kit continúan dentro de `app2`.
+
+Los nombres de los comandos dependen de las skills instaladas. En esta instalación, el comando es `/speckit-constitution` (no `/specify-constitution`); podéis escribir `/` en el chat para ver los nombres disponibles.
+
 Importante: los comandos `/speckit-*` se ejecutan en el chat del agente, no en PowerShell. La CLI `specify` se usa para inicializar y administrar la instalación; los comandos de desarrollo los ejecuta Copilot siguiendo las instrucciones instaladas.
 
 ## 3. Primer paso real: crear la Constitution

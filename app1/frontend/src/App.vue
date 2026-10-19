@@ -4,7 +4,6 @@ import { computed, ref } from 'vue'
 import { FilePlusCorner, MoveDown, Trash } from 'lucide-vue-next'
 import type { Summary, UserText } from './types/types'
 
-const URL = 'http://127.0.0.1:8000/resumir'
 const MAX_WORDS = 5000
 const MAX_FILE_SIZE = 1024 * 1024
 const ALLOWED_EXTENSIONS = ['.txt', '.md']
@@ -61,23 +60,19 @@ function deleteText() {
   text.value = ''
 }
 
-async function getSummary(): Promise<void> {
+async function getSummary() {
+  // Comprobamos que haya texto
+  if (!text.value.trim()) return
+
   loading.value = true
-  reqError.value = null
-
   try {
-    const fullText: UserText = { text: text.value.trim().replaceAll('\n', '') }
-    const response = await axios.post(URL, fullText)
-    const data: Summary = { summary: response.data['resumen'] }
-
-    summary.value = data.summary
-    deleteText()
-  } catch (e) {
-    reqError.value =
-      'Ha ocurrido un error al contactar con el servicio. Por favor, inténtelo de nuevo.'
-  } finally {
-    loading.value = false
+    // Enviamos el texto a Python y guardamos el resumen
+    const res = await axios.post('/api/resumir', { texto: text.value })
+    summary.value = res.data.resumen
+  } catch {
+    summary.value = 'Error al generar el resumen'
   }
+  loading.value = false
 }
 </script>
 <!-- Fondo #17212B · Panel #263746 · Acento #67C4D0 · Texto #E8F1F5 -->
@@ -112,7 +107,7 @@ async function getSummary(): Promise<void> {
         </button>
       </div>
 
-      <form>
+      <form @submit.prevent="getSummary">
         <div
           @dragover.prevent="isDragging = true"
           @dragleave="onDragLeaveFile"
