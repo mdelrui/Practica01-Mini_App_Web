@@ -58,7 +58,6 @@ function deleteText() {
   text.value = ''
 }
 
-
 async function getSummary() {
   // Comprobamos que haya texto
   if (!text.value.trim()) return
@@ -66,18 +65,13 @@ async function getSummary() {
   loading.value = true
   try {
     // Enviamos el texto a Python y guardamos el resumen
-    const res = await axios.post(
-      `${import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'}/api/resumir`,
-      { texto: text.value }
-    )
+    const res = await axios.post('/api/resumir', { texto: text.value })
     summary.value = res.data.resumen
   } catch {
     summary.value = 'Error al generar el resumen'
   }
   loading.value = false
 }
-
-
 </script>
 <!-- Fondo #17212B · Panel #263746 · Acento #67C4D0 · Texto #E8F1F5 -->
 <template>
