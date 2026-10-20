@@ -6,3 +6,8 @@
   --color-primary: #67c4d0;
   --color-on-primary: #e8f1f5;
 }
+
+.cl-avatarBox {
+  width: 2.5rem;
+  height: 2.5rem;
+}

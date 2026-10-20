@@ -1,15 +1,12 @@
 <script setup lang="ts">
 import axios from 'axios'
 import { computed, ref } from 'vue'
-import { useAuth, useClerk } from '@clerk/vue'
+import { useAuth, useClerk, UserButton } from '@clerk/vue'
 import { FilePlusCorner, MoveDown, Trash } from 'lucide-vue-next'
 import type { Summary, UserInput } from './types/types'
 
-const props = withDefaults(defineProps<{ clerkConfigured?: boolean }>(), {
-  clerkConfigured: false
-})
-const auth = props.clerkConfigured ? useAuth() : null
-const clerk = props.clerkConfigured ? useClerk() : null
+const auth = useAuth()
+const clerk = useClerk()
 
 const URL = 'http://127.0.0.1:8000/resumir'
 const MAX_WORDS = 5000
@@ -25,9 +22,9 @@ const fileError = ref('')
 const reqError = ref<string | null>(null)
 const reauthenticationRequired = ref(false)
 const mainIdeasEnabled = ref(false)
-const authReady = computed(() => auth?.isLoaded.value === true)
-const isSignedIn = computed(() => auth?.isSignedIn.value === true)
-const canSubmit = computed(() => props.clerkConfigured && authReady.value && isSignedIn.value)
+const authReady = computed(() => auth.isLoaded.value === true)
+const isSignedIn = computed(() => auth.isSignedIn.value === true)
+const canSubmit = computed(() => authReady.value && isSignedIn.value)
 
 const words = computed(() => {
   const trimmed = text.value.trim()
@@ -88,6 +85,20 @@ async function openSignIn(): Promise<void> {
   }
 }
 
+async function openSignUp(): Promise<void> {
+  if (!clerk?.value) {
+    reqError.value = 'No se pudo abrir la autenticación. Inténtalo de nuevo.'
+    return
+  }
+
+  try {
+    reqError.value = null
+    await clerk.value.openSignUp()
+  } catch {
+    reqError.value = 'No se pudo abrir la autenticación. Inténtalo de nuevo.'
+  }
+}
+
 async function signOut(): Promise<void> {
   if (!clerk?.value) return
 
@@ -99,10 +110,8 @@ async function signOut(): Promise<void> {
 }
 
 async function getSummary(): Promise<void> {
-  if (!canSubmit.value || !auth) {
-    reqError.value = props.clerkConfigured
-      ? 'Inicia sesión para poder resumir el texto.'
-      : 'La autenticación no está configurada. Contacta con la persona responsable del servicio.'
+  if (!canSubmit.value) {
+    reqError.value = 'Inicia sesión para poder resumir el texto.'
     return
   }
 
@@ -169,33 +178,30 @@ async function getSummary(): Promise<void> {
 
 <template>
   <div class="min-h-screen bg-bg-primary flex flex-col items-center py-8 gap-10">
-    <header>
-      <h1 class="text-primary text-2xl font-semibold mb-2">RESUMIDOR AUTOMÁTICO</h1>
-      <h3 class="text-on-primary/70">Convierte textos extensos en ideas claras.</h3>
+    <header class="flex justify-center w-full relative max-w-3xl px-10 md:px-0">
+      <div>
+        <h1 class="text-primary text-2xl font-semibold mb-2">RESUMIDOR AUTOMÁTICO</h1>
+        <h3 class="text-on-primary/70">Convierte textos extensos en ideas claras.</h3>
+      </div>
+
+      <div class="absolute right-0 top-0">
+        <UserButton v-if="isSignedIn" />
+      </div>
     </header>
 
-    <section class="w-full max-w-3xl px-10 md:px-0" aria-live="polite">
-      <p v-if="!clerkConfigured" role="alert" class="text-[#cc4f4f]">
-        La autenticación no está configurada. Contacta con la persona responsable del servicio.
-      </p>
-      <p v-else-if="!authReady" role="status" class="text-on-primary">
-        Comprobando el estado de autenticación...
-      </p>
-      <div v-else-if="isSignedIn" class="flex items-center justify-between gap-4">
-        <p class="text-on-primary">Sesión iniciada</p>
-        <button type="button" @click="signOut" class="text-primary underline">
-          Cerrar sesión
-        </button>
-      </div>
-      <div v-else class="flex items-center justify-between gap-4">
-        <p class="text-on-primary">Inicia sesión para resumir un texto.</p>
-        <button type="button" @click="openSignIn" class="text-primary underline">
-          Iniciar sesión
-        </button>
-      </div>
+    <section v-if="!isSignedIn" class="flex justify-center gap-5 w-full max-w-3xl px-10 mt-10 md:px-0"
+      aria-live="polite">
+      <button type="button" @click="openSignIn"
+        class="bg-primary text-bg-primary font-semibold text-lg py-3 px-10 rounded-sm cursor-pointer hover:bg-primary/70">
+        Iniciar sesión
+      </button>
+      <button type="button" @click="openSignUp"
+        class="bg-transparent text-primary border font-semibold border-primary text-lg py-3 px-10 rounded-sm cursor-pointer hover:bg-primary hover:text-bg-primary">
+        Crear cuenta
+      </button>
     </section>
 
-    <div class="w-full max-w-3xl flex-col justify-center items-center px-10 md:px-0">
+    <div v-else class="w-full max-w-3xl px-10 m-auto md:px-0">
       <div class="flex justify-between pb-4 px-1">
         <div class="flex gap-2 items-center">
           <span
@@ -296,8 +302,7 @@ async function getSummary(): Promise<void> {
           <p class="text-[#cc4f4f] font-semibold leading-relaxed whitespace-pre-line">
             {{ reqError }}
           </p>
-          <button v-if="reauthenticationRequired" type="button" @click="openSignIn"
-            class="mt-3 text-primary underline">
+          <button v-if="reauthenticationRequired" type="button" @click="openSignIn" class="mt-3 text-primary underline">
             Volver a iniciar sesión
           </button>
         </div>
