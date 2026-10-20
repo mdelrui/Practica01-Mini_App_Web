@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import axios from 'axios'
 import { computed, ref } from 'vue'
+import { useAuth, useClerk } from '@clerk/vue'
 import { FilePlusCorner, MoveDown, Trash } from 'lucide-vue-next'
 import type { Summary, UserInput } from './types/types'
+
+const props = withDefaults(defineProps<{ clerkConfigured?: boolean }>(), {
+  clerkConfigured: false
+})
+const auth = props.clerkConfigured ? useAuth() : null
+const clerk = props.clerkConfigured ? useClerk() : null
 
 const URL = 'http://127.0.0.1:8000/resumir'
 const MAX_WORDS = 5000
@@ -16,7 +23,11 @@ const summary = ref<string | null>(null)
 const isDragging = ref(false)
 const fileError = ref('')
 const reqError = ref<string | null>(null)
+const reauthenticationRequired = ref(false)
 const mainIdeasEnabled = ref(false)
+const authReady = computed(() => auth?.isLoaded.value === true)
+const isSignedIn = computed(() => auth?.isSignedIn.value === true)
+const canSubmit = computed(() => props.clerkConfigured && authReady.value && isSignedIn.value)
 
 const words = computed(() => {
   const trimmed = text.value.trim()
@@ -63,17 +74,66 @@ function deleteText() {
   text.value = ''
 }
 
+async function openSignIn(): Promise<void> {
+  if (!clerk?.value) {
+    reqError.value = 'No se pudo abrir la autenticación. Inténtalo de nuevo.'
+    return
+  }
+
+  try {
+    reqError.value = null
+    await clerk.value.openSignIn()
+  } catch {
+    reqError.value = 'No se pudo abrir la autenticación. Inténtalo de nuevo.'
+  }
+}
+
+async function signOut(): Promise<void> {
+  if (!clerk?.value) return
+
+  try {
+    await clerk.value.signOut()
+  } catch {
+    reqError.value = 'No se pudo cerrar la sesión. Inténtalo de nuevo.'
+  }
+}
+
 async function getSummary(): Promise<void> {
+  if (!canSubmit.value || !auth) {
+    reqError.value = props.clerkConfigured
+      ? 'Inicia sesión para poder resumir el texto.'
+      : 'La autenticación no está configurada. Contacta con la persona responsable del servicio.'
+    return
+  }
+
   loading.value = true
   reqError.value = null
+  reauthenticationRequired.value = false
   APIResponse.value = null
 
   try {
+    let token: string | null
+    try {
+      token = await auth.getToken.value()
+    } catch {
+      reqError.value = 'No se pudo obtener la sesión. Vuelve a iniciar sesión e inténtalo de nuevo.'
+      reauthenticationRequired.value = true
+      return
+    }
+
+    if (!token) {
+      reqError.value = 'No se pudo obtener la sesión. Vuelve a iniciar sesión e inténtalo de nuevo.'
+      reauthenticationRequired.value = true
+      return
+    }
+
     const userInput: UserInput = {
-      text: text.value.trim().replaceAll('\n', ''),
+      text: text.value.trim().replace(/\n/g, ''),
       main_ideas: mainIdeasEnabled.value
     }
-    const response = await axios.post(URL, userInput)
+    const response = await axios.post(URL, userInput, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
     const payload = response.data ?? {}
     const data: Summary = {
       summary:
@@ -92,8 +152,15 @@ async function getSummary(): Promise<void> {
     APIResponse.value = data
     deleteText()
   } catch (e) {
-    reqError.value =
-      'Ha ocurrido un error al contactar con el servicio. Por favor, inténtelo de nuevo.'
+    if (axios.isAxiosError(e) && e.response?.status === 401) {
+      reqError.value = 'Tu sesión no es válida o ha caducado. Vuelve a iniciar sesión.'
+      reauthenticationRequired.value = true
+    } else if (axios.isAxiosError(e) && e.response?.status === 503) {
+      reqError.value = 'No se pudo verificar la sesión temporalmente. Inténtalo más tarde.'
+    } else {
+      reqError.value =
+        'Ha ocurrido un error al contactar con el servicio. Por favor, inténtelo de nuevo.'
+    }
   } finally {
     loading.value = false
   }
@@ -106,6 +173,27 @@ async function getSummary(): Promise<void> {
       <h1 class="text-primary text-2xl font-semibold mb-2">RESUMIDOR AUTOMÁTICO</h1>
       <h3 class="text-on-primary/70">Convierte textos extensos en ideas claras.</h3>
     </header>
+
+    <section class="w-full max-w-3xl px-10 md:px-0" aria-live="polite">
+      <p v-if="!clerkConfigured" role="alert" class="text-[#cc4f4f]">
+        La autenticación no está configurada. Contacta con la persona responsable del servicio.
+      </p>
+      <p v-else-if="!authReady" role="status" class="text-on-primary">
+        Comprobando el estado de autenticación...
+      </p>
+      <div v-else-if="isSignedIn" class="flex items-center justify-between gap-4">
+        <p class="text-on-primary">Sesión iniciada</p>
+        <button type="button" @click="signOut" class="text-primary underline">
+          Cerrar sesión
+        </button>
+      </div>
+      <div v-else class="flex items-center justify-between gap-4">
+        <p class="text-on-primary">Inicia sesión para resumir un texto.</p>
+        <button type="button" @click="openSignIn" class="text-primary underline">
+          Iniciar sesión
+        </button>
+      </div>
+    </section>
 
     <div class="w-full max-w-3xl flex-col justify-center items-center px-10 md:px-0">
       <div class="flex justify-between pb-4 px-1">
@@ -123,7 +211,7 @@ async function getSummary(): Promise<void> {
         </button>
       </div>
 
-      <form>
+      <form @submit.prevent="getSummary">
         <div @dragover.prevent="isDragging = true" @dragleave="onDragLeaveFile" @drop.prevent="onDropFile"
           @dragenter="onDragEnter = true" :class="isDragging"
           class="relative w-full mb-4 border border-[#e8f1f59f] rounded-lg bg-bg-secondary focus-within:border focus-within:border-primary focus-within:ring-1">
@@ -158,7 +246,7 @@ async function getSummary(): Promise<void> {
 
         <button type="submit"
           class="w-full flex justify-center items-center gap-4 py-3 rounded-lg border border-transparent font-semibold text-lg transition-all bg-primary text-bg-primary not-disabled:cursor-pointer hover:not-disabled:bg-[#55a2ac] hover:not-disabled:scale-[102%] disabled:bg-transparent disabled:text-on-primary/40 disabled:border-on-primary/25 disabled:cursor-not-allowed"
-          :disabled="!text || loading" v-on:click="getSummary">
+          :disabled="!text || loading || !canSubmit">
           <span>{{ loading ? 'Resumiendo...' : 'Resumir Texto' }}</span>
           <div v-if="loading" class="size-5 animate-spin rounded-full border-2 border-on-primary/30 border-t-on-primary"
             role="status" aria-label="Cargando"></div>
@@ -208,6 +296,10 @@ async function getSummary(): Promise<void> {
           <p class="text-[#cc4f4f] font-semibold leading-relaxed whitespace-pre-line">
             {{ reqError }}
           </p>
+          <button v-if="reauthenticationRequired" type="button" @click="openSignIn"
+            class="mt-3 text-primary underline">
+            Volver a iniciar sesión
+          </button>
         </div>
       </section>
     </div>

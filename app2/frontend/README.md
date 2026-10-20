@@ -1,6 +1,7 @@
 # frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+ResumidorIA App 2 is a Vue single-page app. Authentication is provided by Clerk
+in the existing screen; sign-in opens in a modal and does not add routes.
 
 ## Recommended IDE Setup
 
@@ -27,6 +28,43 @@ See [Vite Configuration Reference](https://vite.dev/config/).
 
 ```sh
 npm install
+```
+
+### Clerk configuration
+
+Create a local `.env` from `.env.example` and set `VITE_CLERK_PUBLISHABLE_KEY`
+to the publishable key for the Clerk instance used by the backend. The key is
+public configuration, not a secret. Do not commit `.env` or place session
+tokens in frontend configuration.
+
+The app intentionally shows an authentication-configuration error and blocks
+summary requests when the publishable key is not configured. The backend must
+use the issuer and JWKS URL from the same Clerk instance; see
+`../backend/.env.example`. Do not guess or reuse values across Clerk
+environments.
+
+### Authentication responses
+
+The frontend obtains the current session token at submit time and sends it only
+in the `Authorization: Bearer` header. The backend returns `401` for missing or
+invalid credentials and `503` when the verifier/JWKS is unavailable. A `503`
+indicates a temporary verification outage, not an invalid user session. Neither
+response triggers an automatic retry, and both preserve the entered text.
+
+### Authentication tests
+
+Automated tests use mocked Clerk/JWKS and the summary service; they do not need
+real Clerk or OpenRouter credentials:
+
+```sh
+npm run test:unit -- --run
+npm run type-check
+```
+
+Backend contract tests run from `../backend`:
+
+```powershell
+python -m pytest -q
 ```
 
 ### Compile and Hot-Reload for Development
