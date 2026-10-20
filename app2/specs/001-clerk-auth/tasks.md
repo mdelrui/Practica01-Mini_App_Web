@@ -16,15 +16,15 @@
 
 **Purpose**: Add only the approved integration dependencies and identify configuration inputs without inventing Clerk instance values.
 
-- [ ] T001 [P] Add a pinned `@clerk/vue` dependency compatible with the existing Vue and Node versions in `app2/frontend/package.json` and update `app2/frontend/package-lock.json`.
-- [ ] T002 [P] Add a pinned PyJWT cryptographic/JWKS dependency compatible with the deployed Python runtime in `app2/backend/requirements.txt`; record the selected version in the same file.
-- [ ] T003 Define `VITE_CLERK_PUBLISHABLE_KEY` and its TypeScript environment typing in `app2/frontend/.env.example` and `app2/frontend/env.d.ts`; define `CLERK_ISSUER`, `CLERK_JWKS_URL`, and finite `CLERK_JWKS_TIMEOUT` placeholders in `app2/backend/.env.example`. Obtain actual development/production values from the configured Clerk instance; do not commit credentials or invent issuer/URL values.
+- [X] T001 [P] Add a pinned `@clerk/vue` dependency compatible with the existing Vue and Node versions in `app2/frontend/package.json` and update `app2/frontend/package-lock.json`.
+- [X] T002 [P] Add a pinned PyJWT cryptographic/JWKS dependency compatible with the deployed Python runtime in `app2/backend/requirements.txt`; record the selected version in the same file.
+- [X] T003 Define `VITE_CLERK_PUBLISHABLE_KEY` and its TypeScript environment typing in `app2/frontend/.env.example` and `app2/frontend/env.d.ts`; define `CLERK_ISSUER`, `CLERK_JWKS_URL`, and finite `CLERK_JWKS_TIMEOUT` placeholders in `app2/backend/.env.example`. Obtain actual development/production values from the configured Clerk instance; do not commit credentials or invent issuer/URL values.
 
 ## Phase 2: Foundational
 
 **Purpose**: Prepare deterministic backend test infrastructure required by the security stories.
 
-- [ ] T004 Create reusable FastAPI `TestClient` fixtures and controlled verifier/OpenRouter mock setup in `app2/backend/tests/conftest.py`; ensure test setup requires no real Clerk or OpenRouter credentials.
+- [X] T004 Create reusable FastAPI `TestClient` fixtures and controlled verifier/OpenRouter mock setup in `app2/backend/tests/conftest.py`; ensure test setup requires no real Clerk or OpenRouter credentials.
 
 **Checkpoint**: Dependency manifests and test configuration are ready; stories can be implemented with the security gate completed before enabling authenticated processing.
 
@@ -36,12 +36,12 @@
 
 ### Tests for User Story 1
 
-- [ ] T005 [P] [US1] Add component tests for loading/signed-out/signed-in states, modal opening, sign-out, unchanged route, and blocked summary submission while unauthenticated in `app2/frontend/src/__tests__/App.spec.ts`.
+- [X] T005 [P] [US1] Add component tests for loading/signed-out/signed-in states, modal opening, sign-out, unchanged route, and blocked summary submission while unauthenticated in `app2/frontend/src/__tests__/App.spec.ts`.
 
 ### Implementation for User Story 1
 
-- [ ] T006 [US1] Initialize the Clerk Vue provider with the configured public publishable key while preserving the current SPA mount in `app2/frontend/src/main.ts`.
-- [ ] T007 [US1] Add visible Clerk loading/signed-out/signed-in states, same-screen sign-in modal, and sign-out action without adding routes or replacing the existing summary screen in `app2/frontend/src/App.vue`.
+- [X] T006 [US1] Initialize the Clerk Vue provider with the configured public publishable key while preserving the current SPA mount in `app2/frontend/src/main.ts`.
+- [X] T007 [US1] Add visible Clerk loading/signed-out/signed-in states, same-screen sign-in modal, and sign-out action without adding routes or replacing the existing summary screen in `app2/frontend/src/App.vue`.
 
 **Checkpoint**: The authentication UI works independently with mocked Clerk state and does not send summary requests before sign-in.
 
@@ -53,15 +53,15 @@
 
 ### Tests for User Story 3
 
-- [ ] T008 [P] [US3] Add backend contract tests for absent/wrong-scheme/blank, invalid-signature, wrong-issuer, expired and unmatched-key credentials; assert HTTP 401, 401 precedence over malformed JSON, and zero summary-service calls in `app2/backend/tests/test_auth.py`.
-- [ ] T009 [US3] Add backend tests for JWKS connection failure, timeout and unusable JWKS; assert HTTP 503 and zero summary-service calls in `app2/backend/tests/test_auth.py`.
-- [ ] T010 [P] [US3] Add frontend tests for distinct 401/session-invalid and 503/verifier-unavailable messages, retained input, no automatic retry, and no token exposure in `app2/frontend/src/__tests__/App.spec.ts`.
+- [X] T008 [P] [US3] Add backend contract tests for absent/wrong-scheme/blank, invalid-signature, wrong-issuer, expired and unmatched-key credentials; assert HTTP 401, 401 precedence over malformed JSON, and zero summary-service calls in `app2/backend/tests/test_auth.py`.
+- [X] T009 [US3] Add backend tests for JWKS connection failure, timeout and unusable JWKS; assert HTTP 503 and zero summary-service calls in `app2/backend/tests/test_auth.py`.
+- [X] T010 [P] [US3] Add frontend tests for distinct 401/session-invalid and 503/verifier-unavailable messages, retained input, no automatic retry, and no token exposure in `app2/frontend/src/__tests__/App.spec.ts`.
 
 ### Implementation for User Story 3
 
-- [ ] T011 [US3] Implement a backend verifier using the configured Clerk JWKS source, a fixed allowed algorithm, required valid `exp`, applicable `nbf`, signature and issuer checks, and a finite fetch timeout; avoid blocking the async request loop during JWKS I/O and classify rejected credentials separately from JWKS unavailability in `app2/backend/auth.py`.
-- [ ] T012 [US3] Protect the existing `POST /resumir` request before JSON parsing/validation and map invalid/missing credentials to HTTP 401 and verifier/JWKS outages to HTTP 503 without changing successful JSON behavior in `app2/backend/main.py`.
-- [ ] T013 [P] [US3] Display separate user-safe messages for HTTP 401 and HTTP 503, preserve the entered text, expose the same-screen Clerk modal for re-authentication, and do not auto-resubmit in `app2/frontend/src/App.vue`.
+- [X] T011 [US3] Implement a backend verifier using the configured Clerk JWKS source, a fixed allowed algorithm, required valid `exp`, applicable `nbf`, signature and issuer checks, and a finite fetch timeout; avoid blocking the async request loop during JWKS I/O and classify rejected credentials separately from JWKS unavailability in `app2/backend/auth.py`.
+- [X] T012 [US3] Protect the existing `POST /resumir` request before JSON parsing/validation and map invalid/missing credentials to HTTP 401 and verifier/JWKS outages to HTTP 503 without changing successful JSON behavior in `app2/backend/main.py`.
+- [X] T013 [P] [US3] Display separate user-safe messages for HTTP 401 and HTTP 503, preserve the entered text, expose the same-screen Clerk modal for re-authentication, and do not auto-resubmit in `app2/frontend/src/App.vue`.
 
 **Checkpoint**: Direct unauthenticated access fails closed before body validation; all 401/503 paths make zero OpenRouter calls and have distinct UI feedback.
 
@@ -73,12 +73,12 @@
 
 ### Tests for User Story 2
 
-- [ ] T014 [P] [US2] Add a frontend test that an authenticated submission obtains the current Clerk token at submit time, sends it only in `Authorization: Bearer`, leaves the existing JSON body unchanged, and never renders the token in `app2/frontend/src/__tests__/App.spec.ts`.
-- [ ] T015 [P] [US2] Add a backend contract test that a valid token and valid existing request body return the existing success schema and invoke the mocked summary/OpenRouter service exactly once in `app2/backend/tests/test_auth.py`.
+- [X] T014 [P] [US2] Add a frontend test that an authenticated submission obtains the current Clerk token at submit time, sends it only in `Authorization: Bearer`, leaves the existing JSON body unchanged, and never renders the token in `app2/frontend/src/__tests__/App.spec.ts`.
+- [X] T015 [P] [US2] Add a backend contract test that a valid token and valid existing request body return the existing success schema and invoke the mocked summary/OpenRouter service exactly once in `app2/backend/tests/test_auth.py`.
 
 ### Implementation for User Story 2
 
-- [ ] T016 [US2] Obtain the current Clerk session token for each submit, attach it as the `Authorization` Bearer header to the existing Axios `POST /resumir`, keep the JSON body unchanged, and handle token-acquisition failure without sending a request in `app2/frontend/src/App.vue`.
+- [X] T016 [US2] Obtain the current Clerk session token for each submit, attach it as the `Authorization` Bearer header to the existing Axios `POST /resumir`, keep the JSON body unchanged, and handle token-acquisition failure without sending a request in `app2/frontend/src/App.vue`.
 
 **Checkpoint**: An authenticated, valid request follows the original summary path once; token transport and successful payload match the contract.
 
@@ -86,9 +86,9 @@
 
 **Purpose**: Verify privacy, CORS, documentation and regression criteria across the complete vertical slice.
 
-- [ ] T017 [P] Add assertions that tokens do not appear in response bodies or captured logs, and that the existing CORS policy accepts an `Authorization` preflight from the configured SPA origin in `app2/backend/tests/test_auth.py`.
-- [ ] T018 Update the setup/configuration and authentication testing instructions, including non-secret Clerk environment variables and the 401/503 distinction, in `app2/frontend/README.md` and `app2/backend/.env.example`.
-- [ ] T019 Run the backend test suite and frontend unit/type checks from the working directories described in `app2/specs/001-clerk-auth/quickstart.md`; resolve failures without contacting real Clerk or OpenRouter services.
+- [X] T017 [P] Add assertions that tokens do not appear in response bodies or captured logs, and that the existing CORS policy accepts an `Authorization` preflight from the configured SPA origin in `app2/backend/tests/test_auth.py`.
+- [X] T018 Update the setup/configuration and authentication testing instructions, including non-secret Clerk environment variables and the 401/503 distinction, in `app2/frontend/README.md` and `app2/backend/.env.example`.
+- [X] T019 Run the backend test suite and frontend unit/type checks from the working directories described in `app2/specs/001-clerk-auth/quickstart.md`; resolve failures without contacting real Clerk or OpenRouter services.
 
 ## Dependencies & Execution Order
 

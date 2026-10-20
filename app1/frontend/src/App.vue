@@ -87,44 +87,71 @@ async function getSummary() {
       <div class="flex justify-between pb-4 px-1">
         <div class="flex gap-2 items-center">
           <span
-            class="flex justify-center items-center text-primary font-semibold text-sm px-4 py-0.5 tabular-nums">01</span>
+            class="flex justify-center items-center text-primary font-semibold text-sm px-4 py-0.5 tabular-nums"
+            >01</span
+          >
           <p class="text-on-primary">Tu texto</p>
         </div>
 
-        <button type="button" variant="ghost" size="icon" aria-label="Borrar texto" title="Borrar texto"
+        <button
+          type="button"
+          variant="ghost"
+          size="icon"
+          aria-label="Borrar texto"
+          title="Borrar texto"
           v-on:click="deleteText()"
           class="rounded-full p-1.5 transition-colors text-on-primary/50 not-disabled:cursor-pointer hover:not-disabled:bg-red-400/10 hover:not-disabled:text-red-40 disabled:text-on-primary/20 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-red-400"
-          :disabled="text.length == 0">
+          :disabled="text.length == 0"
+        >
           <Trash :size="16" />
         </button>
       </div>
 
       <form @submit.prevent="getSummary">
-        <div @dragover.prevent="isDragging = true" @dragleave="onDragLeaveFile" @drop.prevent="onDropFile"
-          @dragenter="onDragEnter = true" :class="isDragging"
-          class="relative w-full mb-4 border border-on-primary/60 rounded-lg bg-bg-secondary focus-within:border focus-within:border-primary focus-within:ring-1">
-          <div v-if="onDragEnter"
-            class="absolute size-full bg-white/20 flex flex-col justify-center rounded-lg items-center gap-2">
+        <div
+          @dragover.prevent="isDragging = true"
+          @dragleave="onDragLeaveFile"
+          @drop.prevent="onDropFile"
+          @dragenter="onDragEnter = true"
+          :class="isDragging"
+          class="relative w-full mb-4 border border-on-primary/60 rounded-lg bg-bg-secondary focus-within:border focus-within:border-primary focus-within:ring-1"
+        >
+          <div
+            v-if="onDragEnter"
+            class="absolute size-full bg-white/20 flex flex-col justify-center rounded-lg items-center gap-2"
+          >
             <span class="text-on-primary">Suelta aquí tu archivo</span>
             <FilePlusCorner class="text-on-primary" />
           </div>
 
-          <textarea class="text-on-primary w-full min-h-36 rounded-t-lg px-4 py-3 outline-none bg-transparent"
-            placeholder="Escribe o pega tu texto aquí… o arrastra tu archivo (.md o .txt)" :maxlength="MAX_WORDS"
-            v-model="text"></textarea>
+          <textarea
+            class="text-on-primary w-full min-h-36 rounded-t-lg px-4 py-3 outline-none bg-transparent"
+            placeholder="Escribe o pega tu texto aquí… o arrastra tu archivo (.md o .txt)"
+            :maxlength="MAX_WORDS"
+            v-model="text"
+          ></textarea>
 
           <div class="flex justify-between px-4 py-3 border-t border-on-primary/60">
-            <span class="text-xs text-on-primary/60">{{ words }} {{ words === 1 ? 'palabra' : 'palabras' }}</span>
+            <span class="text-xs text-on-primary/60"
+              >{{ words }} {{ words === 1 ? 'palabra' : 'palabras' }}</span
+            >
             <span class="text-xs text-on-primary/60">{{ text.length }} / {{ MAX_WORDS }}</span>
           </div>
         </div>
 
-        <button type="submit"
+        <button
+          type="submit"
           class="w-full flex justify-center items-center gap-4 py-3 rounded-lg border border-transparent font-semibold text-lg transition-all bg-primary text-bg-primary not-disabled:cursor-pointer hover:not-disabled:bg-[#55a2ac] hover:not-disabled:scale-[102%] disabled:bg-transparent disabled:text-on-primary/40 disabled:border-on-primary/25 disabled:cursor-not-allowed"
-          :disabled="!text || loading" v-on:click="getSummary">
+          :disabled="!text || loading"
+          v-on:click="getSummary"
+        >
           <span>{{ loading ? 'Resumiendo...' : 'Resumir Texto' }}</span>
-          <div v-if="loading" class="size-5 animate-spin rounded-full border-2 border-on-primary/30 border-t-on-primary"
-            role="status" aria-label="Cargando"></div>
+          <div
+            v-if="loading"
+            class="size-5 animate-spin rounded-full border-2 border-on-primary/30 border-t-on-primary"
+            role="status"
+            aria-label="Cargando"
+          ></div>
         </button>
       </form>
 
