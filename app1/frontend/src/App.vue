@@ -60,7 +60,6 @@ function deleteText() {
   text.value = ''
 }
 
-
 async function getSummary() {
   // Comprobamos que haya texto
   if (!text.value.trim()) return
@@ -75,8 +74,6 @@ async function getSummary() {
   }
   loading.value = false
 }
-
-
 </script>
 
 <template>
