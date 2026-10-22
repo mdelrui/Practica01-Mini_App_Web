@@ -11,3 +11,4 @@ app.include_router(router)
 def inicio():
     # Ruta sencilla para comprobar que la API funciona.
     return {"estado": "ok", "documentacion": "/docs"}
+

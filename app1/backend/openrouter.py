@@ -4,7 +4,7 @@ from .config import API_KEY, API_URL, MODEL
 
 
 class OpenRouterError(Exception):
-    """Error sencillo al pedir un resumen a OpenRouter."""
+    """Error controlado al solicitar un resumen a OpenRouter."""
 
 
 def resumir_con_ia(texto: str) -> str:
@@ -22,16 +22,21 @@ def resumir_con_ia(texto: str) -> str:
         ],
     }
     cabeceras = {
-        "Authorization": f"******",
+        "Authorization": f"Bearer {API_KEY}",
         "Content-Type": "application/json",
+
     }
 
     try:
         respuesta = requests.post(
-            API_URL, headers=cabeceras, json=datos, timeout=30
+            API_URL,
+            headers=cabeceras,
+            json=datos,
+            timeout=(5, 30),
         )
         respuesta.raise_for_status()
-        contenido = respuesta.json()["choices"][0]["message"]["content"]
+        resultado = respuesta.json()
+        contenido = resultado["choices"][0]["message"]["content"]
     except requests.RequestException as error:
         raise OpenRouterError("No se pudo conectar con OpenRouter.") from error
     except (ValueError, KeyError, IndexError, TypeError) as error:
@@ -41,3 +46,4 @@ def resumir_con_ia(texto: str) -> str:
         raise OpenRouterError("OpenRouter devolvió un resumen vacío.")
 
     return contenido.strip()
+

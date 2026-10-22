@@ -61,6 +61,7 @@ function deleteText() {
 
 async function getSummary() {
   // Comprobamos que el texto no esté vacío.
+
   if (!text.value.trim()) return
 
   loading.value = true
@@ -68,6 +69,7 @@ async function getSummary() {
     // Enviamos el texto al backend y guardamos el resumen.
     const apiUrl = import.meta.env.VITE_API_URL || ''
     const res = await axios.post(`${apiUrl}/api/resumir`, { texto: text.value })
+
     summary.value = res.data.resumen
   } catch {
     summary.value = 'Error al generar el resumen'

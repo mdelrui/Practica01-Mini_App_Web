@@ -23,4 +23,5 @@ def resumir(datos: TextoEntrada):
     except OpenRouterError as error:
         raise HTTPException(status_code=502, detail=str(error)) from error
 
+
     return {"resumen": resumen}
