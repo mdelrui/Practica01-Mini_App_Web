@@ -22,7 +22,7 @@ htmlcov/
 .uv-cache/
 
 # Variables y secretos
-.env
+app1/.env
 .env.*
 !.env.example
 !.env.*.example
