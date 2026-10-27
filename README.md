@@ -5,64 +5,49 @@
 
 # Práctica 01 - Mini aplicación web
 
-Este repositorio está organizado por aplicaciones y entregables, con la parte funcional principal en `app1` y el trabajo complementario en `app2`, `docs`, `infra` y `presentation`.
+Este repositorio está organizado por aplicaciones y entregables, con la aplicación funcional principal en `app1` y el trabajo complementario/avanzado en `app2`, `docs`, `infra` y `presentation`.
 
 ## Estructura del repositorio
 
 ```text
 .
-├── app1/
-│   ├── backend/        # FastAPI
-│   └── frontend/       # Vue 3 + TypeScript + Vite
-├── app2/               # trabajo pendiente o segunda aplicación
-├── docs/               # documentación de la práctica
-├── infra/              # Docker y configuración de despliegue
-├── presentation/       # material de presentación
-├── README.md           # documentación general del repositorio
-└── .gitignore
+├── app1/               # Aplicación principal (FastAPI + Vue 3 + Requests hacia OpenRouter)
+├── app2/               # Segunda aplicación avanzada (SDK OpenAI + Spec-Kit + Clerk)
+├── docs/               # Documentación y memorias de la práctica
+├── infra/              # Docker y configuración de contenedores
+├── presentation/       # Material de presentación y defensa
+├── README.md           # Documentación general del repositorio
+└── .gitignore          # Archivo gitignore unificado para todo el proyecto
 ```
 
-## app1: aplicación principal
+---
 
-`app1` contiene el proyecto web funcional base de la práctica. El backend está separado por módulos y sirve el frontend compilado, por lo que la aplicación se puede iniciar con un solo comando.
+## app1: Aplicación principal (Resumidor básico)
+
+`app1` contiene el proyecto web funcional base de la práctica. Está diseñado de forma sencilla y modular: el backend sirve la API y los archivos estáticos compilados del frontend para ejecutar todo el proyecto en un único puerto.
 
 ### Estructura de app1
 
 ```text
 app1/
-├── main.py                 # Punto de entrada de la aplicación
-├── pyproject.toml          # Dependencias de Python
-├── requirements.txt        # Dependencias directas de Python
+├── main.py                 # Punto de entrada (arranca FastAPI y sirve el frontend compilado)
+├── requirements.txt        # Dependencias directas de Python (FastAPI, uvicorn, requests, dotenv)
+├── vercel.json             # Configuración de despliegue en Vercel
 ├── backend/
-│   ├── config.py           # Configuración de OpenRouter
-│   ├── models.py           # Modelo de los datos recibidos
-│   ├── openrouter.py       # Conexión con OpenRouter
-│   └── routes.py           # Rutas de la API
+│   ├── config.py           # Lectura de variables de entorno desde app1/.env
+│   ├── openrouter.py       # Petición HTTP simple con requests hacia la API de OpenRouter
+│   └── routes.py           # Rutas de la API (endpoint POST /api/resumir con texto directo)
 └── frontend/
-    ├── package.json        # Dependencias y comandos de Vue
-    └── src/                # Código de la interfaz
+    ├── package.json        # Dependencias y scripts de Vue
+    └── src/                # Código fuente de la interfaz (App.vue, servicios, tests)
 ```
 
-### Frontend
+### Frontend de app1
 
-Ubicación: `app1/frontend`
+* **Ubicación:** `app1/frontend`
+* **Tecnologías:** Vue 3, TypeScript, Vite, Tailwind CSS, Vitest.
 
-Tecnologías:
-
-- Vue 3
-- TypeScript
-- Vite
-- Vitest
-
-Primera instalación y compilación:
-
-```bash
-cd app1/frontend
-npm install
-npm run build-only
-```
-
-En Windows PowerShell, si `npm` está bloqueado, se puede usar `npm.cmd`:
+Para instalar dependencias y compilar el frontend:
 
 ```powershell
 cd app1\frontend
@@ -70,176 +55,91 @@ npm install
 npm run build-only
 ```
 
-El frontend se sirve desde el backend después de compilarlo.
+### Backend de app1
 
-### Backend
+* **Ubicación:** `app1/backend`
+* **Tecnologías:** Python 3.12+, FastAPI, Uvicorn, Requests.
 
-Ubicación: `app1/backend`
+El backend se conecta a OpenRouter mediante peticiones HTTP estándar con `requests`:
+* `config.py`: Carga la clave secreta `OPENROUTER_API_KEY` desde el archivo `app1/.env`.
+* `openrouter.py`: Envía el texto a la API de OpenRouter (`chat/completions`) usando el modelo gratuito `liquid/lfm-2.5-2.6b:free`.
+* `routes.py`: Expone el endpoint `POST /api/resumir`, recibiendo directamente `texto: str = Body(embed=True)` sin estructuras complejas.
 
-Tecnologías:
-
-- Python 3.12+
-- FastAPI
-- Uvicorn
-- OpenRouter
-
-El backend está organizado en módulos:
-
-- `routes.py`: contiene el endpoint `/api/resumir`.
-- `models.py`: define los datos que recibe la API.
-- `openrouter.py`: realiza la petición a OpenRouter.
-- `config.py`: carga la clave de la API desde `.env`.
-
-El archivo `.env` debe estar en `app1/backend/.env` y contener:
+El archivo `.env` debe crearse en `app1/.env` con el contenido:
 
 ```env
 OPENROUTER_API_KEY=tu_clave_de_openrouter
 ```
 
-No se debe subir el archivo `.env` al repositorio.
+> **Nota:** El archivo `.env` nunca debe subirse al repositorio Git.
 
-### Ejecutar toda la aplicación
+### Ejecutar app1 en local
 
-Desde la carpeta `app1`:
-
-```bash
-cd app1
-uv sync
-uv run python main.py
-```
-
-En Windows PowerShell:
+1. Asegúrate de tener configurado `app1/.env` con tu clave de OpenRouter.
+2. Compila el frontend (`npm run build-only` dentro de `app1/frontend`).
+3. Inicia la aplicación desde la carpeta `app1`:
 
 ```powershell
 cd app1
-uv sync
 uv run python main.py
 ```
+*(O con entorno virtual activo: `python main.py`)*
 
-La aplicación se ejecuta normalmente en:
+La aplicación estará disponible en:
+* Interfaz web y API: `http://127.0.0.1:8000`
+* Documentación interactiva Swagger: `http://127.0.0.1:8000/docs`
 
-```text
-http://127.0.0.1:8000
-```
+---
 
-La interfaz web se abre en:
+## app2: Segunda aplicación (Versión avanzada con Spec-Kit)
 
-```text
-http://127.0.0.1:8000
-```
+`app2` es la versión avanzada del resumidor, desarrollada con opciones adicionales de personalización (ideas principales), gestión de errores tipada y especificaciones guiadas mediante Spec-Kit.
 
-El endpoint para generar resúmenes es:
-
-```text
-POST http://127.0.0.1:8000/api/resumir
-```
-
-## app2
-
-La carpeta `app2/` aparece como trabajo o segunda app en curso, con documentación y estado pendiente del proyecto.
-
-### Estructura de app1
+### Estructura de app2
 
 ```text
 app2/
-├── main.py                 # Punto de entrada de la aplicación
-├── pyproject.toml          # Dependencias de Python
-├── requirements.txt        # Dependencias directas de Python
 ├── backend/
-│   ├── main.py           #
-│   ├── services.py           #
-└── frontend/
-    ├── package.json        # Dependencias y comandos de Vue
-    └── src/                # Código de la interfaz
+│   ├── .env.example        # Plantilla de configuración específica de app2
+│   ├── main.py             # Servidor FastAPI independiente (endpoint POST /resumir y CORS)
+│   ├── requirements.txt    # Dependencias de app2 (FastAPI, SDK openai, pydantic)
+│   └── services.py         # Conexión a OpenRouter usando el SDK oficial de OpenAI y excepciones
+├── frontend/
+│   ├── package.json        # Dependencias de Vue para app2
+│   └── src/                # Interfaz de usuario con opciones de extracción
+└── specs/                  # Especificaciones dirigidas (Spec-Kit, contratos y data model)
 ```
 
-### Frontend
+### Backend de app2
 
-Ubicación: `app2/frontend`
+* **Ubicación:** `app2/backend`
+* **Tecnologías:** Python 3.12+, FastAPI, SDK de OpenAI (`openai`), Pydantic.
+* **Módulos:**
+  - `main.py`: Configura CORS, define el modelo `UserInput` con `main_ideas: bool` y maneja excepciones personalizadas.
+  - `services.py`: Gestiona la conexión con OpenRouter mediante el cliente `OpenAI(base_url="https://openrouter.ai/api/v1")`, con control de timeouts y clases de error (`IAError`, `IATimeoutError`, `ResumenResponse`).
 
-Tecnologías:
+Para ejecutar el backend de `app2` por separado:
 
-- Vue 3
-- TypeScript
-- Vite
-- Vitest
-
-Primera instalación y compilación:
-
-```bash
-cd app2/frontend
-npm install
-```
-
-El frontend se sirve desde el backend después de compilarlo.
-
-### Backend
-
-Ubicación: `app2/backend`
-
-Tecnologías:
-
-- Python 3.12+
-- FastAPI
-- Uvicorn
-- OpenRouter
-
-El backend está organizado en módulos:
-
-- `main.py`:
-- `services.py`:
-
-El archivo `.env` debe estar en `app2/backend/.env` y contener:
-
-```env
-OPENROUTER_API_KEY=tu_clave_de_openrouter
-```
-
-Para ejecutar únicamente el backend:
-
-```bash
+```powershell
+cd app2\backend
+pip install -r requirements.txt
 python -m uvicorn main:app --reload
 ```
 
-No se debe subir el archivo `.env` al repositorio.
-
-## Documentación
-
-La carpeta `docs/` reúne los documentos de la práctica, comparaciones, proceso, despliegues, pruebas y referencias del trabajo realizado.
-
-## Infraestructura
-
-La carpeta `infra/` contiene la configuración de despliegue y contenedores:
-
-- `compose.yaml`
-- `Dockerfile.backend`
-- `Dockerfile.frontend`
+---
 
 ## Despliegue en Vercel
 
-Configura el directorio `app1` como raíz del proyecto en Vercel. Su `vercel.json`
-define dos servicios: `backend` (FastAPI, raíz `.`) y `frontend` (Vite, raíz
-`frontend`). Las peticiones `/api/*` se enrutan al backend y el resto al
-frontend. La aplicación web llama a la API con la ruta relativa `/api/resumir`,
-por lo que ambas usan el mismo dominio.
+La aplicación configurada para el despliegue en Vercel es **`app1`**.
 
-Define `OPENROUTER_API_KEY` en las variables de entorno de Vercel para el
-servicio backend. No es necesaria una binding entre frontend y backend: el
-navegador accede al endpoint mediante la ruta pública `/api/*`.
+* Su archivo `app1/vercel.json` define el servicio de backend (FastAPI en `main:app`) y el frontend estático compilado con Vite.
+* Las peticiones a `/api/*` se dirigen al backend y el resto de rutas al frontend.
+* En el panel de Vercel debe configurarse la variable de entorno `OPENROUTER_API_KEY` dentro del servicio backend.
 
-## Uso recomendado
+---
 
-1. Configurar `app1/backend/.env` con la clave de OpenRouter.
-2. Compilar el frontend desde `app1/frontend`.
-3. Iniciar toda la aplicación desde `app1/main.py`.
-4. Revisar la documentación en `docs/` para conocer el proyecto.
-5. Usar `infra/` para despliegues o pruebas de entorno.
+## Documentación e Infraestructura
 
-## Notas
-
-- La aplicación se inicia desde `app1/main.py`.
-- FastAPI sirve los archivos compilados de `frontend/dist`.
-- El backend está dividido en módulos sencillos dentro de `app1/backend`.
-- Para ejecutar la aplicación localmente no es necesario utilizar Vercel.
-- La parte principal de desarrollo está en `app1`.
-- `app2`, `docs`, `infra` y `presentation` complementan la práctica y su entrega.
+* **`docs/`**: Contiene la ERS de ambas aplicaciones (`ERS-app1.md`, `ERS-app2.md`), comparativas, evidencias, pruebas y tutoriales.
+* **`infra/`**: Dockerfiles y `compose.yaml` para despliegues contenerizados.
+* **`presentation/`**: Diapositivas de defensa de la práctica.

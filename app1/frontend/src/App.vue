@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import axios from 'axios'
+import { resumirTexto } from './services/resumen'
 import { computed, ref } from 'vue'
-import { FilePlusCorner, MoveDown, Trash } from 'lucide-vue-next'
+import { FilePlusCorner, MoveDown, Trash } from '@lucide/vue'
 
-const MAX_WORDS = 5000
+const MAX_CHARS = 5000
 const MAX_FILE_SIZE = 1024 * 1024
 const ALLOWED_EXTENSIONS = ['.txt', '.md']
 
@@ -17,7 +17,6 @@ const words = computed(() => {
   const trimmed = text.value.trim()
   return trimmed === '' ? 0 : trimmed.split(/\s+/).length
 })
-const onDragEnter = ref(false)
 
 async function readFile(file: File) {
   fileError.value = ''
@@ -34,13 +33,16 @@ async function readFile(file: File) {
     return
   }
 
-  const content = await file.text()
-  text.value = content.slice(0, MAX_WORDS)
+  try {
+    const content = await file.text()
+    text.value = content.slice(0, MAX_CHARS)
+  } catch {
+    fileError.value = 'No se pudo leer el archivo'
+  }
 }
 
 function onDropFile(e: DragEvent) {
-  isDragging.value = true
-  onDragEnter.value = false
+  isDragging.value = false
   const file = e.dataTransfer?.files?.[0]
   if (file) readFile(file)
 }
@@ -50,7 +52,6 @@ function onDragLeaveFile(e: DragEvent) {
 
   if (!container.contains(e.relatedTarget as Node)) {
     isDragging.value = false
-    onDragEnter.value = false
   }
 }
 
@@ -59,18 +60,20 @@ function deleteText() {
 }
 
 async function getSummary() {
-  // Comprobamos que haya texto
-  if (!text.value.trim()) return
+  // No enviamos el formulario si el texto está vacío o ya se está procesando.
+  if (!text.value.trim() || loading.value) return
 
   loading.value = true
+  summary.value = null
   try {
     // Enviamos el texto a Python y guardamos el resumen
-    const res = await axios.post('/api/resumir', { texto: text.value })
-    summary.value = res.data.resumen
+    summary.value = await resumirTexto(text.value)
   } catch {
-    summary.value = 'Error al generar el resumen'
+    // Mostramos un mensaje sencillo si ocurre un error.
+    summary.value = 'No se pudo generar el resumen. Comprueba la conexión e inténtalo de nuevo.'
+  } finally {
+    loading.value = false
   }
-  loading.value = false
 }
 </script>
 <!-- Fondo #17212B · Panel #263746 · Acento #67C4D0 · Texto #E8F1F5 -->
@@ -93,13 +96,11 @@ async function getSummary() {
 
         <button
           type="button"
-          variant="ghost"
-          size="icon"
           aria-label="Borrar texto"
           title="Borrar texto"
-          v-on:click="deleteText()"
+          @click="deleteText"
           class="rounded-full p-1.5 transition-colors text-[#e8f1f5]/50 not-disabled:cursor-pointer hover:not-disabled:bg-red-400/10 hover:not-disabled:text-red-40 disabled:text-[#e8f1f5]/20 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-red-400"
-          :disabled="text.length == 0"
+          :disabled="text.length === 0"
         >
           <Trash :size="16" />
         </button>
@@ -110,12 +111,12 @@ async function getSummary() {
           @dragover.prevent="isDragging = true"
           @dragleave="onDragLeaveFile"
           @drop.prevent="onDropFile"
-          @dragenter="onDragEnter = true"
-          :class="isDragging"
+          @dragenter="isDragging = true"
+          :class="{ 'border-[#67C4D0]': isDragging }"
           class="relative w-full mb-4 border border-[#e8f1f59f] rounded-lg bg-[#263746] focus-within:border focus-within:border-[#67C4D0] focus-within:ring-1"
         >
           <div
-            v-if="onDragEnter"
+            v-if="isDragging"
             class="absolute size-full bg-white/20 flex flex-col justify-center rounded-lg items-center gap-2"
           >
             <span class="text-[#E8F1F5]">Suelta aquí tu archivo</span>
@@ -126,7 +127,7 @@ async function getSummary() {
           <textarea
             class="text-[#e8f1f5] w-full min-h-36 rounded-t-lg px-4 py-3 outline-none bg-transparent"
             placeholder="Escribe o pega tu texto aquí… o arrastra tu archivo (.md o .txt)"
-            :maxlength="MAX_WORDS"
+            :maxlength="MAX_CHARS"
             v-model="text"
           ></textarea>
 
@@ -134,15 +135,18 @@ async function getSummary() {
             <span class="text-xs text-[#e8f1f593]"
               >{{ words }} {{ words === 1 ? 'palabra' : 'palabras' }}</span
             >
-            <span class="text-xs text-[#e8f1f593]">{{ text.length }} / {{ MAX_WORDS }}</span>
+            <span class="text-xs text-[#e8f1f593]"
+              >{{ text.length }} / {{ MAX_CHARS }} caracteres</span
+            >
           </div>
         </div>
+
+        <p v-if="fileError" class="mb-3 text-sm text-red-300" role="alert">{{ fileError }}</p>
 
         <button
           type="submit"
           class="w-full flex justify-center items-center gap-4 py-3 rounded-lg border border-transparent font-semibold text-lg transition-all bg-[#67C4D0] text-[#17212B] not-disabled:cursor-pointer hover:not-disabled:bg-[#55a2ac] hover:not-disabled:scale-[102%] disabled:bg-transparent disabled:text-[#e8f1f5]/40 disabled:border-[#e8f1f5]/25 disabled:cursor-not-allowed"
           :disabled="!text || loading"
-          v-on:click="getSummary()"
         >
           <span>{{ loading ? 'Resumiendo...' : 'Resumir Texto' }}</span>
           <div
@@ -183,5 +187,3 @@ async function getSummary() {
     </div>
   </div>
 </template>
-
-<style scoped></style>
