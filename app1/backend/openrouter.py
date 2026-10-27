@@ -1,49 +1,47 @@
 import requests
 
-from .config import API_KEY, API_URL, MODEL
+from .config import API_KEY, API_URL, MODELO
 
-
-class OpenRouterError(Exception):
-    """Error controlado al solicitar un resumen a OpenRouter."""
-
-
-def resumir_con_ia(texto: str) -> str:
-    # Comprobamos que la clave esté configurada.
+def obtener_resumen(texto: str) -> str:
+    # Verificamos si existe la clave de la API configurada
     if not API_KEY:
-        raise OpenRouterError("Falta configurar OPENROUTER_API_KEY.")
+        raise RuntimeError("Falta configurar OPENROUTER_API_KEY.")
 
-    datos = {
-        "model": MODEL,
+    # Estructura del mensaje para enviar a la IA de OpenRouter
+    cuerpo_peticion = {
+        "model": MODELO,
         "messages": [
             {
                 "role": "user",
-                "content": "Resume este texto de forma clara y breve:\n\n" + texto,
+                "content": (
+                        "Resume el siguiente texto de forma clara y breve. "
+                        "Usa solo la información del texto y devuelve únicamente el resumen:\n\n"
+                        + texto
+                ),
             }
         ],
     }
-    cabeceras = {
-        "Authorization": f"Bearer {API_KEY}",
-        "Content-Type": "application/json",
 
-    }
+    # Cabecera con el token de autorización
+    cabeceras = {"Authorization": f"Bearer {API_KEY}"}
 
     try:
+        # Realizamos la petición HTTP POST a OpenRouter
         respuesta = requests.post(
-            API_URL,
-            headers=cabeceras,
-            json=datos,
-            timeout=(5, 30),
+            API_URL, headers=cabeceras, json=cuerpo_peticion, timeout=(5, 30)
         )
         respuesta.raise_for_status()
-        resultado = respuesta.json()
-        contenido = resultado["choices"][0]["message"]["content"]
-    except requests.RequestException as error:
-        raise OpenRouterError("No se pudo conectar con OpenRouter.") from error
-    except (ValueError, KeyError, IndexError, TypeError) as error:
-        raise OpenRouterError("La respuesta de OpenRouter no es válida.") from error
 
-    if not isinstance(contenido, str) or not contenido.strip():
-        raise OpenRouterError("OpenRouter devolvió un resumen vacío.")
+        # Extraemos el resumen de la respuesta recibida
+        datos_respuesta = respuesta.json()
+        resumen = datos_respuesta["choices"][0]["message"]["content"]
+    except (requests.RequestException, ValueError, KeyError, IndexError, TypeError) as error:
+        raise RuntimeError(
+            "No se pudo obtener un resumen válido de OpenRouter."
+        ) from error
 
-    return contenido.strip()
+    # Comprobamos que el resumen obtenido no esté vacío
+    if not isinstance(resumen, str) or not resumen.strip():
+        raise RuntimeError("OpenRouter devolvió un resumen vacío.")
 
+    return resumen.strip()
