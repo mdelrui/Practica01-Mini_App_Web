@@ -2,7 +2,7 @@
 
 ### 1. Despliegue de ambas aplicaciones en Vercel
 
-Para este caso se ha conectado Vercel con el repositorio de GitHub, creando así la aplicación:
+Para este caso se ha conectado Vercel con el repositorio de GitHub, creando así las aplicaciones. Se ha hecho a través de Vercel CLI, seleccionando en cada caso la carpeta desde la que ejecutar la aplicación:
 
 | App   | URL                                                   |
 | ----- | ----------------------------------------------------- |
