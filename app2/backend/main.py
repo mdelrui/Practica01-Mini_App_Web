@@ -1,10 +1,12 @@
 import os
 
+from enum import Enum
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, ConfigDict, Field
 from starlette.concurrency import run_in_threadpool
+
+from models import UserInput
 
 from auth import (
     InvalidSessionToken,
@@ -13,7 +15,6 @@ from auth import (
 )
 from services import IAError, ResumenResponse, resumir
 
-MAX_CHARS = 5000
 ORIGENES = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
 
 app = FastAPI()
@@ -24,6 +25,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+def attach_cors_headers(response: JSONResponse, request: Request) -> JSONResponse:
+    origin = request.headers.get("origin")
+    if origin:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Vary"] = "Origin"
+    elif ORIGENES:
+        response.headers["Access-Control-Allow-Origin"] = ORIGENES[0]
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    return response
+
 
 AUTH_INVALID = {
     "error": {
@@ -51,23 +64,27 @@ async def verificar_sesion(request: Request, call_next):
             or token != token.strip()
             or any(character.isspace() for character in token)
         ):
-            return JSONResponse(status_code=401, content=AUTH_INVALID)
+            return attach_cors_headers(
+                JSONResponse(status_code=401, content=AUTH_INVALID),
+                request,
+            )
 
         try:
             await run_in_threadpool(verify_session_token, token)
         except InvalidSessionToken:
-            return JSONResponse(status_code=401, content=AUTH_INVALID)
+            return attach_cors_headers(
+                JSONResponse(status_code=401, content=AUTH_INVALID),
+                request,
+            )
         except SessionVerifierUnavailable:
-            return JSONResponse(status_code=503, content=AUTH_UNAVAILABLE)
+            return attach_cors_headers(
+                JSONResponse(status_code=503, content=AUTH_UNAVAILABLE),
+                request,
+            )
 
     return await call_next(request)
 
 
-class UserInput(BaseModel):
-    model_config = ConfigDict(str_strip_whitespace=True)
-
-    text: str = Field(min_length=1, max_length=MAX_CHARS)
-    main_ideas: bool = False
 
 
 @app.exception_handler(IAError)
@@ -78,6 +95,6 @@ def manejar_error_ia(request: Request, exc: IAError):
     )
 
 
-@app.post("/resumir", response_model=ResumenResponse)
+@app.post("/resumir", response_model=ResumenResponse, response_model_exclude_none=True)
 def resumir_texto(user_input: UserInput):
-    return resumir(user_input.text, user_input.main_ideas)
+    return resumir(user_input.text, user_input.main_ideas, user_input.glossary, user_input.summary_length)

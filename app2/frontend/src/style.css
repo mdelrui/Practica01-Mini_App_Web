@@ -3,8 +3,10 @@
 @theme {
   --color-bg-primary: #17212b;
   --color-bg-secondary: #263746;
-  --color-primary: #67c4d0;
+  --color-bg-tertiary: #2b4050;
+  --color-primary: #5ec8d8;
   --color-on-primary: #e8f1f5;
+  --color-outline-primary: #3a4d5d;
 }
 
 .cl-avatarBox {

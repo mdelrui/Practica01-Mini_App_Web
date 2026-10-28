@@ -5,6 +5,9 @@ import jwt
 import pytest
 from jwt.exceptions import PyJWKClientConnectionError, PyJWKClientError
 
+import main
+from models import SummaryLength
+
 
 def bearer(token):
     return {"Authorization": f"Bearer {token}"}
@@ -257,7 +260,12 @@ def test_valid_token_preserves_summary_contract_and_calls_service_once(
     }
     assert token not in response.text
     assert token not in caplog.text
-    summary_service.assert_called_once_with("texto de prueba", True)
+    summary_service.assert_called_once_with(
+        "texto de prueba",
+        True,
+        False,
+        SummaryLength.STANDARD,
+    )
 
 
 def test_authorization_cors_preflight_is_allowed(app_client):
@@ -272,3 +280,18 @@ def test_authorization_cors_preflight_is_allowed(app_client):
 
     assert response.status_code == 200
     assert "authorization" in response.headers["access-control-allow-headers"].lower()
+
+
+def test_auth_error_responses_include_cors_headers(app_client, summary_service):
+    response = app_client.post(
+        "/resumir",
+        json={"text": "texto de prueba"},
+        headers={
+            "Origin": "http://localhost:5173",
+            "Authorization": "Bearer not-a-jwt",
+        },
+    )
+
+    assert response.status_code == 401
+    assert response.headers["access-control-allow-origin"] == "http://localhost:5173"
+    summary_service.assert_not_called()

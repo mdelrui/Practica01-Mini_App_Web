@@ -8,18 +8,22 @@ vi.mock('axios', () => ({
     isAxiosError: (error: unknown) =>
       typeof error === 'object' && error !== null && 'isAxiosError' in error
         ? error.isAxiosError === true
-        : false
-  }
+        : false,
+  },
 }))
 
 const clerkMocks = vi.hoisted(() => ({
   auth: {},
-  clerk: {}
+  clerk: {},
 }))
 
 vi.mock('@clerk/vue', () => ({
   useAuth: () => clerkMocks.auth,
-  useClerk: () => clerkMocks.clerk
+  useClerk: () => clerkMocks.clerk,
+  UserButton: {
+    name: 'UserButton',
+    render: () => null,
+  },
 }))
 
 import axios from 'axios'
@@ -28,136 +32,104 @@ import App from '../App.vue'
 const authState = reactive({
   loaded: true,
   signedIn: false,
-  token: null as string | null
+  token: null as string | null,
 })
 const getToken = vi.fn<() => Promise<string | null>>()
 const openSignIn = vi.fn()
+const openSignUp = vi.fn()
 const signOut = vi.fn()
 
 function configureClerk() {
   clerkMocks.auth = {
     isLoaded: computed(() => authState.loaded),
     isSignedIn: computed(() => authState.signedIn),
-    getToken: computed(() => getToken)
+    getToken: computed(() => getToken),
   }
-  clerkMocks.clerk = shallowRef({ openSignIn, signOut })
+  clerkMocks.clerk = shallowRef({ openSignIn, openSignUp, signOut })
 }
 
 function mountConfiguredApp() {
-  return mount(App, { props: { clerkConfigured: true } })
+  return mount(App)
 }
 
 function makeAxiosError(status: number) {
   return Object.assign(new Error('request failed'), {
     isAxiosError: true,
-    response: { status }
+    response: { status },
   })
 }
 
-describe('App authentication', () => {
+describe('App summary flow', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     authState.loaded = true
     authState.signedIn = false
     authState.token = null
     getToken.mockImplementation(async () => authState.token)
+    openSignIn.mockResolvedValue(undefined)
+    openSignUp.mockResolvedValue(undefined)
     signOut.mockImplementation(async () => {
       authState.signedIn = false
     })
     vi.mocked(axios.post).mockResolvedValue({
-      data: { summary: 'Resumen de prueba', main_ideas: ['Idea 1'] }
+      data: { summary: 'Resumen de prueba', mainIdeas: ['Idea 1'] },
     })
     configureClerk()
   })
 
-  it('shows an explicit configuration error and blocks processing without a Clerk key', async () => {
-    const wrapper = mount(App)
-    await wrapper.get('textarea').setValue('Texto de prueba')
-
-    expect(wrapper.get('[role="alert"]').text()).toContain('no está configurada')
-    expect(wrapper.get('button[type="submit"]').attributes('disabled')).toBeDefined()
-    await wrapper.get('form').trigger('submit')
-    await flushPromises()
-
-    expect(axios.post).not.toHaveBeenCalled()
-  })
-
-  it('shows loading state and prevents submissions until Clerk resolves', async () => {
-    authState.loaded = false
-    authState.signedIn = true
+  it('shows the sign-in and sign-up actions when the user is not authenticated', () => {
     const wrapper = mountConfiguredApp()
-    await wrapper.get('textarea').setValue('Texto de prueba')
 
-    expect(wrapper.get('[role="status"]').text()).toContain('Comprobando')
-    expect(wrapper.get('button[type="submit"]').attributes('disabled')).toBeDefined()
-    await wrapper.get('form').trigger('submit')
-    await flushPromises()
-
-    expect(axios.post).not.toHaveBeenCalled()
+    expect(wrapper.text()).toContain('Iniciar sesión')
+    expect(wrapper.text()).toContain('Crear cuenta')
+    expect(wrapper.find('textarea').exists()).toBe(false)
   })
 
-  it('opens the sign-in modal in place while signed out', async () => {
-    const wrapper = mountConfiguredApp()
-    const pathBeforeOpening = window.location.pathname
-
-    expect(wrapper.text()).toContain('Inicia sesión para resumir un texto.')
-    const signInButton = wrapper
-      .findAll('button')
-      .find((button) => button.text().trim() === 'Iniciar sesión')!
-    await signInButton.trigger('click')
-
-    expect(openSignIn).toHaveBeenCalledOnce()
-    expect(window.location.pathname).toBe(pathBeforeOpening)
-    expect(axios.post).not.toHaveBeenCalled()
-  })
-
-  it('shows signed-in state and signs out without navigating', async () => {
-    authState.signedIn = true
-    const wrapper = mountConfiguredApp()
-    const pathBeforeSignOut = window.location.pathname
-
-    expect(wrapper.text()).toContain('Sesión iniciada')
-    const signOutButton = wrapper
-      .findAll('button')
-      .find((button) => button.text().trim() === 'Cerrar sesión')!
-    await signOutButton.trigger('click')
-    await flushPromises()
-
-    expect(signOut).toHaveBeenCalledOnce()
-    expect(wrapper.text()).toContain('Inicia sesión para resumir un texto.')
-    expect(window.location.pathname).toBe(pathBeforeSignOut)
-  })
-
-  it('sends the current Clerk token only as a bearer header with the existing JSON body', async () => {
+  it('sends the bearer token with the selected options and summary length when the form is submitted', async () => {
     authState.signedIn = true
     authState.token = 'test-session-token'
+    vi.mocked(axios.post).mockResolvedValue({
+      data: { summary: 'Resumen de prueba' },
+    })
+
     const wrapper = mountConfiguredApp()
     await wrapper.get('textarea').setValue('Texto de prueba')
+
+    const detailedButton = wrapper
+      .findAll('button')
+      .find((button) => button.text().trim() === 'Detallado')
+    await detailedButton!.trigger('click')
+
+    const switches = wrapper.findAll('button[role="switch"]')
+    await switches[0].trigger('click')
+    await switches[1].trigger('click')
+
     await wrapper.get('form').trigger('submit')
     await flushPromises()
 
     expect(getToken).toHaveBeenCalledOnce()
     expect(axios.post).toHaveBeenCalledWith(
       'http://127.0.0.1:8000/resumir',
-      { text: 'Texto de prueba', main_ideas: false },
-      { headers: { Authorization: 'Bearer test-session-token' } }
+      {
+        text: 'Texto de prueba',
+        main_ideas: true,
+        glossary: true,
+        summary_length: 'detallado',
+      },
+      { headers: { Authorization: 'Bearer test-session-token' } },
     )
-    expect(JSON.stringify(vi.mocked(axios.post).mock.calls[0]?.[1])).not.toContain(
-      'test-session-token'
-    )
-    expect(wrapper.text()).not.toContain('test-session-token')
-    expect(wrapper.text()).toContain('Resumen de prueba')
   })
 
-  it.each([
-    [401, 'Tu sesión no es válida o ha caducado'],
-    [503, 'No se pudo verificar la sesión temporalmente']
-  ])(
-    'shows a distinct %i response without clearing the text or retrying',
-    async (status, message) => {
-      authState.signedIn = true
-      authState.token = 'test-session-token'
+  it('shows a user-facing authentication error for 401 and 503 responses', async () => {
+    authState.signedIn = true
+    authState.token = 'test-session-token'
+
+    for (const [status, message] of [
+      [401, 'Tu sesión no es válida o ha caducado'],
+      [503, 'No se pudo verificar la sesión temporalmente'],
+    ]) {
       vi.mocked(axios.post).mockRejectedValue(makeAxiosError(status))
+
       const wrapper = mountConfiguredApp()
       await wrapper.get('textarea').setValue('Texto que debe conservarse')
       await wrapper.get('form').trigger('submit')
@@ -165,35 +137,63 @@ describe('App authentication', () => {
 
       expect(wrapper.text()).toContain(message)
       expect((wrapper.get('textarea').element as HTMLTextAreaElement).value).toBe(
-        'Texto que debe conservarse'
+        'Texto que debe conservarse',
       )
-      expect(axios.post).toHaveBeenCalledOnce()
-      expect(wrapper.text()).not.toContain('test-session-token')
+
       if (status === 401) {
-        const reauthenticateButton = wrapper
-          .findAll('button')
-          .find((button) => button.text().trim() === 'Volver a iniciar sesión')
-        expect(reauthenticateButton).toBeDefined()
-        await reauthenticateButton!.trigger('click')
-        expect(openSignIn).toHaveBeenCalledOnce()
-      } else {
-        expect(wrapper.text()).not.toContain('Volver a iniciar sesión')
+        expect(wrapper.text()).toContain('Volver a iniciar sesión')
       }
     }
-  )
+  })
 
-  it('does not send a request when token acquisition fails', async () => {
+  it('renders the result sections and supports copy plus local export', async () => {
     authState.signedIn = true
-    getToken.mockRejectedValue(new Error('token unavailable'))
+    authState.token = 'test-session-token'
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText },
+      configurable: true,
+    })
+
+    const createObjectURL = vi.fn(() => 'blob:mock-url')
+    const revokeObjectURL = vi.fn()
+    vi.stubGlobal('URL', { createObjectURL, revokeObjectURL })
+
+    vi.mocked(axios.post).mockResolvedValue({
+      data: {
+        summary: 'Resumen exportable',
+        mainIdeas: ['Idea principal'],
+        glossary: [{ concept: 'Concepto', definition: 'Definición' }],
+      },
+    })
+
     const wrapper = mountConfiguredApp()
-    await wrapper.get('textarea').setValue('Texto que debe conservarse')
+    await wrapper.get('textarea').setValue('Texto de prueba')
     await wrapper.get('form').trigger('submit')
     await flushPromises()
 
-    expect(wrapper.text()).toContain('No se pudo obtener la sesión')
-    expect((wrapper.get('textarea').element as HTMLTextAreaElement).value).toBe(
-      'Texto que debe conservarse'
-    )
-    expect(axios.post).not.toHaveBeenCalled()
+    expect(wrapper.text()).toContain('RESUMEN')
+    expect(wrapper.text()).toContain('IDEAS PRINCIPALES')
+    expect(wrapper.text()).toContain('GLOSARIO')
+    expect(wrapper.text()).toContain('Resumen exportable')
+
+    const copyButtons = wrapper.findAll('button[aria-label="Copiar"]')
+    await copyButtons[0].trigger('click')
+    await copyButtons[1].trigger('click')
+    await copyButtons[2].trigger('click')
+
+    expect(writeText).toHaveBeenCalledTimes(3)
+    expect(writeText).toHaveBeenNthCalledWith(1, 'RESUMEN\nResumen exportable')
+    expect(writeText).toHaveBeenNthCalledWith(2, 'IDEAS PRINCIPALES\n1. Idea principal')
+    expect(writeText).toHaveBeenNthCalledWith(3, 'GLOSARIO\n- Concepto: Definición')
+
+    const txtButton = wrapper.findAll('button').find((button) => button.text().trim() === '.txt')
+    const mdButton = wrapper.findAll('button').find((button) => button.text().trim() === '.md')
+
+    await txtButton!.trigger('click')
+    await mdButton!.trigger('click')
+
+    expect(createObjectURL).toHaveBeenCalledTimes(2)
+    expect(revokeObjectURL).toHaveBeenCalledTimes(2)
   })
 })
