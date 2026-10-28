@@ -15,7 +15,14 @@ from auth import (
 )
 from services import IAError, ResumenResponse, resumir
 
-ORIGENES = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
+ORIGENES = [
+    origen.strip()
+    for origen in os.getenv(
+        "CORS_ORIGINS",
+        "http://localhost:5173"
+    ).split(',')
+    if origen.strip()
+]
 
 app = FastAPI()
 app.add_middleware(

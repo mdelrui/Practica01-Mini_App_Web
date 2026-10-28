@@ -13,7 +13,8 @@ import ConceptItem from './components/ConceptItem.vue'
 const auth = useAuth()
 const clerk = useClerk()
 
-const API_URL = 'http://127.0.0.1:8000/resumir'
+const API_URL = import.meta.env.VITE_API_URL ??
+  (import.meta.env.DEV ? 'http://127.0.0.1:8000/resumir' : '/api/resumir')
 const MAX_WORDS = 5000
 const MAX_FILE_SIZE = 1024 * 1024
 const ALLOWED_EXTENSIONS = ['.txt', '.md']
@@ -420,7 +421,7 @@ function getTimestamp(): string {
 
           <div class="flex justify-between px-4 py-3 border-t border-[#e8f1f59f] gap-4">
             <span class="text-xs text-[#e8f1f593]">{{ userTextWords }} {{ userTextWords === 1 ? 'palabra' : 'palabras'
-              }}</span>
+            }}</span>
             <span class="text-xs text-[#e8f1f593]">{{ text.length }} / {{ MAX_WORDS }}</span>
           </div>
         </div>
