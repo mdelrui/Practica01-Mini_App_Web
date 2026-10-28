@@ -101,8 +101,9 @@ describe('App summary flow', () => {
     await detailedButton!.trigger('click')
 
     const switches = wrapper.findAll('button[role="switch"]')
-    await switches[0].trigger('click')
-    await switches[1].trigger('click')
+    expect(switches).toHaveLength(2)
+    await switches[0]!.trigger('click')
+    await switches[1]!.trigger('click')
 
     await wrapper.get('form').trigger('submit')
     await flushPromises()
@@ -127,7 +128,7 @@ describe('App summary flow', () => {
     for (const [status, message] of [
       [401, 'Tu sesión no es válida o ha caducado'],
       [503, 'No se pudo verificar la sesión temporalmente'],
-    ]) {
+    ] as [number, string][]) {
       vi.mocked(axios.post).mockRejectedValue(makeAxiosError(status))
 
       const wrapper = mountConfiguredApp()
@@ -178,9 +179,10 @@ describe('App summary flow', () => {
     expect(wrapper.text()).toContain('Resumen exportable')
 
     const copyButtons = wrapper.findAll('button[aria-label="Copiar"]')
-    await copyButtons[0].trigger('click')
-    await copyButtons[1].trigger('click')
-    await copyButtons[2].trigger('click')
+    expect(copyButtons).toHaveLength(3)
+    await copyButtons[0]!.trigger('click')
+    await copyButtons[1]!.trigger('click')
+    await copyButtons[2]!.trigger('click')
 
     expect(writeText).toHaveBeenCalledTimes(3)
     expect(writeText).toHaveBeenNthCalledWith(1, 'RESUMEN\nResumen exportable')

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { Concept } from '@/types/types';
+import type { GlossaryConcept } from '@/types/types';
 
 defineProps<{
-    concept: Concept
+    concept: GlossaryConcept
 }>()
 </script>
 
