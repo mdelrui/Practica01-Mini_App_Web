@@ -4,10 +4,11 @@ import App from './App.vue'
 import './style.css'
 
 const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY?.trim()
-const app = createApp(App, { clerkConfigured: Boolean(publishableKey) })
 
-if (publishableKey) {
-  app.use(clerkPlugin, { publishableKey })
+if (!publishableKey) {
+  throw new Error('Falta VITE_CLERK_PUBLISHABLE_KEY')
 }
 
+const app = createApp(App)
+app.use(clerkPlugin, { publishableKey })
 app.mount('#app')
