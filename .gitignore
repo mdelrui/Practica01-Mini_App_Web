@@ -1,4 +1,5 @@
 # Python
+**__pycache__/
 __pycache__/
 *.py[cod]
 *$py.class
@@ -21,7 +22,7 @@ htmlcov/
 .uv-cache/
 
 # Variables y secretos
-.env
+app1/.env
 .env.*
 !.env.example
 !.env.*.example

@@ -5,10 +5,13 @@ import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import tailwindcss from '@tailwindcss/vite'
 
-// https://vite.dev/config/
+// Configuración de Vite para el desarrollo y la compilación del frontend
 export default defineConfig({
   plugins: [vue(), vueDevTools(), tailwindcss()],
   server: {
+    host: '127.0.0.1',
+    port: 5173,
+    strictPort: true,
     proxy: {
       '/api': 'http://127.0.0.1:8000',
     },

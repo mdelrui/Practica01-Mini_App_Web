@@ -6,8 +6,8 @@ Sync Impact Report
   resultados seguros; V. Desarrollo dirigido por especificaciones y calidad.
 - Secciones añadidas: Restricciones permanentes; Flujo de desarrollo y calidad.
 - Secciones eliminadas: ninguna.
-- TODOs de plantilla: ninguno. Las decisiones de implementación se concretarán en
-  la especificación y el plan.
+- TODOs de plantilla: ninguno. Las decisiones de implementación se concretarán en la
+  especificación y el plan.
 -->
 
 # Constitución de ResumidorIA (App 2)
@@ -20,7 +20,7 @@ La aplicación MUST consistir en una SPA con una sola pantalla y un único formu
 solicitar, opcionalmente, ideas principales y glosario. El backend MUST realizar exactamente una
 llamada a OpenRouter por cada envío válido y autenticado. La carga de archivos `.txt` y `.md`
 MUST limitarse a leerlos en el navegador y colocar su contenido en el formulario; MUST NOT
-enviar archivos al servidor. Copiar el resultado y exportarlo a `.txt` o `.md` MUST ocurrir en
+ enviar archivos al servidor. Copiar el resultado y exportarlo a `.txt` o `.md` MUST ocurrir en
 el navegador y no constituir funciones de procesamiento adicionales. MUST NOT haber bases de
 datos, persistencia funcional, historial, conversaciones con memoria, CRUD, pantallas o rutas de
 navegación adicionales, perfiles, paneles, agentes encadenados, RAG, proveedores de IA
@@ -33,12 +33,12 @@ El frontend MUST usar Vue 3, TypeScript y Tailwind CSS; el backend MUST usar Pyt
 OpenRouter MUST ser el único proveedor de IA y Clerk MUST ser el servicio de identidad de App 2.
 La estructura actual de carpetas y archivos del frontend y el backend, sus configuraciones,
 dependencias, puntos de entrada y contratos entre capas MUST tratarse como inmutables, salvo que
-un requisito aprobado haga imprescindible modificarlos. Antes de proponer cualquier cambio de
-esa clase, el agente MUST explicar su necesidad, impacto y alternativas, y solicitar
-autorización explícita; MUST NOT ejecutarlo sin dicha autorización. Los archivos nuevos MUST
-añadirse únicamente cuando estén justificados por un requisito aprobado o por Spec Kit,
-respetando la organización existente. El proyecto MUST NOT recrearse ni inicializarse de nuevo.
-Esto protege el trabajo existente y evita cambios estructurales innecesarios.
+un requisito aprobado haga imprescindible modificarlos. Antes de proponer cualquier cambio de esa
+clase, el agente MUST explicar su necesidad, impacto y alternativas, y solicitar autorización
+explícita; MUST NOT ejecutarlo sin dicha autorización. Los archivos nuevos MUST añadirse únicamente
+cuando estén justificados por un requisito aprobado o por Spec Kit, respetando la organización
+existente. El proyecto MUST NOT recrearse ni inicializarse de nuevo. Esto protege el trabajo
+existente y evita cambios estructurales innecesarios.
 
 ### III. Seguridad, identidad y privacidad
 El backend MUST validar la firma y vigencia del token de sesión de Clerk antes de procesar
@@ -108,11 +108,11 @@ código mientras existan contradicciones de alcance o de estructura sin resolver
 ## Gobernanza
 
 Esta constitución establece las reglas permanentes para el desarrollo de ResumidorIA (App 2). Si
-una propuesta, requisito, ERS, plan o instrucción entra en conflicto con ella o con la
-estructura existente, el agente MUST detener el trabajo afectado, exponer la contradicción y
-solicitar una decisión explícita; MUST NOT elegir una interpretación por su cuenta. Toda
-modificación de esta constitución requiere aprobación explícita del equipo y MUST actualizarse
-junto con los artefactos de Spec Kit afectados antes de implementar el cambio aprobado.
+una propuesta, requisito, ERS, plan o instrucción entra en conflicto con ella o con la estructura
+existente, el agente MUST detener el trabajo afectado, exponer la contradicción y solicitar una
+decisión explícita; MUST NOT elegir una interpretación por su cuenta. Toda modificación de esta
+constitución requiere aprobación explícita del equipo y MUST actualizarse junto con los artefactos
+de Spec Kit afectados antes de implementar el cambio aprobado.
 
 La versión seguirá SemVer: un cambio incompatible de alcance, tecnología o principio
 incrementará MAJOR; un principio o restricción permanente añadido o ampliado incrementará MINOR;

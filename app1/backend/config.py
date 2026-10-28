@@ -1,12 +1,11 @@
 import os
-from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv(Path(__file__).with_name(".env"))
+# En local, cargamos el archivo .env ubicado en la carpeta app1
+load_dotenv()
 
+# Obtenemos la clave de la API desde las variables de entorno
 API_KEY = os.getenv("OPENROUTER_API_KEY")
-
-# Datos de la API de OpenRouter.
-URL = "https://openrouter.ai/api/v1/chat/completions"
+API_URL = "https://openrouter.ai/api/v1/chat/completions"
 MODELO = "liquid/lfm-2.5-2.6b:free"

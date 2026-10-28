@@ -1,42 +1,31 @@
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, Body, HTTPException
 
-from .openrouter import OpenRouterError, preguntar_ia
-
+from .openrouter import obtener_resumen
 
 router = APIRouter()
 
 
-class Texto(BaseModel):
-    texto: str = Field(max_length=5000)
-
-
 @router.post("/api/resumir")
-def resumir(datos: Texto):
-    texto = datos.texto.strip()
+def resumir_texto(texto: str = Body(embed=True)):
+    # Limpiamos los espacios en blanco sobrantes al inicio y al final
+    texto_limpio = texto.strip()
 
-    if not texto:
+    # Comprobamos que el texto no esté vacío
+    if not texto_limpio:
+        raise HTTPException(status_code=400, detail="Escribe un texto para resumir.")
+
+    # Validamos que no supere el límite permitido de caracteres
+    if len(texto_limpio) > 5000:
         raise HTTPException(
             status_code=400,
-            detail="Escribe un texto para resumir.",
+            detail="El texto es demasiado largo (máximo 5000 caracteres).",
         )
 
-    historial = [
-        {
-            "role": "user",
-            "content": (
-                "Resume el siguiente texto de forma clara y breve:\n\n"
-                + texto
-            ),
-        }
-    ]
-
     try:
-        resumen = preguntar_ia(historial)
-    except OpenRouterError as exc:
-        raise HTTPException(
-            status_code=502,
-            detail=str(exc),
-        ) from exc
+        # Llamamos a la función auxiliar para generar el resumen con la IA
+        resumen = obtener_resumen(texto_limpio)
+    except RuntimeError as error:
+        raise HTTPException(status_code=502, detail=str(error)) from error
 
+    # Devolvemos el resultado en formato JSON
     return {"resumen": resumen}

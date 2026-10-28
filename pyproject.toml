@@ -1,0 +1,13 @@
+[project]
+name = "apps"
+version = "0.1.0"
+description = "Aplicaciones"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi",
+    "pathlib",
+    "python-dotenv",
+    "requests",
+    "uvicorn",
+]
