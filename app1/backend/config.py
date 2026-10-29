@@ -8,4 +8,4 @@ load_dotenv()
 # Obtenemos la clave de la API desde las variables de entorno
 API_KEY = os.getenv("OPENROUTER_API_KEY")
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
-MODELO = "liquid/lfm-2.5-2.6b:free"
+MODELO = "nvidia/nemotron-3.5-lightning:free"
