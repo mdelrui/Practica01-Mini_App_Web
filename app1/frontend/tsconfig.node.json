@@ -1,4 +1,4 @@
-// TSConfig for modules that run in Node.js environment via either transpilation or type-stripping.
+// Configuración de TypeScript para herramientas que se ejecutan con Node.js.
 {
   "extends": "@tsconfig/node24/tsconfig.json",
   "include": [
@@ -9,20 +9,20 @@
     "eslint.config.*"
   ],
   "compilerOptions": {
-    // Most tools use transpilation instead of Node.js's native type-stripping.
-    // Bundler mode provides a smoother developer experience.
+    // La mayoría de las herramientas transforman el código antes de ejecutarlo.
+    // Este modo facilita el trabajo con herramientas que agrupan archivos.
     "module": "preserve",
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
 
-    // Include Node.js types and avoid accidentally including other `@types/*` packages.
+    // Incluye los tipos de Node.js sin añadir otros tipos por accidente.
     "types": ["node"],
 
-    // Disable emitting output during `vue-tsc --build`, which is used for type-checking only.
+    // Evita generar archivos al comprobar los tipos.
     "noEmit": true,
 
-    // `vue-tsc --build` produces a .tsbuildinfo file for incremental type-checking.
-    // Specified here to keep it out of the root directory.
+    // vue-tsc crea un archivo de información para comprobar cambios más rápido.
+    // Guardamos ese archivo fuera de la carpeta principal.
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo"
   }
 }

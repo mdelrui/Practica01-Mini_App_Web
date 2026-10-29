@@ -4,7 +4,7 @@
 
 | Campo               | Valor                                                                      |
 | ------------------- | -------------------------------------------------------------------------- |
-| Nombre del proyecto | ResumidorAI                                                                |
+| Nombre del proyecto | ResumidorIA                                                                |
 | Autores             | Francisco Luis Cara García & Mario Delgado Ruiz                            |
 | Curso y grupo       | Aprendizaje Automático: Gestión de Datos y Entrenamiento - Grupo 4         |
 | Asignatura o módulo | Desarrollo de Componentes Software para Sistemas de Aprendizaje Automático |
