@@ -85,6 +85,55 @@ describe('App summary flow', () => {
     expect(wrapper.find('textarea').exists()).toBe(false)
   })
 
+  it('keeps empty text disabled and enforces the configured text limit', async () => {
+    authState.signedIn = true
+    authState.token = 'test-session-token'
+
+    const wrapper = mountConfiguredApp()
+    const textarea = wrapper.get('textarea')
+    const submitButton = wrapper.get('button[type="submit"]')
+
+    expect(submitButton.attributes('disabled')).toBeDefined()
+    expect(textarea.attributes('maxlength')).toBe('5000')
+
+    await textarea.setValue('Texto válido')
+    expect(submitButton.attributes('disabled')).toBeUndefined()
+  })
+
+  it('accepts only .txt and .md files and rejects other extensions', async () => {
+    authState.signedIn = true
+    authState.token = 'test-session-token'
+
+    const wrapper = mountConfiguredApp()
+    const textarea = wrapper.get('textarea')
+    const dropZone = textarea.element.parentElement as HTMLElement
+
+    const readDropEvent = (file: File) => {
+      const event = new Event('drop', { bubbles: true })
+      Object.defineProperty(event, 'dataTransfer', {
+        value: { files: [file] },
+        configurable: true,
+      })
+      return event
+    }
+
+    const txtFile = new File(['texto plano'], 'entrada.txt', { type: 'text/plain' })
+    const mdFile = new File(['# Título'], 'entrada.md', { type: 'text/markdown' })
+    const invalidFile = new File(['binario'], 'entrada.pdf', { type: 'application/pdf' })
+
+    await dropZone.dispatchEvent(readDropEvent(txtFile))
+    await flushPromises()
+    await dropZone.dispatchEvent(readDropEvent(mdFile))
+    await flushPromises()
+
+    expect((textarea.element as HTMLTextAreaElement).value).toContain('Título')
+
+    await dropZone.dispatchEvent(readDropEvent(invalidFile))
+    await flushPromises()
+
+    expect((textarea.element as HTMLTextAreaElement).value).toContain('Título')
+  })
+
   it('sends the bearer token with the selected options and summary length when the form is submitted', async () => {
     authState.signedIn = true
     authState.token = 'test-session-token'
