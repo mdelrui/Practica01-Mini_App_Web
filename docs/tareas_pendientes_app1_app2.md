@@ -2,51 +2,56 @@
 
 Esta lista reúne las tareas que quedan por revisar, completar o verificar según las instrucciones del proyecto, las ERS, el código y los artefactos de Spec Kit. No implica que todas estén sin empezar: antes de trabajar en una tarea, comprobad el estado actual y marcadla cuando exista evidencia de que está terminada.
 
+| Situación       | Indicador |
+| --------------- | :-------: |
+| `COMPLETADA`    |    ✅     |
+| `NO COMPLETADA` |    ❌     |
+
 ## Prioridad 0 — Bloqueos y reproducibilidad
 
-- [ ] **P0-01 — Verificar la instalación y el arranque de App 1 desde un entorno limpio.** Confirmar que las dependencias se pueden instalar y que la aplicación arranca siguiendo las instrucciones documentadas. Revisar el papel de `app1/backend/main.py` frente al punto de entrada que realmente se utiliza y eliminarlo o documentarlo si procede.
-- [ ] **P0-02 — Asegurar la reproducibilidad de Docker para App 2.** Confirmar que `app2/backend/uv.lock` existe y está versionado, ya que `app2/infra/Dockerfile.backend` lo copia y ejecuta `uv sync --locked`. Construir las imágenes desde un clon limpio.
+- [❌] **P0-01 — Verificar la instalación y el arranque de App 1 desde un entorno limpio.** Confirmar que las dependencias se pueden instalar y que la aplicación arranca siguiendo las instrucciones documentadas. Revisar el papel de `app1/backend/main.py` frente al punto de entrada que realmente se utiliza y eliminarlo o documentarlo si procede.
+- [✅] **P0-02 — Asegurar la reproducibilidad de Docker para App 2.** Confirmar que `app2/backend/uv.lock` existe y está versionado, ya que `app2/infra/Dockerfile.backend` lo copia y ejecuta `uv sync --locked`. Construir las imágenes desde un clon limpio.
 
 ## Prioridad 1 — Pruebas y calidad técnica
 
-- [ ] **P1-01 — Añadir pruebas de backend para App 1.** Cubrir petición válida, entrada vacía o solo espacios, límite de longitud, fallo del proveedor, timeout y respuesta vacía o mal formada. Usar mocks para que la suite habitual no dependa de OpenRouter.
-- [ ] **P1-02 — Unificar el contrato de errores de App 1.** Acordar los códigos HTTP y el formato JSON; distinguir los errores del proveedor de los timeouts y actualizar la implementación, las pruebas y la ERS.
-- [ ] **P1-03 — Ampliar las pruebas del frontend de App 1.** Comprobar envío válido, representación del resultado, estados de carga y error y validaciones relevantes. Corregir `docs/pruebas.md` si describe pruebas que todavía no existen o no se han ejecutado.
-- [ ] **P1-04 — Añadir pruebas de `app2/backend/services.py`.** Simular éxito, timeout, fallo de conexión o del proveedor, respuesta vacía, JSON inválido y contenido que no cumpla el modelo de respuesta.
-- [ ] **P1-05 — Completar las pruebas funcionales de App 2.** Verificar límites del texto, carga de archivos `.txt` y `.md`, rechazo de tipos no permitidos, exportación, copia del resultado y comportamiento de la interfaz cuando falla el servicio.
-- [ ] **P1-06 — Revisar la política CORS de App 2.** Comprobar que solo se permiten los orígenes configurados y verificar solicitudes autenticadas, preflight y respuestas de error. Revisar especialmente la función `attach_cors_headers()` en `app2/backend/main.py`.
-- [ ] **P1-07 — Ejecutar las suites de pruebas completas.** Registrar en `docs/pruebas.md` los comandos ejecutados, el entorno, la fecha y los resultados. No declarar verificadas pruebas que no existan o no se hayan ejecutado.
-- [ ] **P1-08 — Verificar ambas aplicaciones en Vercel.** Probar desde las URL publicadas el flujo real de frontend y backend. En App 2, comprobar autenticación, generación de resumen y rechazo de peticiones no autenticadas.
+- [❌] **P1-01 — Añadir pruebas de backend para App 1.** Cubrir petición válida, entrada vacía o solo espacios, límite de longitud, fallo del proveedor, timeout y respuesta vacía o mal formada. Usar mocks para que la suite habitual no dependa de OpenRouter.
+- [❌] **P1-02 — Unificar el contrato de errores de App 1.** Acordar los códigos HTTP y el formato JSON; distinguir los errores del proveedor de los timeouts y actualizar la implementación, las pruebas y la ERS.
+- [❌] **P1-03 — Ampliar las pruebas del frontend de App 1.** Comprobar envío válido, representación del resultado, estados de carga y error y validaciones relevantes. Corregir `docs/pruebas.md` si describe pruebas que todavía no existen o no se han ejecutado.
+- [✅] **P1-04 — Añadir pruebas de `app2/backend/services.py`.** Simular éxito, timeout, fallo de conexión o del proveedor, respuesta vacía, JSON inválido y contenido que no cumpla el modelo de respuesta.
+- [✅] **P1-05 — Completar las pruebas funcionales de App 2.** Verificar límites del texto, carga de archivos `.txt` y `.md`, rechazo de tipos no permitidos, exportación, copia del resultado y comportamiento de la interfaz cuando falla el servicio.
+- [✅] **P1-06 — Revisar la política CORS de App 2.** Comprobar que solo se permiten los orígenes configurados y verificar solicitudes autenticadas, preflight y respuestas de error. Revisar especialmente la función `attach_cors_headers()` en `app2/backend/main.py`.
+- [✅] **P1-07 — Ejecutar las suites de pruebas completas.** Registrar en `docs/pruebas.md` los comandos ejecutados, el entorno, la fecha y los resultados. No declarar verificadas pruebas que no existan o no se hayan ejecutado.
+- [❌] **P1-08 — Verificar ambas aplicaciones en Vercel.** Probar desde las URL publicadas el flujo real de frontend y backend. En App 2, comprobar autenticación, generación de resumen y rechazo de peticiones no autenticadas.
 
 ## Prioridad 1 — ERS, Spec Kit y documentación técnica
 
-- [ ] **P1-09 — Cerrar la ERS de App 1.** Eliminar ejemplos de plantilla y marcadores pendientes; revisar problema, alcance, RF/RNF, errores, criterios de aceptación, apartados no aplicables y trazabilidad con pruebas reales.
-- [ ] **P1-10 — Cerrar la ERS de App 2.** Eliminar contenido residual de plantilla y alinear el documento con el contrato real: endpoint, nombres de campos, valores permitidos, errores y requisitos de Clerk.
-- [ ] **P1-11 — Revisar la trazabilidad de ambas ERS.** Vincular cada requisito con un criterio de aceptación y una prueba, inspección o demostración que permita comprobarlo.
-- [ ] **P1-12 — Revisar los artefactos de Spec Kit de App 2.** Comprobar que especificación, plan y tareas reflejan el código actual, corregir referencias a rutas que ya no existen y verificar que los estados de tareas y pruebas son verdaderos. Conservar la evidencia disponible del proceso y de la secuencia temporal de los artefactos.
-- [ ] **P1-13 — Actualizar el `README.md` principal.** Corregir estructura de directorios, rutas, dependencias, comandos de instalación y ejecución, variables de entorno, pruebas, URLs y enlaces a la documentación. Confirmar que las instrucciones coinciden con el repositorio real.
-- [ ] **P1-14 — Completar `docs/uso-ia.md`.** Registrar herramientas y modelos utilizados, finalidad, prompts o resúmenes relevantes, propuestas aceptadas o rechazadas y comprobaciones/correcciones humanas. No incluir secretos ni conversaciones innecesarias.
-- [ ] **P1-15 — Completar `docs/comparativa.md`.** Comparar App 1 y App 2 en tiempo, calidad, errores, mantenibilidad y utilidad de IA. Usar datos reales o estimaciones claramente identificadas y separar el esfuerzo de Clerk e infraestructura.
-- [ ] **P1-16 — Completar `docs/diagramas/diagramas.md`.** Incluir o enlazar un diagrama de arquitectura coherente con el código y otros diagramas que aporten valor.
-- [ ] **P1-17 — Completar `docs/evidencias/evidencias.md`.** Añadir o enlazar capturas y registros de pruebas y despliegues, indicando qué demuestra cada evidencia y evitando datos sensibles.
-- [ ] **P1-18 — Revisar `docs/proceso.md`.** Registrar decisiones e incidencias que falten, los problemas relevantes, sus soluciones y los cambios importantes del proceso.
-- [ ] **P1-19 — Revisar `docs/despliegues.md`.** Asegurar que documenta el procedimiento real de Vercel CLI, las URLs verificadas, Docker local, AWS EC2, Clerk, HTTPS, configuración no secreta y comandos de actualización y recuperación.
+- [❌] **P1-09 — Cerrar la ERS de App 1.** Eliminar ejemplos de plantilla y marcadores pendientes; revisar problema, alcance, RF/RNF, errores, criterios de aceptación, apartados no aplicables y trazabilidad con pruebas reales.
+- [✅] **P1-10 — Cerrar la ERS de App 2.** Eliminar contenido residual de plantilla y alinear el documento con el contrato real: endpoint, nombres de campos, valores permitidos, errores y requisitos de Clerk.
+- [✅] **P1-11 — Revisar la trazabilidad de ambas ERS.** Vincular cada requisito con un criterio de aceptación y una prueba, inspección o demostración que permita comprobarlo.
+- [✅] **P1-12 — Revisar los artefactos de Spec Kit de App 2.** Comprobar que especificación, plan y tareas reflejan el código actual, corregir referencias a rutas que ya no existen y verificar que los estados de tareas y pruebas son verdaderos. Conservar la evidencia disponible del proceso y de la secuencia temporal de los artefactos.
+- [❌] **P1-13 — Actualizar el `README.md` principal.** Corregir estructura de directorios, rutas, dependencias, comandos de instalación y ejecución, variables de entorno, pruebas, URLs y enlaces a la documentación. Confirmar que las instrucciones coinciden con el repositorio real.
+- [✅] **P1-14 — Completar `docs/uso-ia.md`.** Registrar herramientas y modelos utilizados, finalidad, prompts o resúmenes relevantes, propuestas aceptadas o rechazadas y comprobaciones/correcciones humanas. No incluir secretos ni conversaciones innecesarias.
+- [✅] **P1-15 — Completar `docs/comparativa.md`.** Comparar App 1 y App 2 en tiempo, calidad, errores, mantenibilidad y utilidad de IA. Usar datos reales o estimaciones claramente identificadas y separar el esfuerzo de Clerk e infraestructura.
+- [✅] **P1-16 — Completar `docs/diagramas/diagramas.md`.** Incluir o enlazar un diagrama de arquitectura coherente con el código y otros diagramas que aporten valor.
+- [❌] **P1-17 — Completar `docs/evidencias/evidencias.md`.** Añadir o enlazar capturas y registros de pruebas y despliegues, indicando qué demuestra cada evidencia y evitando datos sensibles.
+- [✅] **P1-18 — Revisar `docs/proceso.md`.** Registrar decisiones e incidencias que falten, los problemas relevantes, sus soluciones y los cambios importantes del proceso.
+- [❌] **P1-19 — Revisar `docs/despliegues.md`.** Asegurar que documenta el procedimiento real de Vercel CLI, las URLs verificadas, Docker local, AWS EC2, Clerk, HTTPS, configuración no secreta y comandos de actualización y recuperación.
 
 ## Prioridad 1 — Docker, AWS y despliegue final
 
-- [ ] **P1-20 — Revisar la configuración de producción de Docker para App 2.** Comprobar Dockerfiles, Compose, Nginx, variables, puertos, red interna y política de reinicio. Mantener el backend sin publicación directa de su puerto al exterior.
-- [ ] **P1-21 — Construir y probar Docker desde un clon limpio.** Confirmar que las imágenes se construyen y los servicios arrancan sin depender de archivos locales no versionados.
-- [ ] **P1-22 — Desplegar App 2 en AWS EC2.** Documentar instancia, región, sistema operativo, grupo de seguridad, instalación de Docker/Compose, obtención del código y comandos realmente utilizados.
-- [ ] **P1-23 — Configurar Clerk y CORS para producción.** Autorizar los orígenes y URLs reales y comprobar que la autenticación funciona en el dominio de EC2.
-- [ ] **P1-24 — Verificar el control de acceso a la API en EC2.** Comprobar que una solicitud autenticada puede generar un resumen y que las solicitudes sin token o con token inválido/caducado reciben 401 sin llamar a la IA.
-- [ ] **P1-25 — Ejecutar pruebas de extremo a extremo en EC2.** Desde otro dispositivo o conexión, comprobar carga de la aplicación, autenticación, generación de resumen y un error controlado. Registrar URL, versión Git y evidencias.
+- [❌] **P1-20 — Revisar la configuración de producción de Docker para App 2.** Comprobar Dockerfiles, Compose, Nginx, variables, puertos, red interna y política de reinicio. Mantener el backend sin publicación directa de su puerto al exterior.
+- [❌] **P1-21 — Construir y probar Docker desde un clon limpio.** Confirmar que las imágenes se construyen y los servicios arrancan sin depender de archivos locales no versionados.
+- [❌] **P1-22 — Desplegar App 2 en AWS EC2.** Documentar instancia, región, sistema operativo, grupo de seguridad, instalación de Docker/Compose, obtención del código y comandos realmente utilizados.
+- [❌] **P1-23 — Configurar Clerk y CORS para producción.** Autorizar los orígenes y URLs reales y comprobar que la autenticación funciona en el dominio de EC2.
+- [❌] **P1-24 — Verificar el control de acceso a la API en EC2.** Comprobar que una solicitud autenticada puede generar un resumen y que las solicitudes sin token o con token inválido/caducado reciben 401 sin llamar a la IA.
+- [❌] **P1-25 — Ejecutar pruebas de extremo a extremo en EC2.** Desde otro dispositivo o conexión, comprobar carga de la aplicación, autenticación, generación de resumen y un error controlado. Registrar URL, versión Git y evidencias.
 
 ## Prioridad 1 — Entrega y defensa
 
-- [ ] **P1-26 — Crear `presentation/defensa.pptx`.** Preparar la presentación propia del grupo con problema, alcance, arquitectura, ERS, proceso de App 1, Spec Kit y App 2, pruebas, seguridad, despliegues, comparativa y conclusiones.
-- [ ] **P1-27 — Preparar y ensayar la demostración.** Incluir una entrada válida y su resultado, un caso de validación o error controlado, autenticación Clerk, rechazo de una petición sin autenticación, un test con mock y un hito Git.
-- [ ] **P1-28 — Preparar evidencia de respaldo para la demo.** Tener una captura o grabación para posibles fallos externos, identificada claramente como evidencia de respaldo y no como ejecución en directo.
-- [ ] **P1-29 — Comprobar la entrega completa.** Verificar los enlaces de App 1 y App 2 en Vercel, App 2 en EC2, README, ERS, pruebas, comparativa, documentación, evidencias y presentación. Preparar el ZIP si se solicita, excluyendo secretos y carpetas de dependencias.
+- [❌] **P1-26 — Crear `presentation/defensa.pptx`.** Preparar la presentación propia del grupo con problema, alcance, arquitectura, ERS, proceso de App 1, Spec Kit y App 2, pruebas, seguridad, despliegues, comparativa y conclusiones.
+- [❌] **P1-27 — Preparar y ensayar la demostración.** Incluir una entrada válida y su resultado, un caso de validación o error controlado, autenticación Clerk, rechazo de una petición sin autenticación, un test con mock y un hito Git.
+- [❌] **P1-28 — Preparar evidencia de respaldo para la demo.** Tener una captura o grabación para posibles fallos externos, identificada claramente como evidencia de respaldo y no como ejecución en directo.
+- [❌] **P1-29 — Comprobar la entrega completa.** Verificar los enlaces de App 1 y App 2 en Vercel, App 2 en EC2, README, ERS, pruebas, comparativa, documentación, evidencias y presentación. Preparar el ZIP si se solicita, excluyendo secretos y carpetas de dependencias.
 
 ## Criterio para marcar una tarea como terminada
 
