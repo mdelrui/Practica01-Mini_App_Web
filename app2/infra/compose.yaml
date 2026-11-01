@@ -1,0 +1,22 @@
+services:
+    backend:
+        build:
+            context: ..
+            dockerfile: infra/Dockerfile.backend
+        env_file:
+            - .env
+        expose:
+            - "8000"
+        restart: unless-stopped
+
+    frontend:
+        build:
+            context: ..
+            dockerfile: infra/Dockerfile.frontend
+            args:
+                VITE_CLERK_PUBLISHABLE_KEY: ${VITE_CLERK_PUBLISHABLE_KEY:?Define VITE_CLERK_PUBLISHABLE_KEY en infra/.env}
+        ports:
+            - "8080:80"
+        depends_on:
+            - backend
+        restart: unless-stopped

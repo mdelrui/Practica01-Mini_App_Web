@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
-import App from '../App.vue'
+import App from '../services/App.vue'
 import { resumirTexto } from '../services/resumen'
 
 vi.mock('../services/resumen', () => ({

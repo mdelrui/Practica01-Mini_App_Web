@@ -1,14 +1,28 @@
 import os
 
+from enum import Enum
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, ConfigDict, Field
+from starlette.concurrency import run_in_threadpool
 
+from models import UserInput
+
+from auth import (
+    InvalidSessionToken,
+    SessionVerifierUnavailable,
+    verify_session_token,
+)
 from services import IAError, ResumenResponse, resumir
 
-MAX_CHARS = 5000
-ORIGENES = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
+ORIGENES = [
+    origen.strip()
+    for origen in os.getenv(
+        "CORS_ORIGINS",
+        "http://localhost:5173"
+    ).split(',')
+    if origen.strip()
+]
 
 app = FastAPI()
 app.add_middleware(
@@ -20,11 +34,64 @@ app.add_middleware(
 )
 
 
-class UserInput(BaseModel):
-    model_config = ConfigDict(str_strip_whitespace=True)
+def attach_cors_headers(response: JSONResponse, request: Request) -> JSONResponse:
+    origin = request.headers.get("origin")
+    if origin:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Vary"] = "Origin"
+    elif ORIGENES:
+        response.headers["Access-Control-Allow-Origin"] = ORIGENES[0]
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    return response
 
-    text: str = Field(min_length=1, max_length=MAX_CHARS)
-    main_ideas: bool = False
+
+AUTH_INVALID = {
+    "error": {
+        "codigo": "AUTH_INVALID",
+        "mensaje": "Autenticación requerida o sesión no válida.",
+    }
+}
+AUTH_UNAVAILABLE = {
+    "error": {
+        "codigo": "AUTH_UNAVAILABLE",
+        "mensaje": "No se pudo verificar la sesión temporalmente. Inténtalo más tarde.",
+    }
+}
+
+
+@app.middleware("http")
+async def verificar_sesion(request: Request, call_next):
+    if request.method == "POST" and request.url.path == "/resumir":
+        authorization = request.headers.get("authorization", "")
+        scheme, separator, token = authorization.partition(" ")
+        if (
+            scheme.lower() != "bearer"
+            or not separator
+            or not token
+            or token != token.strip()
+            or any(character.isspace() for character in token)
+        ):
+            return attach_cors_headers(
+                JSONResponse(status_code=401, content=AUTH_INVALID),
+                request,
+            )
+
+        try:
+            await run_in_threadpool(verify_session_token, token)
+        except InvalidSessionToken:
+            return attach_cors_headers(
+                JSONResponse(status_code=401, content=AUTH_INVALID),
+                request,
+            )
+        except SessionVerifierUnavailable:
+            return attach_cors_headers(
+                JSONResponse(status_code=503, content=AUTH_UNAVAILABLE),
+                request,
+            )
+
+    return await call_next(request)
+
+
 
 
 @app.exception_handler(IAError)
@@ -35,6 +102,6 @@ def manejar_error_ia(request: Request, exc: IAError):
     )
 
 
-@app.post("/resumir", response_model=ResumenResponse)
+@app.post("/resumir", response_model=ResumenResponse, response_model_exclude_none=True)
 def resumir_texto(user_input: UserInput):
-    return resumir(user_input.text, user_input.main_ideas)
+    return resumir(user_input.text, user_input.main_ideas, user_input.glossary, user_input.summary_length)

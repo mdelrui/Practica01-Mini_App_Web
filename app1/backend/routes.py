@@ -12,8 +12,10 @@ class TextoEntrada(BaseModel):
 
 @router.post("/api/resumir")
 def resumir_texto(entrada: TextoEntrada):
+    # Limpiamos los espacios en blanco sobrantes al inicio y al final
     texto_limpio = entrada.texto.strip()
 
+    # Comprobamos que el texto no esté vacío
     if not texto_limpio:
         raise HTTPException(status_code=400, detail="Escribe un texto para resumir.")
     try:

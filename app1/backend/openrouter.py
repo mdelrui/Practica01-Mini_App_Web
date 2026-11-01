@@ -2,7 +2,6 @@ import requests
 
 from .config import API_KEY, API_URL, MODELO
 
-
 def obtener_resumen(texto: str) -> str:
     # Verificamos si existe la clave de la API configurada
     if not API_KEY:
@@ -15,9 +14,9 @@ def obtener_resumen(texto: str) -> str:
             {
                 "role": "user",
                 "content": (
-                    "Resume el siguiente texto de forma clara y breve. "
-                    "Usa solo la información del texto y devuelve únicamente el resumen:\n\n"
-                    + texto
+                        "Resume el siguiente texto de forma clara y breve. "
+                        "Usa solo la información del texto y devuelve únicamente el resumen:\n\n"
+                        + texto
                 ),
             }
         ],
@@ -40,6 +39,7 @@ def obtener_resumen(texto: str) -> str:
     except (requests.RequestException, KeyError, IndexError, TypeError, ValueError) as error:
         raise RuntimeError("No se pudo obtener un resumen válido de OpenRouter.") from error
 
+    # Comprobamos que el resumen obtenido no esté vacío
     if not isinstance(resumen, str) or not resumen.strip():
         raise RuntimeError("OpenRouter devolvió un resumen vacío.")
 
