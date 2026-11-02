@@ -295,10 +295,3 @@ def test_auth_error_responses_include_cors_headers(app_client, summary_service):
     assert response.status_code == 401
     assert response.headers["access-control-allow-origin"] == "http://localhost:5173"
     summary_service.assert_not_called()
-
-
-def test_health_endpoint_is_public_and_returns_ok(app_client):
-    response = app_client.get("/health")
-
-    assert response.status_code == 200
-    assert response.json() == {"status": "ok"}

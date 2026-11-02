@@ -13,11 +13,6 @@ os.environ["CLERK_ISSUER"] = "https://issuer.test"
 os.environ["CLERK_JWKS_URL"] = "https://issuer.test/.well-known/jwks.json"
 os.environ["CLERK_JWKS_TIMEOUT"] = "1"
 
-import sys
-from pathlib import Path
-
-BACKEND_DIR = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(BACKEND_DIR))
 import auth
 import main
 

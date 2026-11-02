@@ -1,25 +1,13 @@
 from pathlib import Path
 
 import uvicorn
-from fastapi import FastAPI, Request
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from backend.routes import router
 
 # Creamos la aplicación FastAPI y registramos las rutas de la API
 app = FastAPI(title="Resumidor de textos")
-
-
-@app.exception_handler(RequestValidationError)
-async def manejar_error_validacion(request: Request, error: RequestValidationError):
-    """Mantiene un formato JSON sencillo para los errores de entrada."""
-    return JSONResponse(
-        status_code=422,
-        content={"detail": "El campo 'texto' debe contener entre 1 y 5000 caracteres."},
-    )
-
 app.include_router(router)
 
 # En local, servimos los archivos del frontend si ya está compilado en la carpeta dist

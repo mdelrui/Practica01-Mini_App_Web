@@ -4,18 +4,10 @@ version = "0.1.0"
 description = "Aplicaciones"
 readme = "README.md"
 requires-python = ">=3.12"
-
-[tool.uv]
-package = false
-workspace = { members = ["app1", "app2/backend"] }
-
-[tool.pytest.ini_options]
-pythonpath = [
-    "app1",
-    "app2/backend"
-]
-
-testpaths = [
-    "app1/backend/tests",
-    "app2/backend/tests"
+dependencies = [
+    "fastapi",
+    "pathlib",
+    "python-dotenv",
+    "requests",
+    "uvicorn",
 ]
