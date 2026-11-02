@@ -11,7 +11,7 @@ Instala Node.js y npm antes de continuar.
 Desde esta carpeta, ejecuta:
 
 ```sh
-npm install
+npm ci
 ```
 
 ## Iniciar el frontend

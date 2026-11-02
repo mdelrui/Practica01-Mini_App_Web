@@ -1,488 +1,248 @@
-# Especificación de Requisitos del Software (ERS)
+# Especificación de Requisitos del Software (ERS), App 1
 
 ## Datos del documento
 
-| Campo               | Valor                                                                      |
-| ------------------- | -------------------------------------------------------------------------- |
-| Nombre del proyecto | ResumidorIA                                                                |
-| Autores             | Francisco Luis Cara García & Mario Delgado Ruiz                            |
-| Curso y grupo       | Aprendizaje Automático: Gestión de Datos y Entrenamiento - Grupo 4         |
-| Asignatura o módulo | Desarrollo de Componentes Software para Sistemas de Aprendizaje Automático |
-| Docente             | Francisco Manuel Matías Prados                                             |
-| Fecha               | 08/10/2026                                                                 |
-| Versión             | 0.1                                                                        |
-| Estado              | Borrador                                                                   |
+| Campo | Valor |
+|---|---|
+| Proyecto | ResumidorIA, App 1 |
+| Autores | Francisco Luis Cara García y Mario Delgado Ruiz |
+| Asignatura | Desarrollo de Componentes Software para Sistemas de Aprendizaje Automático |
+| Fecha de revisión | 02/11/2026 |
+| Versión | 0.2 |
+| Estado | Revisada; pruebas automatizadas comprobadas y despliegue pendiente |
 
 ### Historial de cambios
 
-| Versión | Fecha      | Autor/es          | Cambios realizados            |
-| ------- | ---------- | ----------------- | ----------------------------- |
-| 0.1     | 08/10/2026 | Francisco & Mario | Primera versión del documento |
-
-## Instrucciones para completar la plantilla
-
-- Sustituye los textos entre corchetes por la información de tu proyecto.
-- Describe **qué debe hacer el sistema** y las condiciones que debe cumplir. Evita detallar su implementación, salvo que exista una restricción obligatoria.
-- Asigna un identificador único a cada requisito y mantenlo aunque cambie su descripción.
-- Redacta una sola obligación por requisito, con un lenguaje claro y comprobable. Evita expresiones como «rápido», «fácil» o «seguro» sin definir cómo se comprobarán.
-- Duplica las fichas y filas que necesites. Si una sección no corresponde a tu proyecto, indica «No aplica» y explica el motivo.
-- Marca como «Pendiente» la información que todavía no se haya acordado; no presentes las suposiciones como hechos confirmados.
-- Elimina estas instrucciones y los ejemplos antes de entregar la versión final.
+| Versión | Fecha | Cambios |
+|---|---|---|
+| 0.1 | 08/10/2026 | Primera versión |
+| 0.2 | 02/11/2026 | Eliminación de instrucciones de plantilla y ajuste al comportamiento implementado; definición del contrato de errores y trazabilidad de pruebas |
 
 ## 1. Introducción
 
-### 1.1. Propósito del documento
+### 1.1. Propósito
 
-Esta Especificación de Requisitos del Software (ERS) tiene como finalidad definir las necesidades, el alcance, los requisitos funcionales y no funcionales, las interfaces y los criterios de aceptación de la aplicación web.
-
-El documento servirá como referencia para los integrantes del equipo durante el análisis, desarrollo, pruebas y validación del sistema, así como para comprobar el cumplimiento de los requisitos establecidos en la práctica.
+Este documento define el alcance, los requisitos funcionales y no funcionales y los criterios de aceptación de App 1. Se utiliza como referencia para el desarrollo y la comprobación de la aplicación.
 
 ### 1.2. Problema y objetivos
 
-**Problema o necesidad:** Se pretende crear un sistema que permita resumir textos sintetizando la información más importante y dando respuestas adecuadas, permitiendo la posibilidad de extraer conceptos relevantes e ideas principales dentro del contexto del texto.
+App 1 permite obtener una síntesis de un texto sin que el usuario tenga que seleccionar manualmente sus ideas principales. El navegador presenta el formulario y el backend valida la entrada y consulta al proveedor de IA.
 
-| ID     | Objetivo del proyecto                                                                                               | Indicador de logro                                                                                                          |
-| ------ | ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| OBJ-01 | Desarrollar una aplicación web modular de doble capa (frontend y backend) orientada al análisis y resumen de textos | La arquitectura desplegada separa correctamente las responsabilidades de interfaz y lógica de negocio                       |
-| OBJ-02 | Implementar una interfaz de usuario interactiva y fluida en el frontend                                             | El usuario puede introducir texto, seleccionar opciones de síntesis y visualizar el resultado de manera clara               |
-| OBJ-03 | Construir un servicio backend robusto capaz de procesar peticiones y gestionar la lógica de análisis                | Los endpoints expuestos devuelven respuestas estructuradas en formato JSON mediante HTTP                                    |
-| OBJ-04 | Integrar capacidades de procesamiento de lenguaje natural para la extracción de ideas clave y resúmenes             | El sistema genera resúmenes coherentes y extrae conceptos relevantes a partir de entradas de texto                          |
-| OBJ-05 | Garantizar la calidad del código y la fiabilidad del sistema mediante pruebas automatizadas                         | Se ejecutan con éxito tanto las pruebas unitarias y de integración del backend como los tests de componentes en el frontend |
-| OBJ-06 | Documentar el proceso de desarrollo y diseño de la solución de manera clara y estructurada                          | Se cuenta con una especificación de requisitos completa                                                                     |
+Objetivos:
+
+- Permitir introducir texto de forma sencilla.
+- Generar un resumen mediante OpenRouter.
+- Validar la entrada tanto en la interfaz como en el servidor.
+- Mostrar estados de carga y mensajes de error comprensibles.
+- Mantener la clave privada del proveedor en el backend.
+- Comprobar el comportamiento mediante pruebas automatizadas.
 
 ### 1.3. Alcance
 
-**El sistema incluirá:**
+La aplicación incluye una interfaz web de una sola pantalla, un área de texto, contador de palabras y caracteres, borrado del contenido, carga por arrastre de archivos `.txt` y `.md`, generación de un resumen y visualización del resultado.
 
-- Una aplicación web de una sola página.
-- Un único formulario para introducir los datos necesarios para realizar una función útil.
-- El envío de los datos al backend para su validación y procesamiento.
-- Una llamada a una única API de IA por cada envío válido.
-- La visualización del resultado en la misma pantalla.
-- La gestión de los estados de espera y error.
+La aplicación admite un máximo de 5000 caracteres de texto y un máximo de 1 MiB por archivo. El contenido de un archivo admitido se limita a los primeros 5000 caracteres antes de utilizarlo.
 
-**Queda fuera del alcance:**
+Quedan fuera del alcance la autenticación propia, el almacenamiento persistente, el historial de consultas, la base de datos y la gestión de conversaciones.
 
-- Bases de datos y persistencia de las entradas o resultados.
-- Historial de solicitudes o conversaciones.
-- CRUD, paneles de administración y dashboards.
-- Múltiples pantallas o rutas de navegación.
-- Gestión propia de usuarios.
-- Subida y procesamiento de archivos, RAG, agentes encadenados u otros servicios adicionales.
+### 1.4. Definiciones
 
-### 1.4. Definiciones y abreviaturas
+| Término | Definición |
+|---|---|
+| API | Interfaz de comunicación entre aplicaciones |
+| Backend | Parte del servidor que valida la petición y consulta OpenRouter |
+| Frontend | Interfaz web que utiliza el usuario |
+| IA | Inteligencia artificial |
+| JSON | Formato de intercambio de datos |
+| ERS | Especificación de Requisitos del Software |
 
-| Término  | Definición                                                        |
-| -------- | ----------------------------------------------------------------- |
-| ERS      | Especificación de Requisitos del Software                         |
-| SPA      | Aplicación web de una sola página                                 |
-| API      | Interfaz que permite la comunicación entre sistemas software      |
-| IA       | Inteligencia artificial                                           |
-| HTTP     | Protocolo utilizado para la comunicación entre cliente y servidor |
-| JSON     | Formato de intercambio de datos estructurados                     |
-| Frontend | Parte de la aplicación con la que interactúa el usuario           |
-| Backend  | Parte que valida los datos y se comunica con la API de IA         |
-| RF       | Requisito funcional                                               |
-| RNF      | Requisito no funcional                                            |
+## 2. Descripción general
 
-### 1.5. Referencias y fuentes
+### 2.1. Contexto
 
-| ID     | Fuente                                  | Fecha o versión | Ubicación                  |
-| ------ | --------------------------------------- | --------------- | -------------------------- |
-| FUE-01 | Enunciado del desarrollo de la práctica | 08/10/2026      | [Práctica 01](PR01-UD1.md) |
-
-## 2. Descripción general del sistema
-
-### 2.1. Contexto y perspectiva del producto
-
-[Explica si es un sistema nuevo o una ampliación, dónde se utilizará y con qué otros sistemas se relaciona. Puedes añadir un diagrama de contexto.]
-
-Este proyecto es una aplicación web que posee una arquitectura limpia y separada en dos partes: por un lado, una interfaz web moderna y fluida para que cualquier usuario interactúe sin complicaciones, y por otro, un servidor backend que se encargue de procesar la lógica y comunicarse con los servicios de inteligencia artificial. El sistema funciona de forma autónoma en el entorno del usuario; el navegador se conecta con la API en el backend.
+App 1 es una aplicación web cliente-servidor. El frontend está desarrollado con Vue 3, TypeScript y Vite. El backend utiliza FastAPI y realiza las peticiones a OpenRouter. El navegador no recibe la clave privada del proveedor.
 
 ```mermaid
-graph TD
-    %% Estilos
-    classDef user fill:#fff,stroke:#333,stroke-width:2px,color:#000;
-    classDef system fill:#fff,stroke:#333,stroke-width:2px,color:#000;
-    classDef external fill:#fff,stroke:#333,stroke-width:2px,color:#000;
-
-    %% Nodos
-    User([Usuario / Navegador Web]):::user
-
-    subgraph App ["Sistema Web (App 1)"]
-        Frontend[Frontend Vue 3]:::system
-        Backend[Backend FastAPI]:::system
-    end
-
-    OpenRouter[API Externa OpenRouter / Modelos IA]:::external
-
-    %% Relaciones
-    User -->|Interactúa / Envía texto| Frontend
-    Frontend -->|Peticiones HTTP| Backend
-    Backend -->|Consulta con API Key| OpenRouter
-    OpenRouter -->|Devuelve respuesta procesada| Backend
-    Backend -->|Responde al cliente| Frontend
-    Frontend -->|Muestra resultados| User
+flowchart LR
+    U[Usuario] --> F[Frontend Vue]
+    F -->|POST /api/resumir| B[Backend FastAPI]
+    B -->|Solicitud autenticada con API key| O[OpenRouter]
+    O --> B
+    B --> F
+    F --> U
 ```
 
-### 2.2. Personas interesadas y tipos de usuario
+### 2.2. Actores
 
-| ID     | Persona, colectivo o rol | Necesidad o responsabilidad                                                                                                                                                        | Permisos                                                                                                      | Conocimientos relevantes                                                                 |
-| ------ | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| ACT-01 | Usuario final            | Necesita una herramienta rápida y sencilla para introducir textos densos, obtener resúmenes claros y extraer ideas principales o respuestas contextuales sin complicaciones        | Acceso libre a la interfaz web para realizar consultas y procesar textos                                      | Ninguno técnico específico; uso intuitivo de navegadores web                             |
-| ACT-02 | Docente                  | Necesita comprobar el correcto funcionamiento de la herramienta, evaluar la calidad de los resúmenes generados por la IA y revisar el cumplimiento de los objetivos de la práctica | Acceso completo a la interfaz web y, opcionalmente, a la revisión de la documentación y endpoints del sistema | Perfil académico/técnico con capacidad de análisis crítico                               |
-| ACT-03 | Equipo de desarrollo     | Responsable de implementar la aplicación, mantener la arquitectura limpia, configurar el backend y conexión con APIs y asegurar que el sistema sea estable                         | Control total sobre el código fuente, despliegues, configuración de entorno, tests, etc.                      | Competencias técnicas en desarrollo web, Python, JavaScript/TypeScript y gestión de APIs |
+| Actor | Responsabilidad |
+|---|---|
+| Usuario final | Introduce o carga un texto y consulta el resumen |
+| Backend | Valida la entrada, llama al proveedor y devuelve el resultado |
+| OpenRouter | Procesa la solicitud de generación de texto |
+| Equipo de desarrollo | Mantiene el código, las pruebas y la documentación |
 
-### 2.3. Funciones principales
+### 2.3. Restricciones y dependencias
 
-[Resume las capacidades principales del sistema. Los requisitos detallados se documentan en la sección 3.]
-
-El sistema centra su funcionamiento en una única pantalla. Sus capacidades principales son las siguientes:
-
-- Introducción y envío de texto mediante un único formulario web.
-- Validación de los datos introducidos en el cliente y en el servidor.
-- Procesamiento de la solicitud enviándola a la API de IA a través del backend.
-- Recepción de la respuesta y visualización del resultado procesado en la misma pantalla.
-
-### 2.4. Entorno de uso
-
-| Aspecto                    | Descripción                                                                                                                                                                                           |
-| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Dispositivos y plataformas | Aplicación web accesible desde cualquier ordenador de escritorio o dispositivo móvil a través de un navegador web moderno                                                                             |
-| Condiciones de uso         | Diseñado para entornos de trabajo o académicos con acceso estable a Internet. Requiere conectividad continua para permitir la comunicación entre el navegador, el backend desplegado y la API externa |
-| Volumen esperado           | Pensado para un uso personal o de pruebas académicas esporádicas, donde una sola persona hace peticiones individuales                                                                                 |
-
-### 2.5. Restricciones
-
-[Indica las limitaciones impuestas por el proyecto. Distingue las obligaciones de las preferencias del equipo.]
-
-| ID     | Restricción                              | Origen o justificación                                                                                                        |
-| ------ | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| RES-01 | Python y FastAPI (backend)               | Impuesto por los requisitos de la asignatura para garantizar la validación del servidor y el manejo del contrato JSON         |
-| RES-02 | API única de IA                          | Impuesto por el docente para limitar la complejidad y centralizar las peticiones en un único proveedor                        |
-| RES-03 | Vue, TypeScript y TailwindCSS (frontend) | Decisión tecnológica del equipo para construir una interfaz limpia, moderna, reactiva y adaptada a móviles                    |
-| RES-04 | Pantalla única                           | Impuesto por el docente, limitando la aplicación a un único formulario y resultado                                            |
-| RES-05 | Ausencia de persitencia o bases de datos | Impuesto por el docente para evitar almacenar historiales, perfiles, ficheros de datos, etc.                                  |
-| RES-06 | Uso de una sola llamada por envío válido | Impuesto por el docente para evitar conversaciones con memoria, agentes encadenados o llamadas redundantes al proveedor de IA |
-
-### 2.6. Suposiciones y dependencias
-
-| ID     | Tipo        | Descripción                                                                                                                                                                  | Consecuencia si no se cumple                                                                                                                      |
-| ------ | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| SUP-01 | Suposición  | La API de OpenRouter mantendrá un formato de respuesta estable y compatible durante el ciclo de desarrollo de la práctica                                                    | Si el proveedor modifica su estructura de manera imprevisible, el backend fallará al deserializar la respuesta y requerirá ajustes en el contrato |
-| DEP-01 | Dependencia | Disponibilidad continua de conexión a Internet y créditos activos (o uso de modelos gratuitos) en la cuenta de OpenRouter para poder realizar las llamadas de prueba a la IA | Si el servicio externo se cae o se agotan los créditos, la aplicación no podrá procesar ninguna solicitud                                         |
-| DEP-02 | Dependencia | Funcionamiento correcto de Vercel como plataforma de despliegue serverless tanto para el frontend como para el backend                                                       | Si surgen incompatibilidades de ejecución en servidor, se deberá reconfigurar el despliegue o buscar alternativas compatibles                     |
+- El backend utiliza Python, FastAPI y Uvicorn.
+- El frontend utiliza Vue 3, TypeScript y Vite.
+- La generación depende de la disponibilidad de OpenRouter y de una clave API válida.
+- La aplicación no almacena de forma persistente los textos ni los resultados.
+- El punto de entrada local es `app1/main.py`, que crea la instancia `app` y registra las rutas de `app1/backend/routes.py`.
 
 ## 3. Requisitos funcionales
 
-Los requisitos funcionales describen las acciones y comportamientos que debe ofrecer el sistema.
+| ID | Requisito | Prioridad |
+|---|---|---|
+| RF-01 | Introducir texto mediante el formulario | Alta |
+| RF-02 | Cargar archivos `.txt` y `.md` mediante arrastre | Media |
+| RF-03 | Validar el texto y sus límites | Alta |
+| RF-04 | Enviar la petición al backend y generar el resumen | Alta |
+| RF-05 | Mostrar el resultado y los estados de carga y error | Alta |
+| RF-06 | Permitir borrar el texto introducido | Media |
 
-**Prioridades:** Alta = imprescindible para la versión prevista; Media = importante, pero puede aplazarse mediante acuerdo; Baja = deseable.
+### RF-01. Introducción de texto
 
-### 3.1. Catálogo de requisitos funcionales
+El sistema permitirá escribir o pegar texto en el área de entrada.
 
-| ID    | Nombre                                           | Prioridad             | Fuente                         | Estado                             |
-| ----- | ------------------------------------------------ | --------------------- | ------------------------------ | ---------------------------------- |
-| RF-00 | [Nombre breve]                                   | [Alta / Media / Baja] | [FUE-01 o rol que lo solicita] | [Propuesto / Validado / Pendiente] |
-| RF-01 | Introducción de texto para resumen               | Alta                  | Desarrollador/es               | Propuesto                          |
-| RF-02 | Procesamiento de solicitudes en el backend       | Alta                  | Desarrollador/es               | Propuesto                          |
-| RF-03 | Visualización del resultado y gestión de estados | Alta                  | Desarrollador/es               | Propuesto                          |
-| RF-04 | Validación de datos y control de errores         | Media                 | Desarrollador/es               | Pendiente                          |
+Criterios de aceptación:
+- CA-01. El formulario muestra un área de texto y el contador de caracteres.
+- CA-02. El botón de envío permanece deshabilitado cuando no hay texto o mientras se procesa una petición.
 
-### 3.2. Ficha de requisito funcional
+### RF-02. Carga de archivos
 
-#### RF-00. [Nombre del requisito] - TEMPLATE DE COPIA Y PEGA
+El sistema permitirá cargar por arrastre archivos con extensión `.txt` o `.md`, siempre que no superen 1 MiB.
 
-| Campo                     | Descripción                                                                                  |
-| ------------------------- | -------------------------------------------------------------------------------------------- |
-| Enunciado                 | El sistema deberá [acción observable sobre un objeto, indicando las condiciones relevantes]. |
-| Justificación             | [Necesidad que satisface]                                                                    |
-| Actor                     | [Rol o sistema que inicia o recibe la acción]                                                |
-| Prioridad                 | [Alta / Media / Baja]                                                                        |
-| Fuente                    | [Referencia a la fuente]                                                                     |
-| Precondiciones            | [Qué debe cumplirse antes de ejecutar la acción]                                             |
-| Entradas                  | [Datos necesarios y sus condiciones de validez]                                              |
-| Comportamiento esperado   | [Qué debe hacer el sistema]                                                                  |
-| Salidas y postcondiciones | [Resultado observable y estado final]                                                        |
-| Errores o alternativas    | [Qué debe ocurrir ante entradas incorrectas o situaciones excepcionales]                     |
-| Dependencias              | [IDs de requisitos o reglas relacionados, o «Ninguna»]                                       |
+Criterios de aceptación:
+- CA-03. Un archivo admitido se lee y su contenido se introduce en el área de texto.
+- CA-04. Una extensión no admitida o un archivo superior a 1 MiB produce un mensaje de error visible.
+- CA-05. El contenido leído se limita a 5000 caracteres.
 
-**Criterios de aceptación:**
+### RF-03. Validación de entrada
 
-- **CA-RF01-01:** Dado [estado inicial], cuando [acción o evento], entonces [resultado concreto y verificable].
-- **CA-RF01-02:** Dado [situación de error o caso límite], cuando [acción o evento], entonces [respuesta esperada].
+El backend aceptará un objeto JSON con el campo `texto`, de tipo cadena y longitud entre 1 y 5000 caracteres. También rechazará cadenas que solo contengan espacios en blanco.
 
-#### RF-01. Introducción de texto para resumen
+Criterios de aceptación:
+- CA-06. Una entrada válida se limpia de espacios exteriores antes de enviarse al proveedor.
+- CA-07. Una entrada vacía, compuesta solo por espacios o superior al límite se rechaza con HTTP 422.
 
-| Campo                     | Descripción                                                                                                                                                                   |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Enunciado                 | El sistema deberá permitir al usuario introducir un texto a través de un único formulario web para solicitar su resumen o procesamiento                                       |
-| Justificación             | Es el punto de entrada indispensable de la aplicación para que el usuario pueda aportar la información que desea procesar                                                     |
-| Actor                     | Usuario final                                                                                                                                                                 |
-| Prioridad                 | Alta                                                                                                                                                                          |
-| Fuente                    | Desarrollador/es                                                                                                                                                              |
-| Precondiciones            | La aplicación web está abierta en el navegador y el formulario se encuentra disponible                                                                                        |
-| Entradas                  | Texto libre introducido por el usuario en el área de texto del formulario                                                                                                     |
-| Comportamiento esperado   | El sistema habilita un campo de texto interactivo, valida de forma preliminar que no esté vacío ni supere un máximo establecido y permite al usuario pulsar el botón de envío |
-| Salidas y postcondiciones | Los datos del formulario quedan preparados para ser enviados al backend mediante una petición HTTP POST                                                                       |
-| Errores o alternativas    | Si se detecta algún tipo de error en el campo de texto, el sistema muestra un aviso visual impidiendo la solicitud                                                            |
-| Dependencias              | «Ninguna»                                                                                                                                                                     |
+### RF-04. Generación del resumen
 
-**Criterios de aceptación:**
+El backend expondrá `POST /api/resumir`. Para una entrada válida realizará una única solicitud a OpenRouter y devolverá `{"resumen": "..."}` cuando la respuesta sea correcta.
 
-- **CA-RF01-01:** Dado el formulario vacío, cuando el usuario introduce un texto válido y pulsa enviar, entonces se genera la petición HTTP hacia el servidor.
-- **CA-RF01-02:** Dado el formulario vacío, cuando el usuario intenta enviar sin introducir contenido o contenido no permitido, entonces el sistema muestra una advertencia y no realiza la petición.
+Criterios de aceptación:
+- CA-08. Una respuesta válida del proveedor produce HTTP 200 y un campo `resumen` no vacío.
+- CA-09. La clave de OpenRouter se utiliza exclusivamente en el backend.
+- CA-10. Una respuesta vacía o mal formada del proveedor se trata como error del proveedor.
 
-#### RF-02. Procesamiento de solicitudes en el backend
+### RF-05. Visualización y gestión de estados
 
-| Campo                     | Descripción                                                                                                                                                                                       |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Enunciado                 | El sistema deberá recibir la petición en el backend con FastAPI, validar los datos de entrada, comunicarse de forma segura con la API de OpenRouter y devolver una respuesta estructurada en JSON |
-| Justificación             | Centraliza la lógica de negocio y protege la clave privada de la API de IA, evitando exponer credenciales en el cliente                                                                           |
-| Actor                     | Sistema backend (FastAPI) / API Externa (OpenRouter)                                                                                                                                              |
-| Prioridad                 | Alta                                                                                                                                                                                              |
-| Fuente                    | Desarrollador/es                                                                                                                                                                                  |
-| Precondiciones            | El backend está activo y cuenta con la clave de OpenRouter configurada en las variables de entorno                                                                                                |
-| Entradas                  | Objeto JSON recibido mediante POST conteniendo el texto enviado por el frontend                                                                                                                   |
-| Comportamiento esperado   | El backend valida la estructura de la entrada, realiza una única llamada al proveedor de IA utilizando la clave privada, procesa la respuesta obtenida y la devuelve en formato JSON              |
-| Salidas y postcondiciones | Respuesta HTTP con código de éxito (200) y el contenido procesado, o un código de error controlado en caso de fallo                                                                               |
-| Errores o alternativas    | Si el proveedor externo falla o se agota el tiempo de espera, el backend intercepta el error y devuelve un código HTTP adecuado (ej. 502 o 504) con un mensaje JSON claro                         |
-| Dependencias              | RF-01                                                                                                                                                                                             |
+El frontend mostrará el resumen recibido, indicará que la petición está en curso y presentará un mensaje visible cuando falle.
 
-**Criterios de aceptación:**
+Criterios de aceptación:
+- CA-11. Mientras se procesa la solicitud se muestra un estado de carga y se deshabilita el envío.
+- CA-12. Si la petición falla, se muestra un aviso de error separado del área del resumen.
+- CA-13. Al iniciar un nuevo intento se limpia el mensaje de error anterior.
 
-- **CA-RF02-01:** Dado un texto válido recibido en el endpoint del backend, cuando se procesa correctamente con la IA, entonces se devuelve un JSON con el resultado esperado y estado 200.
-- **CA-RF02-02:** Dado un fallo de comunicación con el proveedor de IA, cuando el backend detecta el error o timeout, entonces responde con un JSON de error controlado sin exponer trazas internas ni credenciales.
+### RF-06. Borrado del texto
 
-#### RF-03. Visualización del resultado y gestión de estados
+El usuario podrá borrar el contenido del área de texto mediante el botón correspondiente.
 
-| Campo                     | Descripción                                                                                                                                                                                                                  |
-| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Enunciado                 | El sistema deberá mostrar los diferentes estados de la interfaz de forma dinámica en la misma pantalla sin recargar la página                                                                                                |
-| Justificación             | Proporciona una experiencia de usuario fluida y transparente mientras la aplicación se comunica con el servidor y la IA                                                                                                      |
-| Actor                     | Usuario final / Frontend SPA (Vue)                                                                                                                                                                                           |
-| Prioridad                 | Alta                                                                                                                                                                                                                         |
-| Fuente                    | Desarrollador/es                                                                                                                                                                                                             |
-| Precondiciones            | El usuario ha enviado una solicitud a través del formulario                                                                                                                                                                  |
-| Entradas                  | Respuesta JSON obtenida desde el backend (éxito o error) o estado de carga pendiente                                                                                                                                         |
-| Comportamiento esperado   | El frontend bloquea temporalmente el envío duplicado y muestra un indicador visual de carga; al recibir la respuesta, muestra el resultado formateado limpiamente en la misma pantalla o el mensaje de error correspondiente |
-| Salidas y postcondiciones | El resultado o el error quedan visibles para el usuario en la interfaz, restaurando el formulario para nuevas consultas                                                                                                      |
-| Errores o alternativas    | Si la respuesta del servidor indica un error, el texto descriptivo del fallo se muestra destacado en la interfaz                                                                                                             |
-| Dependencias              | RF-01, RF-02                                                                                                                                                                                                                 |
+Criterios de aceptación:
+- CA-14. Al pulsar el botón de borrado, el área de texto queda vacía y el envío vuelve a estar deshabilitado.
 
-**Criterios de aceptación:**
+## 4. Contrato HTTP y errores
 
-- **CA-RF03-01:** Dada una petición en curso, cuando el usuario pulsa enviar, entonces el botón se deshabilita y aparece un indicador de carga visible.
-- **CA-RF03-02:** Dada una respuesta correcta del backend, cuando se procesa el JSON, entonces el resultado se renderiza de forma legible en la misma pantalla.
+Endpoint: `POST /api/resumir`
 
-#### RF-04. Validación de datos y control de límites
+Petición:
 
-| Campo                     | Descripción                                                                                                                                            |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Enunciado                 | El sistema deberá rechazar en el backend aquellas peticiones que superen los límites de longitud establecidos o contengan formatos de datos no válidos |
-| Justificación             | Garantiza la robustez del servidor frente a abusos, entradas excesivamente grandes o datos malformados                                                 |
-| Actor                     | Sistema backend (FastAPI)                                                                                                                              |
-| Prioridad                 | Media                                                                                                                                                  |
-| Fuente                    | Desarrollador/es                                                                                                                                       |
-| Precondiciones            | El backend cuenta con esquemas de validación definidos, como Pydantic                                                                                  |
-| Entradas                  | Datos JSON enviados desde el cliente con textos excesivamente largos o vacíos                                                                          |
-| Comportamiento esperado   | El backend comprueba la longitud y el tipo de los datos; si no cumplen los criterios, rechaza la operación inmediatamente sin llamar al servicio de IA |
-| Salidas y postcondiciones | Respuesta HTTP 422 (Unprocessable Entity) con un mensaje explicativo sobre el error de validación                                                      |
-| Errores o alternativas    | Si la entrada es válida, el flujo continúa normalmente hacia la IA                                                                                     |
-| Dependencias              | RF-02                                                                                                                                                  |
+```json
+{
+  "texto": "Texto que se desea resumir"
+}
+```
 
-**Criterios de aceptación:**
+Respuesta correcta, HTTP 200:
 
-- **CA-RF04-01:** Dado un texto que supera el límite máximo de caracteres permitido, cuando se envía al backend, entonces se rechaza con código 422 sin consumir créditos de la IA.
-- **CA-RF04-02:** Dado un formato JSON inválido o ausente en la petición, cuando el backend lo evalúa, entonces devuelve el error de validación correspondiente.
+```json
+{
+  "resumen": "Resumen generado por el proveedor"
+}
+```
 
-## 4. Requisitos no funcionales
+Todas las respuestas de error utilizan un objeto JSON con el campo `detail`, de tipo cadena.
 
-Describen propiedades de calidad y condiciones de funcionamiento. Incluye únicamente las categorías relevantes y define una comprobación objetiva para cada requisito.
+| Situación | HTTP | Ejemplo de respuesta |
+|---|---:|---|
+| Entrada vacía, solo espacios, tipo incorrecto o más de 5000 caracteres | 422 | `{"detail":"El campo 'texto' debe contener entre 1 y 5000 caracteres."}` |
+| Fallo del proveedor o respuesta no válida | 502 | `{"detail":"No se pudo obtener un resumen válido de OpenRouter."}` |
+| Tiempo de espera agotado | 504 | `{"detail":"El proveedor tardó demasiado en responder."}` |
 
-| ID     | Categoría                  | Requisito medible                                                                                                                             | Condiciones de comprobación                                                                                                  | Criterio de aceptación                                                                                                                     | Prioridad |
-| ------ | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | --------- |
-| RNF-01 | Rendimiento                | El backend deberá responder a la petición de procesamiento en un tiempo máximo de 10 segundos, dependiendo de la latencia del proveedor de IA | Entorno de pruebas local con un texto de prueba estándar de 500 palabras y conexión estable a Internet                       | El tiempo de respuesta de la API se mantiene por debajo de 10 segundos en al menos 9 de cada 10 solicitudes consecutivas                   | Alta      |
-| RNF-02 | Seguridad y privacidad     | La clave de la API de IA no debe exponerse al frontend y las entradas y resultados no deben persistirse                                       | Inspección de código fuente, variables de entorno y análisis de tráfico de red durante la ejecución                          | El frontend nunca recibe ni expone la clave de la IA, y ningún dato del formulario queda guardado en bases de datos o almacenamiento local | Alta      |
-| RNF-03 | Usabilidad y accesibilidad | El formulario y los mensajes deben permitir comprender cómo introducir los datos y qué ocurre al enviar la solicitud                          | Pruebas manuales en navegadores actuales reduciendo y ampliando la ventana de visualización                                  | El formulario se adapta correctamente a pantallas de escritorio y móviles, indicando visualmente cuándo hay una petición en curso          | Media     |
-| RNF-04 | Fiabilidad y recuperación  | El sistema debe gestionar los fallos del proveedor sin mostrar errores técnicos sensibles                                                     | Simulación de corte de conexión o error de respuesta del proveedor externo mediante pruebas automatizadas con mocks (pytest) | El sistema responde con el código de error HTTP acordado y un mensaje JSON legible, sin mostrar trazas internas ni caídas de servidor      | Alta      |
-| RNF-05 | Compatibilidad             | La aplicación web debe ser compatible con los estándares web modernos                                                                         | Ejecución de compilación y despliegue de prueba en el entorno de Vercel para frontend y backend                              | La SPA compila sin errores de TypeScript y el backend despliega la instancia de FastAPI procesando correctamente las peticiones            | Alta      |
+El formato de error evita devolver trazas internas, credenciales o detalles técnicos innecesarios. Los mensajes concretos pueden variar para errores controlados distintos, pero mantienen el campo `detail`.
 
-**Ejemplo orientativo — eliminar al completar:**
+## 5. Requisitos no funcionales
 
-> RNF-01: El sistema deberá mostrar los resultados de búsqueda en un máximo de 2 segundos para al menos el 95 % de 100 búsquedas de prueba, con 20 usuarios simultáneos y 10 000 registros, en el entorno de pruebas acordado y descrito en la sección 2.4.
-
-## 5. Datos y reglas de negocio
-
-### 5.1. Información que gestionará el sistema
-
-| ID     | Entidad o conjunto de datos        | Campos principales                                                                                 | Validaciones                                                           | Acceso y conservación                                                                                                                 |
-| ------ | ---------------------------------- | -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| DAT-00 | [Usuario, producto, reserva, etc.] | [Campos y tipos de datos]                                                                          | [Obligatoriedad, unicidad, rangos y relaciones]                        | [Quién puede consultar o modificar; cuándo se elimina]                                                                                |
-| DAT-01 | Petición de resumen (Transitoria)  | **texto (String):** Contenido a resumir                                                            | Obligatorio, no vacío; longitud máxima permitida (ej. 5000 caracteres) | Acceso exclusivo temporal en memoria durante el procesamiento de la request; no se conserva ni almacena en ningún soporte persistente |
-| DAT-02 | Petición de resumen (Transitoria)  | **resultado (String):** Texto procesado/resumen </br> **estado (Integer):** Código HTTP de control | Formato JSON válido estructurado por el backend                        | Se transmite inmediatamente al frontend para su visualización y se desecha de la memoria del servidor                                 |
-
-### 5.2. Reglas de negocio
-
-Las reglas de negocio expresan condiciones del ámbito del problema que el sistema debe respetar.
-
-| ID    | Regla                                                                                                                                                                                                              | Requisitos relacionados | Fuente               |
-| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- | -------------------- |
-| RN-00 | [Ejemplo: un usuario no puede tener más de tres reservas activas a la vez.]                                                                                                                                        | [RF-01, etc.]           | [Fuente de la regla] |
-| RN-01 | **No aplica:** El sistema no gestiona lógica de dominio ni reglas funcionales de negocio complejas; únicamente aplica validaciones técnicas de formato, longitud de entrada y control de llamadas a la API externa | RF-02, RF-04            | FUE-01               |
+| ID | Requisito |
+|---|---|
+| RNF-01 | La clave privada de OpenRouter no aparecerá en el código del frontend ni en las respuestas HTTP. |
+| RNF-02 | El backend aplicará un límite de 5000 caracteres a la entrada. |
+| RNF-03 | La interfaz indicará visualmente los estados de carga y error. |
+| RNF-04 | Las pruebas automatizadas del backend simularán las respuestas del proveedor y no dependerán de llamadas reales a OpenRouter. |
+| RNF-05 | El proyecto incluirá instrucciones para instalar dependencias y arrancar la aplicación desde un entorno nuevo. |
+| RNF-06 | La aplicación no persistirá textos ni resúmenes en una base de datos. |
 
 ## 6. Interfaces externas
 
 ### 6.1. Interfaz de usuario
 
-| ID    | Pantalla o interacción | Usuarios      | Información y acciones necesarias                                                                                                                                                | Requisitos relacionados |
-| ----- | ---------------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| IU-01 | [Nombre]               | [Roles]       | [Datos visibles, entradas, acciones y mensajes]                                                                                                                                  | [RF / RNF]              |
-| IU-01 | Vista única principal  | Usuario final | **Entrada:** Área de texto para introducir el contenido </br> **Acciones:** Botón de envío </br> **Salida:** Indicador de carga y bloque de visualización del resultado o error. | RF-01, RF-03            |
+La interfaz ofrece un área de texto, un contador de palabras y caracteres, un botón para borrar, una zona de arrastre de archivos y un botón para generar el resumen. Los resultados y errores se presentan en la misma pantalla.
 
-[Añade enlaces o imágenes de bocetos si ayudan a aclarar los requisitos. Indica si son orientativos o vinculantes.]
+### 6.2. Interfaz HTTP
 
-> FALTA POR DEFINIR EN CASO NECESARIO
+El frontend realiza una petición `POST` a `/api/resumir` con un cuerpo JSON que contiene `texto`. El backend devuelve el resultado o un error con el formato definido en la sección 4.
 
-### 6.2. Interfaces con otros sistemas o dispositivos
+### 6.3. Proveedor externo
 
-| ID     | Sistema o dispositivo externo  | Información intercambiada                                                                                                                            | Dirección y momento del intercambio                                                                | Formato o protocolo exigido                | Respuesta ante fallos                                                                                               |
-| ------ | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
-| INT-00 | [Nombre]                       | [Datos enviados o recibidos]                                                                                                                         | [Entrada / Salida / Ambas; cuándo]                                                                 | [Formato acordado o «Pendiente»]           | [Comportamiento esperado]                                                                                           |
-| INT-01 | API Externa de IA (OpenRouter) | **Envío:** Prompt estructurado con el texto a resumir y la configuración del modelo </br> **Recepción:** Respuesta del modelo con el texto procesado | Salida y Entrada se ejecutan de forma síncrona en cada petición válida enviada desde el formulario | HTTP / HTTPS y clave privada en el backend | Interceptación de excepciones, control de timeout e inversión de códigos de error HTTP controlados hacia el cliente |
+El backend envía una petición a la API de OpenRouter utilizando la clave configurada mediante la variable de entorno `OPENROUTER_API_KEY`. La conexión tiene límites de espera configurados en el cliente HTTP.
 
-> FALTA POR DEFINIR EN CASO NECESARIO
+## 7. Escenario principal
 
-## 7. Casos de uso o escenarios de usuario
+1. El usuario abre la aplicación.
+2. Introduce texto o carga un archivo permitido.
+3. La interfaz comprueba los límites de entrada.
+4. El usuario pulsa «Resumir Texto».
+5. El frontend muestra el estado de carga y envía la petición al backend.
+6. El backend valida la entrada y solicita el resumen a OpenRouter.
+7. El backend devuelve el resultado en JSON.
+8. El frontend muestra el resumen.
 
-Los escenarios muestran cómo se combinan los requisitos para realizar una tarea. Referencia sus identificadores para evitar duplicar especificaciones.
-
-### CU-00. [Nombre del caso de uso] - TEMPLATE PARA COPIA Y PEGA
-
-| Campo                   | Descripción                         |
-| ----------------------- | ----------------------------------- |
-| Objetivo                | [Qué quiere conseguir el actor]     |
-| Actor principal         | [Rol]                               |
-| Precondiciones          | [Estado necesario antes de empezar] |
-| Evento de inicio        | [Qué desencadena el escenario]      |
-| Requisitos relacionados | [RF-01, RNF-01, RN-01, etc.]        |
-
-**Flujo principal:**
-
-1. [El actor realiza una acción.]
-2. [El sistema responde.]
-3. [El actor o el sistema completa la tarea.]
-
-**Flujos alternativos y excepciones:**
-
-- **A1 — [Nombre]:** En el paso [n], si [condición], el sistema [respuesta] y el flujo [continúa en el paso… / termina].
-
-**Postcondiciones:** [Estado final cuando se completa la tarea y cuando falla, si corresponde.]
-
-### CU-01. Procesamiento y resumen de texto en la aplicación
-
-| Campo                   | Descripción                                                                                                                                    |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| Objetivo                | Introducir un texto en la interfaz web para obtener un resumen o procesamiento generado por la inteligencia artificial de forma rápida y clara |
-| Actor principal         | Usuario final                                                                                                                                  |
-| Precondiciones          | La aplicación web está abierta en el navegador, el backend se encuentra en ejecución y el servicio externo de IA está disponible               |
-| Evento de inicio        | El usuario accede a la única pantalla de la aplicación y pulsa el botón de envío tras introducir el texto en el formulario                     |
-| Requisitos relacionados | RF-01, RF-02, RF-03, RF-04, RNF-01, RNF-02, RNF-03, RNF-04                                                                                     |
-
-**Flujo principal:**
-
-1. El usuario introduce o pega el texto que desea procesar en el área de texto del formulario único.
-2. El usuario hace clic en el botón de envío de la solicitud.
-3. El frontend valida preliminarmente que el campo no esté vacío, deshabilita temporalmente el botón y muestra un indicador visual de carga.
-4. El frontend envía una petición HTTP POST con los datos JSON al backend en FastAPI.
-5. El backend valida la estructura y longitud de los datos de entrada.
-6. El backend realiza de forma síncrona una única llamada segura al proveedor de IA (OpenRouter) utilizando la clave privada configurada en el servidor.
-7. El proveedor de IA procesa la solicitud y devuelve el resultado generado al backend.
-8. El backend empaqueta el resultado en una respuesta JSON con código HTTP 200 y la envía al frontend.
-9. El frontend recibe la respuesta, oculta el indicador de carga y muestra el resultado procesado de forma limpia y legible en la misma pantalla.
-
-**Flujos alternativos y excepciones:**
-
-- **A1 — Entrada inválida o vacía:** En el paso 3 o 5, si el texto introducido está vacío o supera los límites permitidos, el sistema rechaza la petición, muestra una advertencia o error, y restaura el formulario sin realizar ninguna llamada a la IA.
-- **A2 — Fallo de comunicación o timeout del proveedor de IA:** En el paso 6 o 7, si el servicio externo de IA falla, experimenta un tiempo de espera excesivo o no responde, el backend intercepta la excepción y responde al cliente con un código de error controlado (ej. 502/504) y un mensaje JSON descriptivo. El frontend lo muestra en pantalla de forma limpia.
-- **A3 — Acceso no autorizado (App 2 con Clerk):** En el paso 4, si se trata de la App 2 y la petición no incluye un token de sesión válido de Clerk (o ha caducado), el backend rechaza la solicitud con un código HTTP 401, impidiendo el consumo de la IA y mostrando un aviso de autenticación en la interfaz.
-
-**Postcondiciones:**
-
-- **Éxito:** El resultado generado por la IA queda visible en la interfaz para el usuario, sin haberse almacenado ningún dato de forma persistente.
-- **Fallo:** Se muestra un mensaje de error comprensible en la pantalla y la aplicación permanece limpia, lista para que el usuario intente una nueva consulta.
-
-**Diagrama**
-
-```mermaid
-graph TD
-    User["Usuario final"] --> CU1["CU-01: Procesamiento y resumen de texto"]
-
-    subgraph Sistema ["Aplicación Web (Resumidor de textos)"]
-        CU1 --> RF1["RF-01: Introducción de texto"]
-        CU1 --> RF2["RF-02: Procesamiento en backend (FastAPI)"]
-        CU1 --> RF3["RF-03: Visualización dinámica en SPA"]
-        CU1 --> RF4["RF-04: Validación de datos"]
-    end
-
-    CU1 --> AI["API Externa (OpenRouter)"]
-```
+Si la entrada no es válida o falla el proveedor, se muestra un mensaje de error y la interfaz permanece operativa.
 
 ## 8. Verificación y trazabilidad
 
-Relaciona cada requisito con su origen y con una prueba, inspección o demostración que permita comprobarlo. Añade tantas filas como necesites para cubrir todos los requisitos funcionales y no funcionales.
+| Requisito | Evidencia de verificación |
+|---|---|
+| RF-01, RF-05, RF-06 | `app1/frontend/src/__tests__/App.spec.ts` |
+| RF-02 | Validación de archivo en `app1/frontend/src/App.vue`; suite frontend ejecutada |
+| RF-03, RF-04 | `app1/backend/tests/test_routes.py` y `app1/backend/tests/test_openrouter.py` |
+| RNF-01 | Inspección de configuración y código; verificación de despliegue pendiente |
+| RNF-04 | Pruebas de backend con mocks |
 
-| Requisito | Objetivo o necesidad de origen | Criterio de aceptación                                                  | ID de prueba | Método y datos de comprobación                                                                    | Resultado esperado                                                                              |
-| --------- | ------------------------------ | ----------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| RF-00     | [OBJ-01 / FUE-01]              | [CA-RF01-01]                                                            | [PR-00]      | [Pasos y datos concretos]                                                                         | [Resultado observable]                                                                          |
-| RNF-00    | [OBJ-01 / FUE-01]              | [Criterio de la sección 4]                                              | [PR-00]      | [Procedimiento y entorno]                                                                         | [Umbral exigido]                                                                                |
-| RF-01     | FUE-01 / OBJ-02                | CA-RF01-01                                                              | PR-01        | Introducir un texto válido en el campo del formulario de la SPA y pulsar el botón de envío        | Se genera correctamente la petición HTTP y se prepara el envío de datos                         |
-| RF-02     | FUE-01 / OBJ-03                | CA-RF02-01                                                              | PR-02        | Enviar una petición POST simulada con un JSON válido directamente al endpoint del backend         | El backend procesa la llamada con la IA y devuelve un JSON con código 200                       |
-| RF-03     | FUE-01 / OBJ-02                | CA-RF03-01                                                              | PR-03        | Enviar la solicitud desde la interfaz y comprobar el comportamiento visual de la pantalla         | El botón se deshabilita temporalmente y aparece el indicador de carga visible                   |
-| RF-04     | FUE-01 / OBJ-03                | CA-RF04-01                                                              | PR-04        | Enviar un texto que supere el límite de longitud o esté vacío al backend o formulario             | El sistema rechaza la operación inmediatamente (código 422 o aviso visual) sin llamar a la IA   |
-| RNF-01    | FUE-01 / OBJ-03                | El tiempo de respuesta se mantiene por debajo de 10s en el 90% de casos | PR-05        | Medir el tiempo de respuesta del backend con un texto estándar de 500 palabras y conexión estable | El sistema responde en un tiempo inferior a 10 segundos                                         |
-| RNF-02    | FUE-01 / OBJ-03                | Clave oculta y ausencia absoluta de persistencia                        | PR-06        | Inspección de código fuente, variables de entorno y análisis de tráfico de red / bases de datos   | El frontend no expone credenciales y no se almacena ningún dato de forma persistente            |
-| RNF-03    | FUE-01 / OBJ-02                | Adaptabilidad móvil/escritorio e indicadores visuales claros            | PR-07        | Pruebas manuales en navegadores actuales ajustando el tamaño de la ventana y ejecutando envíos    | El diseño se adapta correctamente y muestra con claridad los estados de carga o error           |
-| RNF-04    | FUE-01 / OBJ-05                | Respuesta controlada ante fallos o timeout de la IA                     | PR-08        | Ejecutar test unitario con pytest simulando un fallo externo mediante mocks                       | El backend captura la excepción y responde con el código HTTP de error y JSON descriptivo       |
-| RNF-05    | FUE-01 / OBJ-01                | Compilación correcta en TS y despliegue en Vercel                       | PR-09        | Ejecutar la compilación del proyecto y realizar un despliegue de prueba en Vercel                 | La SPA compila sin errores y el backend despliega la instancia de FastAPI procesando peticiones |
+Comando de pruebas del backend:
 
-## 9. Cuestiones pendientes
+```bash
+cd app1
+uv run pytest -q
+```
 
-| ID     | Duda o decisión pendiente                        | Requisitos afectados | Responsable de resolverla | Fecha prevista | Resolución                                                |
-| ------ | ------------------------------------------------ | -------------------- | ------------------------- | -------------- | --------------------------------------------------------- |
-| PEN-00 | [Qué falta por aclarar]                          | [IDs]                | [Persona o rol]           | [Fecha]        | [Pendiente / Decisión acordada y fecha]                   |
-| PEN-01 | ¿Qué necesidad concreta resolverá la aplicación? | RF-01                | Desarrollador/es          | 08/10/2026     | Resumir textos de forma rápida y automatizada mediante IA |
-| PEN-02 | ¿Qué campos tendrá el formulario?                | RF-01, IU-01         | Desarrollador/es          | [Fecha]        | [Pendiente]                                               |
-| PEN-03 | ¿Qué proveedor y modelo de IA utilizaremos?      | RF-02, INT-01        | Desarrollador/es          | [Fecha]        | [Pendiente]                                               |
-| PEN-04 | ¿Qué límite de entrada y timeout estableceremos? | RNF-01, RF-04        | Desarrollador/es          | [Fecha]        | [Pendiente]                                               |
-| PEN-05 | ¿Qué esquema JSON devolverá el backend?          | RF-02                | Desarrollador/es          | [Fecha]        | [Pendiente]                                               |
-| PEN-06 | ¿Qué condiciones de uso vamos a considerar?      | RNF-02               | Desarrollador/es          | [Fecha]        | [Pendiente]                                               |
+El 02/11/2026 se ejecutaron 18 pruebas del backend desde `app1/`. También pasaron 8 pruebas de Vitest y la compilación del frontend desde `app1/frontend`.
 
-## 10. Revisión y conformidad
+## 9. Pendientes de validación
 
-### 10.1. Lista de comprobación antes de entregar
+- Verificar el flujo completo en la URL publicada de Vercel.
+- Revisar los criterios de aceptación con el equipo y el docente.
+- Adjuntar evidencias de despliegue y pruebas manuales.
 
-- [ ] El problema, los objetivos y los límites del sistema están definidos.
-- [ ] Se identifican los usuarios y sus permisos.
-- [ ] Cada requisito tiene un identificador único.
-- [ ] Los requisitos son claros, necesarios y no se contradicen.
-- [ ] Cada requisito funcional expresa una obligación y tiene criterios de aceptación verificables.
-- [ ] Se contemplan los errores y los casos límite relevantes.
-- [ ] Los requisitos no funcionales incluyen medidas y condiciones de comprobación.
-- [ ] Los datos, las reglas de negocio y las interfaces están descritos.
-- [ ] Todos los requisitos están relacionados con su origen y su comprobación.
-- [ ] Las dudas pendientes están identificadas y tienen un responsable.
-- [ ] Se han sustituido los marcadores, eliminado los ejemplos y justificado los apartados que no aplican.
-- [ ] Se han actualizado la fecha, la versión y el historial de cambios.
+## 10. Revisión
 
-### 10.2. Registro de revisión
-
-| Revisor y rol     | Versión revisada | Fecha      | Resultado                     | Observaciones                                    |
-| ----------------- | ---------------- | ---------- | ----------------------------- | ------------------------------------------------ |
-| [Nombre y rol]    | [Versión]        | [Fecha]    | [Conforme / Requiere cambios] | [Comentarios]                                    |
-| Francisco & Mario | 0.1              | 08/10/2026 | Requiere cambios              | Revisión inicial de requisitos y estructura base |
-| Francisco & Mario | 0.1              | 13/10/2026 | Conforme                      | Primera versión de ERS completada                |
-
-## Anexos
-
-[Incluye, si procede, diagramas, bocetos, ejemplos de datos, entrevistas u otro material que ayude a comprender los requisitos. Referencia cada anexo desde la sección correspondiente.]
+Esta versión describe el comportamiento observado en el código revisado el 02/11/2026. La suite backend se ejecutó con 18 pruebas superadas, la suite frontend con 8 pruebas superadas y la compilación terminó correctamente. La verificación del despliegue sigue pendiente.
