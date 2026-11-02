@@ -12,6 +12,7 @@ const loading = ref(false)
 const summary = ref<string | null>(null)
 const isDragging = ref(false)
 const fileError = ref('')
+const reqError = ref<string | null>(null)
 
 const words = computed(() => {
   const trimmed = text.value.trim()
@@ -76,22 +77,20 @@ async function getSummary() {
   }
 }
 </script>
-<!-- Fondo #17212B · Panel #263746 · Acento #67C4D0 · Texto #E8F1F5 -->
+
 <template>
-  <div class="min-h-screen bg-[#17212B] flex flex-col items-center py-8 gap-10">
+  <div class="min-h-screen bg-bg-primary flex flex-col items-center py-8 gap-10">
     <header>
-      <h1 class="text-[#67C4D0] text-2xl font-semibold mb-2">RESUMIDOR AUTOMÁTICO</h1>
-      <h3 class="text-[#e8f1f5c5]">Convierte textos extensos en ideas claras.</h3>
+      <h1 class="text-primary text-2xl font-semibold mb-2">RESUMIDOR AUTOMÁTICO</h1>
+      <h3 class="text-on-primary/80">Convierte textos extensos en ideas claras.</h3>
     </header>
 
     <div class="w-full max-w-3xl flex-col justify-center items-center px-10 md:px-0">
       <div class="flex justify-between pb-4 px-1">
         <div class="flex gap-2 items-center">
           <span
-            class="flex justify-center items-center text-[#67C4D0] font-semibold text-sm px-4 py-0.5 tabular-nums"
-            >01</span
-          >
-          <p class="text-[#e8f1f5]">Tu texto</p>
+            class="flex justify-center items-center text-primary font-semibold text-sm px-4 py-0.5 tabular-nums">01</span>
+          <p class="text-on-primary">Tu texto</p>
         </div>
 
         <button
@@ -149,38 +148,40 @@ async function getSummary() {
           :disabled="!text || loading"
         >
           <span>{{ loading ? 'Resumiendo...' : 'Resumir Texto' }}</span>
-          <div
-            v-if="loading"
-            class="size-5 animate-spin rounded-full border-2 border-[#e8f1f5]/30 border-t-[#e8f1f5]"
-            role="status"
-            aria-label="Cargando"
-          ></div>
+          <div v-if="loading" class="size-5 animate-spin rounded-full border-2 border-on-primary/30 border-t-on-primary"
+            role="status" aria-label="Cargando"></div>
         </button>
       </form>
 
       <section aria-live="polite">
         <div class="flex justify-evenly items-center my-8">
           <div class="flex flex-1 justify-evenly items-center gap-2">
-            <div class="flex-1 border-t border-[#67C4D0]/50"></div>
+            <div class="flex-1 border-t border-primary/50"></div>
 
-            <MoveDown class="text-[#67C4D0]" />
+            <MoveDown class="text-primary" />
           </div>
 
-          <p class="flex-1 text-sm text-[#e8f1f5] text-center">Tu resumen aparecerá aquí debajo</p>
+          <p class="flex-1 text-sm text-on-primary text-center">Tu resumen aparecerá aquí debajo</p>
 
           <div class="flex flex-1 justify-evenly items-center gap-2">
-            <MoveDown class="text-[#67C4D0]" />
+            <MoveDown class="text-primary" />
 
-            <div class="flex-1 border-t border-[#67C4D0]/50"></div>
+            <div class="flex-1 border-t border-primary/50"></div>
           </div>
         </div>
         <!-- <h2 class="text-sm font-semibold text-[#e8f1f5] mb-3">Resumen</h2> -->
 
-        <p v-if="loading" class="text-sm font-semibold text-[#e8f1f5]/60">Generando resumen…</p>
+        <p v-if="loading" class="text-sm font-semibold text-on-primary/60">Generando resumen…</p>
 
-        <div v-else-if="summary" class="bg-[#263746] border border-[#e8f1f5]/50 rounded-lg p-4">
-          <p class="text-[#e8f1f5] leading-relaxed whitespace-pre-line">
+        <div v-else-if="summary" class="bg-bg-secondary border border-on-primary/50 rounded-lg p-4">
+          <p class="text-on-primary leading-relaxed whitespace-pre-line">
             {{ summary }}
+          </p>
+        </div>
+
+        <div v-if="reqError" class="bg-[#ff7979]/20 border border-[#ff9292] rounded-lg p-4">
+          <p class="text-[#cc4f4f] font-semibold leading-relaxed whitespace-pre-line">
+            {{ reqError }}
           </p>
         </div>
       </section>

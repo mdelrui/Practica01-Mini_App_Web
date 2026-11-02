@@ -6,8 +6,15 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi",
+    "httpx",
     "pathlib",
+    "pydantic",
+    "pytest",
     "python-dotenv",
     "requests",
     "uvicorn",
 ]
+
+
+[tool.pytest.ini_options]
+pythonpath = ["app1"]
