@@ -1,22 +1,33 @@
 services:
-    backend:
-        build:
-            context: ..
-            dockerfile: infra/Dockerfile.backend
-        env_file:
-            - .env
-        expose:
-            - "8000"
-        restart: unless-stopped
+  backend:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.backend
+    env_file:
+      - .env
+    expose:
+      - "8000"
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
-    frontend:
-        build:
-            context: ..
-            dockerfile: infra/Dockerfile.frontend
-            args:
-                VITE_CLERK_PUBLISHABLE_KEY: ${VITE_CLERK_PUBLISHABLE_KEY:?Define VITE_CLERK_PUBLISHABLE_KEY en infra/.env}
-        ports:
-            - "8080:80"
-        depends_on:
-            - backend
-        restart: unless-stopped
+  frontend:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.frontend
+      args:
+        VITE_CLERK_PUBLISHABLE_KEY: ${VITE_CLERK_PUBLISHABLE_KEY:?Define VITE_CLERK_PUBLISHABLE_KEY en infra/.env}
+    ports:
+      - "127.0.0.1:8080:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped

@@ -17,7 +17,7 @@ def resumir_texto(entrada: TextoEntrada):
 
     # Comprobamos que el texto no esté vacío
     if not texto_limpio:
-        raise HTTPException(status_code=400, detail="Escribe un texto para resumir.")
+        raise HTTPException(status_code=422, detail="Escribe un texto para resumir.")
     try:
         resumen = obtener_resumen(texto_limpio)
     except TimeoutError as error:
