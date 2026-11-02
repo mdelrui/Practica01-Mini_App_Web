@@ -25,7 +25,7 @@ def test_entrada_solo_espacios_falla():
     with pytest.raises(HTTPException) as fallo:
         resumir_texto(entrada)
 
-    assert fallo.value.status_code == 400
+    assert fallo.value.status_code == 422
     assert "Escribe un texto" in fallo.value.detail
 
 
@@ -72,3 +72,39 @@ def test_timeout_del_proveedor(monkeypatch):
 
     assert fallo.value.status_code == 504
     assert "tardó demasiado" in fallo.value.detail
+
+
+def test_contrato_http_error_proveedor(monkeypatch):
+    from fastapi.testclient import TestClient
+    from ...main import app
+    from backend import routes as rutas_api
+
+    monkeypatch.setattr(rutas_api, "obtener_resumen", lambda texto: (_ for _ in ()).throw(RuntimeError("fallo")))
+    respuesta = TestClient(app).post("/api/resumir", json={"texto": "Texto válido"})
+
+    assert respuesta.status_code == 502
+    assert respuesta.json() == {"detail": "fallo"}
+
+
+def test_contrato_http_timeout(monkeypatch):
+    from fastapi.testclient import TestClient
+    from ...main import app
+    from backend import routes as rutas_api
+
+    monkeypatch.setattr(rutas_api, "obtener_resumen", lambda texto: (_ for _ in ()).throw(TimeoutError("timeout")))
+    respuesta = TestClient(app).post("/api/resumir", json={"texto": "Texto válido"})
+
+    assert respuesta.status_code == 504
+    assert respuesta.json() == {"detail": "timeout"}
+
+
+def test_contrato_http_validacion(monkeypatch):
+    from fastapi.testclient import TestClient
+    from ...main import app
+
+    respuesta = TestClient(app).post("/api/resumir", json={"texto": ""})
+
+    assert respuesta.status_code == 422
+    assert respuesta.json() == {
+        "detail": "El campo 'texto' debe contener entre 1 y 5000 caracteres."
+    }

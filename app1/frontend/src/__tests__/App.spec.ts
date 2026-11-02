@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
 import App from '../App.vue'
 import { resumirTexto } from '../services/resumen'
 
@@ -57,7 +56,6 @@ describe('Aplicación', () => {
     await wrapper.find('textarea').setValue('Un texto largo para resumir')
     await wrapper.find('form').trigger('submit')
     await flushPromises()
-    await nextTick()
 
     expect(wrapper.text()).toContain('Este es el resumen')
     expect(resumirTextoMock).toHaveBeenCalledWith('Un texto largo para resumir')
@@ -70,8 +68,31 @@ describe('Aplicación', () => {
     await wrapper.find('textarea').setValue('Texto para probar el error')
     await wrapper.find('form').trigger('submit')
     await flushPromises()
-    await nextTick()
 
     expect(wrapper.text()).toContain('No se pudo generar el resumen')
+    expect(wrapper.find('[role="alert"]').exists()).toBe(true)
+  })
+
+  it('muestra el estado de carga mientras espera la respuesta', async () => {
+    let resolver!: (valor: string) => void
+    resumirTextoMock.mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolver = resolve
+      }),
+    )
+    const wrapper = mount(App)
+
+    await wrapper.find('textarea').setValue('Texto para resumir')
+    await wrapper.find('form').trigger('submit')
+
+    expect(wrapper.text()).toContain('Resumiendo...')
+    expect(wrapper.find('[role="status"]').exists()).toBe(true)
+    expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeDefined()
+
+    resolver('Resumen terminado')
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Resumen terminado')
+    expect(wrapper.find('[role="status"]').exists()).toBe(false)
   })
 })
