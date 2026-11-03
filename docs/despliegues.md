@@ -12,9 +12,7 @@ Para este caso se ha conectado Vercel con el repositorio de GitHub. El despliegu
 
 ### 2.1. Objetivo
 
-Este documento recoge los procedimientos necesarios para ejecutar y desplegar la aplicación 2, desarrollada con Vue 3 y FastAPI, tanto en local mediante Docker como en los servicios de despliegue utilizados en el proyecto.
-
-La aplicación utiliza Clerk para la autenticación de usuarios y OpenRouter para generar los resúmenes mediante un modelo de IA.
+Este documento recoge los procedimientos necesarios para ejecutar y desplegar la aplicación 2 tanto en local mediante Docker como en los servicios de despliegue utilizados en el proyecto.
 
 ### 2.2. Entornos de despliegue
 
@@ -87,8 +85,6 @@ Las variables utilizadas incluyen:
 | `CLERK_JWKS_URL`             | URL utilizada para obtener las claves públicas de verificación de Clerk. |
 | `CLERK_JWKS_TIMEOUT`         | Tiempo límite de espera para obtener las claves de verificación.         |
 | `CORS_ORIGINS`               | Orígenes autorizados para las peticiones al backend.                     |
-
-Los valores concretos deben corresponder a la configuración del código y al entorno de despliegue. Las claves privadas y los tokens no deben incluirse en el repositorio ni en la documentación.
 
 #### 2.3.4. Construcción y ejecución
 
@@ -401,7 +397,6 @@ Incluir o enlazar las siguientes evidencias:
 - [Ver la URL de la app 2 del punto 1](#1-despliegue-de-ambas-aplicaciones-en-vercel)
 - [URL HTTPS de la aplicación 2 en EC2]
 - [Capturas de las pruebas de autenticación y generación de resúmenes]
-
 
 ## 3. Estado de verificación de los despliegues
 
