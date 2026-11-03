@@ -156,8 +156,6 @@ La configuración Docker Compose está preparada para construir y ejecutar ambos
 
 El mapeo de Nginx se limita a `127.0.0.1:8080`, de modo que un proxy HTTPS del host puede publicarlo sin exponer el puerto de aplicación directamente.
 
-![Contenedor Docker en funcionamiento en local](./evidencias/contenedor_docker.PNG)
-
 ### 2.4. Referencia del despliegue anterior de la aplicación 2 en Vercel
 
 Esta sección conserva los pasos de la configuración anterior de App 2 en Vercel. El despliegue que queda por completar en esta práctica es App 2 en AWS EC2, documentado en las secciones anteriores y pendiente de evidencias.
