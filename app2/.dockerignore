@@ -1,0 +1,13 @@
+.github/
+.specify/
+specs/
+**/node_modules/
+**/__pycache__/
+**/.venv/
+**/venv/
+**/dist/
+**/coverage/
+**/.env
+**/.env.*
+!**/.env.example
+*.log
