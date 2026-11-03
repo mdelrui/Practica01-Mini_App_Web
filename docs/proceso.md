@@ -2,21 +2,6 @@
 
 Este documento sirve como registro oficial de bitácora para el equipo de desarrollo. Su propósito es documentar de forma trazable las decisiones técnicas clave tomadas durante el diseño y la implementación, así como los problemas imprevistos y su correspondiente resolución conforme vayan ocurriendo.
 
----
-
-## Estructura de Registro para Nuevas Entradas
-
-Cada decisión o incidencia significativa se registrará siguiendo esta estructura básica:
-
-> ## [FECHA] - [Título descriptivo de la decisión o incidencia]
->
-> - **Tipo:** [Decisión de Diseño / Incidencia o Problema]
-> - **Contexto / Problema:** Descripción breve de la situación encontrada.
-> - **Decisión / Solución adoptada:** Qué enfoque se seleccionó.
-> - **Evidencia visual (Opcional):** [Captura de pantalla explicada mediante texto complementario].
-
----
-
 ## Historial de Decisiones y Problemas
 
 ## 18/10/2026 - Base arquitectónica y alcance de la App 2
@@ -53,3 +38,10 @@ Cada decisión o incidencia significativa se registrará siguiendo esta estructu
 - **Contexto / Problema:** El proyecto necesitaba dejar un registro ordenado del trabajo realizado, su alcance y las decisiones esenciales para futuras revisiones o entregas. No se buscaba documentar cada línea de código, sino los puntos clave que afectaban al diseño, la seguridad y la funcionalidad.
 - **Decisión / Solución adoptada:** Se consolidó un registro de proceso centrado en cuatro decisiones principales: base del producto, autenticación con Clerk, nuevas features de resumen y validación final. Esta bitácora deja constancia de qué se tomó como criterio de diseño y qué se confirmó con evidencia, sin incluir detalles no esenciales.
 - **Evidencia visual (Opcional):** La documentación del repositorio (ERS App 1, ERS App 2, comparativa, despliegues y pruebas) sirve como soporte de estas decisiones y consolida la trazabilidad del proyecto.
+
+## 03/11/2026 - Validación del estado real y revisión documental
+
+- **Tipo:** Incidencia o Problema
+- **Contexto / Problema:** Durante la revisión del proyecto hubo un problema de comprobación del input del usuario. La documentación establecía la comprobación de un input vacío antes de llamar al backend, pero la aplicación no comprobaba si el texto insertado estaba formado únicamente por espacios en blanco y/o saltos de línea.
+- **Decisión / Solución adoptada:** Se revisó la implementación existente y la cobertura de pruebas del frontend. Se actualizó la función de llamada al backend desde el frontend para incluir esta situación y mostrar el mensaje correspondiente de error. Además se creó y documentó su correspondiente test en la documentación de la aplicación.
+- **Evidencia visual (Opcional):** La documentación de pruebas incorpora la nueva prueba correspondiente a esta situación.

@@ -629,10 +629,11 @@ classDiagram
 
 ### 11.2. Registro de revisión
 
-| Revisor y rol     | Versión revisada | Fecha      | Resultado | Observaciones                                                        |
-| ----------------- | ---------------- | ---------- | --------- | -------------------------------------------------------------------- |
-| Francisco & Mario | 0.1              | 18/10/2026 | Conforme  | Pendiente de revisión cruzada de la ERS de la App 2                  |
-| Francisco & Mario | 0.2              | 21/10/2026 | Conforme  | Revisión de la implementación de Clerk                               |
-| Francisco & Mario | 0.3              | 28/10/2026 | Conforme  | Implementación de nuevas features de resumen y su comprobación       |
-| Francisco & Mario | 0.4              | 28/10/2026 | Conforme  | Ajuste del documento para reflejar el estado actual de la aplicación |
-| Francisco & Mario | 1.0              | 31/10/2026 | Conforme  | Ajuste del documento para reflejar tests y algunos cambios pequeños  |
+| Revisor y rol     | Versión revisada | Fecha      | Resultado | Observaciones                                                                        |
+| ----------------- | ---------------- | ---------- | --------- | ------------------------------------------------------------------------------------ |
+| Francisco & Mario | 0.1              | 18/10/2026 | Conforme  | Pendiente de revisión cruzada de la ERS de la App 2                                  |
+| Francisco & Mario | 0.2              | 21/10/2026 | Conforme  | Revisión de la implementación de Clerk                                               |
+| Francisco & Mario | 0.3              | 28/10/2026 | Conforme  | Implementación de nuevas features de resumen y su comprobación                       |
+| Francisco & Mario | 0.4              | 28/10/2026 | Conforme  | Ajuste del documento para reflejar el estado actual de la aplicación                 |
+| Francisco & Mario | 0.5              | 31/10/2026 | Conforme  | Ajuste del documento para reflejar tests y algunos cambios pequeños                  |
+| Francisco & Mario | 1.0              | 03/11/2026 | Conforme  | Añadidos apartados para mostrar diagramas de clase tanto de frontend como de backend |
