@@ -9,8 +9,8 @@
 | Curso y grupo       | Aprendizaje Automático: Gestión de Datos y Entrenamiento - Grupo 4         |
 | Asignatura o módulo | Desarrollo de Componentes Software para Sistemas de Aprendizaje Automático |
 | Docente             | Francisco Manuel Matías Prados                                             |
-| Fecha               | 18/10/2026                                                                 |
-| Versión             | 0.2                                                                        |
+| Fecha               | 31/10/2026                                                                 |
+| Versión             | 1.0                                                                        |
 | Estado              | Implementado y validado con la app actual                                  |
 
 ### Historial de cambios
@@ -20,7 +20,8 @@
 | 0.1     | 18/10/2026 | Equipo   | Primera versión de la ERS de la App 2, derivada de la ERS de la App 1 (versión 0.1, 08/10/2026). Se añaden funcionalidades extra y autenticación con Clerk                  |
 | 0.2     | 21/10/2026 | Equipo   | Revisión de la implementación de Clerk: validación del flujo de autenticación, comprobación del token en el backend y ajuste del acceso antes del envío del resumen         |
 | 0.3     | 28/10/2026 | Equipo   | Implementación de nuevas features de resumen: control de longitud, extracción de ideas principales, glosario, copia y exportación del resultado en la interfaz              |
-| 1.0     | 28/10/2026 | Equipo   | Ajuste del documento para reflejar el estado actual de la aplicación: requisitos ya implementados, validación por pruebas y eliminación del contenido de plantilla residual |
+| 0.4     | 28/10/2026 | Equipo   | Ajuste del documento para reflejar el estado actual de la aplicación: requisitos ya implementados, validación por pruebas y eliminación del contenido de plantilla residual |
+| 1.0     | 31/10/2026 | Equipo   | Ajuste del documento para reflejar la modificación y añadido de tests a App 2 y algunos cambios mínimos a la documentación                                                  |
 
 ## 1. Introducción
 
@@ -106,35 +107,7 @@ Este proyecto es una aplicación web que posee una arquitectura limpia y separad
 
 La App 2 es un sistema nuevo, desarrollado desde cero con Spec Kit, que ofrece la misma función base que la App 1 (resumir textos) y la amplía con opciones de procesamiento, acciones sobre el resultado y autenticación. El navegador se conecta con la API en el backend; la identidad del usuario la gestiona Clerk como servicio externo, distinto del proveedor de IA.
 
-```mermaid
-graph TD
-    %% Estilos
-    classDef user fill:#fff,stroke:#333,stroke-width:2px,color:#000;
-    classDef system fill:#fff,stroke:#333,stroke-width:2px,color:#000;
-    classDef external fill:#fff,stroke:#333,stroke-width:2px,color:#000;
-
-    %% Nodos
-    User([Usuario / Navegador Web]):::user
-
-    subgraph App ["Sistema Web (App 2)"]
-        Frontend[Frontend Vue 3 + SDK Clerk]:::system
-        Backend[Backend FastAPI]:::system
-    end
-
-    Clerk[Clerk - Servicio de identidad]:::external
-    OpenRouter[API Externa OpenRouter / Modelos IA]:::external
-
-    %% Relaciones
-    User -->|Interactúa / Envía texto y opciones| Frontend
-    Frontend -->|Inicio de sesión| Clerk
-    Clerk -->|Token de sesión| Frontend
-    Frontend -->|POST HTTP + Authorization Bearer| Backend
-    Backend -->|Verifica firma y caducidad del token| Clerk
-    Backend -->|Consulta con API Key solo si el token es válido| OpenRouter
-    OpenRouter -->|Devuelve respuesta procesada| Backend
-    Backend -->|Responde al cliente| Frontend
-    Frontend -->|Muestra resultados, copiar y exportar| User
-```
+![Diagrama de flujo](./diagramas/flujo.png)
 
 ### 2.2. Personas interesadas y tipos de usuario
 
@@ -181,15 +154,15 @@ El sistema centra su funcionamiento en una única pantalla. Sus capacidades prin
 
 ### 2.6. Suposiciones y dependencias
 
-| ID     | Tipo        | Descripción                                                                                                                                                                               | Consecuencia si no se cumple                                                                                                                      |
-| ------ | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| SUP-01 | Suposición  | La API de OpenRouter mantendrá un formato de respuesta estable y compatible durante el ciclo de desarrollo de la práctica                                                                 | Si el proveedor modifica su estructura de manera imprevisible, el backend fallará al deserializar la respuesta y requerirá ajustes en el contrato |
-| SUP-02 | Suposición  | El modelo de IA elegido es capaz de devolver, en una sola respuesta, el resumen, las ideas principales y el glosario con un formato que el backend pueda validar (Pendiente de confirmar) | Si el modelo no respeta el formato, el backend devolverá un error controlado o habrá que simplificar el contrato                                  |
-| DEP-01 | Dependencia | Disponibilidad continua de conexión a Internet y créditos activos (o uso de modelos gratuitos) en la cuenta de OpenRouter para poder realizar las llamadas de prueba a la IA              | Si el servicio externo se cae o se agotan los créditos, la aplicación no podrá procesar ninguna solicitud                                         |
-| DEP-02 | Dependencia | Funcionamiento correcto de Vercel como plataforma de despliegue serverless tanto para el frontend como para el backend                                                                    | Si surgen incompatibilidades de ejecución en servidor, se deberá reconfigurar el despliegue o buscar alternativas compatibles                     |
-| DEP-03 | Dependencia | Disponibilidad del servicio Clerk y configuración correcta de sus orígenes/URLs de desarrollo y despliegue                                                                                | Si Clerk no está disponible, ningún usuario podrá autenticarse y el backend rechazará todas las peticiones de procesamiento                       |
-| DEP-04 | Dependencia | Acceso a una cuenta de AWS (región y presupuesto confirmados con el docente) y a un nombre DNS para publicar la App 2 en EC2 con HTTPS (Pendiente)                                        | Sin HTTPS no puede probarse Clerk de forma segura en EC2 y el despliegue final no se considera completo                                           |
-| DEP-05 | Dependencia | Disponibilidad de un agente de IA compatible con Spec Kit y de sus créditos de uso                                                                                                        | Si no está disponible, se retrasa la generación de especificación, plan y tareas de la App 2                                                      |
+| ID     | Tipo        | Descripción                                                                                                                                                                  | Consecuencia si no se cumple                                                                                                                      |
+| ------ | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SUP-01 | Suposición  | La API de OpenRouter mantendrá un formato de respuesta estable y compatible durante el ciclo de desarrollo de la práctica                                                    | Si el proveedor modifica su estructura de manera imprevisible, el backend fallará al deserializar la respuesta y requerirá ajustes en el contrato |
+| SUP-02 | Suposición  | El modelo de IA elegido es capaz de devolver, en una sola respuesta, el resumen, las ideas principales y el glosario con un formato que el backend pueda validar             | Si el modelo no respeta el formato, el backend devolverá un error controlado o habrá que simplificar el contrato                                  |
+| DEP-01 | Dependencia | Disponibilidad continua de conexión a Internet y créditos activos (o uso de modelos gratuitos) en la cuenta de OpenRouter para poder realizar las llamadas de prueba a la IA | Si el servicio externo se cae o se agotan los créditos, la aplicación no podrá procesar ninguna solicitud                                         |
+| DEP-02 | Dependencia | Funcionamiento correcto de Vercel como plataforma de despliegue serverless tanto para el frontend como para el backend                                                       | Si surgen incompatibilidades de ejecución en servidor, se deberá reconfigurar el despliegue o buscar alternativas compatibles                     |
+| DEP-03 | Dependencia | Disponibilidad del servicio Clerk y configuración correcta de sus orígenes/URLs de desarrollo y despliegue                                                                   | Si Clerk no está disponible, ningún usuario podrá autenticarse y el backend rechazará todas las peticiones de procesamiento                       |
+| DEP-04 | Dependencia | Acceso a una cuenta de AWS (región y presupuesto confirmados con el docente) y a un nombre DNS para publicar la App 2 en EC2 con HTTPS                                       | Sin HTTPS no puede probarse Clerk de forma segura en EC2 y el despliegue final no se considera completo                                           |
+| DEP-05 | Dependencia | Disponibilidad de un agente de IA compatible con Spec Kit y de sus créditos de uso                                                                                           | Si no está disponible, se retrasa la generación de especificación, plan y tareas de la App 2                                                      |
 
 ## 3. Requisitos funcionales
 
@@ -198,8 +171,6 @@ Los requisitos funcionales describen las acciones y comportamientos que debe ofr
 **Prioridades:** Alta = imprescindible para la versión prevista; Media = importante, pero puede aplazarse mediante acuerdo; Baja = deseable.
 
 ### 3.1. Catálogo de requisitos funcionales
-
-La aplicación actual ya implementa la base funcional descrita en esta ERS y la cobertura de pruebas del backend y del frontend confirma la ruta principal de autenticación, procesamiento y salida del resultado.
 
 | ID    | Nombre                                            | Prioridad | Fuente           | Estado   |
 | ----- | ------------------------------------------------- | --------- | ---------------- | -------- |
@@ -225,8 +196,8 @@ La aplicación actual ya implementa la base funcional descrita en esta ERS y la 
 | Actor                     | Usuario final                                                                                                                                                                                                                                                                                                                  |
 | Prioridad                 | Alta                                                                                                                                                                                                                                                                                                                           |
 | Fuente                    | Desarrollador/es                                                                                                                                                                                                                                                                                                               |
-| Precondiciones            | La aplicación web está abierta en el navegador y el formulario se encuentra disponible                                                                                                                                                                                                                                         |
-| Entradas                  | Texto libre introducido por el usuario en el área de texto del formulario, o contenido de un archivo .txt/.md arrastrado y soltado o seleccionado en el formulario                                                                                                                                                             |
+| Precondiciones            | La aplicación web está abierta en el navegador, el usuario tiene una sesión iniciada y el formulario se encuentra disponible                                                                                                                                                                                                   |
+| Entradas                  | Texto libre introducido por el usuario en el área de texto del formulario, o contenido de un archivo .txt/.md arrastrado y soltado en el formulario                                                                                                                                                                            |
 | Comportamiento esperado   | El sistema habilita un campo de texto interactivo; si el usuario carga un archivo .txt/.md, lee su contenido en el navegador y lo vuelca en el campo de texto sin enviarlo ni almacenarlo; valida de forma preliminar que el texto no esté vacío ni supere un máximo establecido y permite al usuario pulsar el botón de envío |
 | Salidas y postcondiciones | Los datos del formulario quedan preparados para ser enviados al backend mediante una petición HTTP POST                                                                                                                                                                                                                        |
 | Errores o alternativas    | Si se detecta algún tipo de error en el campo de texto o el archivo no es .txt/.md o supera el límite, el sistema muestra un aviso visual impidiendo la solicitud                                                                                                                                                              |
@@ -235,8 +206,8 @@ La aplicación actual ya implementa la base funcional descrita en esta ERS y la 
 **Criterios de aceptación:**
 
 - **CA-RF01-01:** Dado el formulario vacío, cuando el usuario introduce un texto válido y pulsa enviar, entonces se genera la petición HTTP hacia el servidor.
-- **CA-RF01-02:** Dado el formulario vacío, cuando el usuario intenta enviar sin introducir contenido o contenido no permitido, entonces el sistema muestra una advertencia y no realiza la petición.
-- **CA-RF01-03:** Dado el formulario vacío, cuando el usuario arrastra un archivo .txt o .md válido, entonces su contenido aparece en el área de texto y no se realiza ninguna petición al servidor hasta pulsar enviar.
+- **CA-RF01-02:** Dado el formulario vacío, cuando el usuario intenta enviar sin introducir contenido o contenido no permitido, entonces el sistema no habilita el botón de envío y no se puede realizar una petición.
+- **CA-RF01-03:** Dado el formulario vacío, cuando el usuario arrastra un archivo .txt o .md válido, entonces su contenido aparece en el área de texto hasta el límite permitido y no se realiza ninguna petición al servidor hasta pulsar enviar.
 - **CA-RF01-04:** Dado el formulario vacío, cuando el usuario arrastra un archivo con otra extensión, entonces el sistema muestra un aviso y no modifica el área de texto.
 
 #### RF-02. Procesamiento de solicitudes en el backend
@@ -293,7 +264,7 @@ La aplicación actual ya implementa la base funcional descrita en esta ERS y la 
 | Prioridad                 | Media                                                                                                                                                                                           |
 | Fuente                    | Desarrollador/es                                                                                                                                                                                |
 | Precondiciones            | El backend cuenta con esquemas de validación definidos, como Pydantic                                                                                                                           |
-| Entradas                  | Datos JSON enviados desde el cliente con textos excesivamente largos o vacíos, o con una longitud de resumen distinta de las permitidas (breve, medio, extenso)                                 |
+| Entradas                  | Datos JSON enviados desde el cliente con textos excesivamente largos o vacíos, o con una longitud de resumen distinta de las permitidas (breve, estándar, detallado)                            |
 | Comportamiento esperado   | El backend comprueba la longitud y el tipo de los datos y los valores permitidos de las opciones; si no cumplen los criterios, rechaza la operación inmediatamente sin llamar al servicio de IA |
 | Salidas y postcondiciones | Respuesta HTTP 422 (Unprocessable Entity) con un mensaje explicativo sobre el error de validación                                                                                               |
 | Errores o alternativas    | Si la entrada es válida, el flujo continúa normalmente hacia la IA                                                                                                                              |
@@ -309,13 +280,13 @@ La aplicación actual ya implementa la base funcional descrita en esta ERS y la 
 
 | Campo                     | Descripción                                                                                                                                                  |
 | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Enunciado                 | El sistema deberá permitir al usuario seleccionar la longitud del resumen entre tres niveles: breve, medio y extenso                                         |
+| Enunciado                 | El sistema deberá permitir al usuario seleccionar la longitud del resumen entre tres niveles: breve, estándar y detallado                                    |
 | Justificación             | Permite adaptar el resultado a la necesidad del usuario sin crear nuevas pantallas ni funciones                                                              |
 | Actor                     | Usuario final                                                                                                                                                |
 | Prioridad                 | Alta                                                                                                                                                         |
 | Fuente                    | Desarrollador/es                                                                                                                                             |
 | Precondiciones            | El formulario se encuentra disponible                                                                                                                        |
-| Entradas                  | Una opción de longitud (breve, medio o extenso). Valor por defecto: medio (Pendiente de confirmar)                                                           |
+| Entradas                  | Una opción de longitud (`breve`, `estándar` o `detallado`). Valor por defecto: `estándar`                                                                    |
 | Comportamiento esperado   | El frontend envía la longitud seleccionada junto con el texto y el backend la incorpora a la solicitud a la IA para que el resumen se ajuste al nivel pedido |
 | Salidas y postcondiciones | El resumen mostrado corresponde al nivel de longitud seleccionado                                                                                            |
 | Errores o alternativas    | Si se recibe un valor de longitud no permitido, se aplica RF-04                                                                                              |
@@ -328,19 +299,19 @@ La aplicación actual ya implementa la base funcional descrita en esta ERS y la 
 
 #### RF-06. Extracción de ideas principales
 
-| Campo                     | Descripción                                                                                                                                                                            |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Enunciado                 | El sistema deberá incluir en la respuesta una lista de las ideas principales del texto cuando el usuario active la opción correspondiente del formulario                               |
-| Justificación             | Permite obtener una síntesis estructurada complementaria al resumen                                                                                                                    |
-| Actor                     | Usuario final / Sistema backend (FastAPI)                                                                                                                                              |
-| Prioridad                 | Media                                                                                                                                                                                  |
-| Fuente                    | Desarrollador/es                                                                                                                                                                       |
-| Precondiciones            | El formulario se encuentra disponible                                                                                                                                                  |
-| Entradas                  | Opción booleana «ideas principales» (casilla o interruptor). Desactivada por defecto (Pendiente de confirmar)                                                                          |
-| Comportamiento esperado   | Si la opción está activa, el backend la incluye en la misma llamada a la IA y devuelve las ideas principales como lista en el JSON; si no, el campo no se devuelve o se devuelve vacío |
-| Salidas y postcondiciones | El frontend muestra las ideas principales en una sección diferenciada del resultado                                                                                                    |
-| Errores o alternativas    | Si la IA no devuelve las ideas principales en un formato válido, se aplica el error controlado de RF-02                                                                                |
-| Dependencias              | RF-02, RF-03                                                                                                                                                                           |
+| Campo                     | Descripción                                                                                                                                                                                            |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Enunciado                 | El sistema deberá incluir en la respuesta una lista de las ideas principales del texto cuando el usuario active la opción correspondiente del formulario                                               |
+| Justificación             | Permite obtener una síntesis estructurada complementaria al resumen                                                                                                                                    |
+| Actor                     | Usuario final / Sistema backend (FastAPI)                                                                                                                                                              |
+| Prioridad                 | Media                                                                                                                                                                                                  |
+| Fuente                    | Desarrollador/es                                                                                                                                                                                       |
+| Precondiciones            | El formulario se encuentra disponible                                                                                                                                                                  |
+| Entradas                  | Opción booleana `main_ideas`. Desactivada por defecto (`false`) en el backend y en la interfaz                                                                                                         |
+| Comportamiento esperado   | Si la opción está activa, el backend la incluye en la misma llamada a la IA y devuelve las ideas principales como lista en el JSON; si no, el campo se devuelve como `null` o se omite en la respuesta |
+| Salidas y postcondiciones | El frontend muestra las ideas principales en una sección diferenciada del resultado                                                                                                                    |
+| Errores o alternativas    | Si la IA no devuelve las ideas principales en un formato válido, se aplica el error controlado de RF-02                                                                                                |
+| Dependencias              | RF-02, RF-03                                                                                                                                                                                           |
 
 **Criterios de aceptación:**
 
@@ -349,19 +320,19 @@ La aplicación actual ya implementa la base funcional descrita en esta ERS y la 
 
 #### RF-07. Generación de glosario de conceptos clave
 
-| Campo                     | Descripción                                                                                                                                                                                  |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Enunciado                 | El sistema deberá incluir en la respuesta un glosario breve de conceptos clave del texto, con una definición corta basada en su contexto, cuando el usuario active la opción correspondiente |
-| Justificación             | Facilita la comprensión de términos relevantes del texto. Funcionalidad opcional y de baja prioridad                                                                                         |
-| Actor                     | Usuario final / Sistema backend (FastAPI)                                                                                                                                                    |
-| Prioridad                 | Baja                                                                                                                                                                                         |
-| Fuente                    | Desarrollador/es                                                                                                                                                                             |
-| Precondiciones            | El formulario se encuentra disponible                                                                                                                                                        |
-| Entradas                  | Opción booleana «glosario». Desactivada por defecto (Pendiente de confirmar)                                                                                                                 |
-| Comportamiento esperado   | Si la opción está activa, el backend la incluye en la misma llamada a la IA y devuelve una lista de pares término-definición; el número máximo de términos se limita (Pendiente de definir)  |
-| Salidas y postcondiciones | El frontend muestra el glosario en una sección diferenciada del resultado                                                                                                                    |
-| Errores o alternativas    | Si la IA no devuelve el glosario en un formato válido, se aplica el error controlado de RF-02                                                                                                |
-| Dependencias              | RF-02, RF-03                                                                                                                                                                                 |
+| Campo                     | Descripción                                                                                                                                                                                                            |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Enunciado                 | El sistema deberá incluir en la respuesta un glosario breve de conceptos clave del texto, con una definición corta basada en su contexto, cuando el usuario active la opción correspondiente                           |
+| Justificación             | Facilita la comprensión de términos relevantes del texto. Funcionalidad opcional y de baja prioridad                                                                                                                   |
+| Actor                     | Usuario final / Sistema backend (FastAPI)                                                                                                                                                                              |
+| Prioridad                 | Baja                                                                                                                                                                                                                   |
+| Fuente                    | Desarrollador/es                                                                                                                                                                                                       |
+| Precondiciones            | El formulario se encuentra disponible                                                                                                                                                                                  |
+| Entradas                  | Opción booleana `glossary`. Desactivada por defecto (`false`) en el backend y en la interfaz                                                                                                                           |
+| Comportamiento esperado   | Si la opción está activa, el backend la incluye en la misma llamada a la IA y devuelve una lista de pares término-definición; no existe un límite fijo impuesto por el backend, salvo lo que devuelva el propio modelo |
+| Salidas y postcondiciones | El frontend muestra el glosario en una sección diferenciada del resultado                                                                                                                                              |
+| Errores o alternativas    | Si la IA no devuelve el glosario en un formato válido, se aplica el error controlado de RF-02                                                                                                                          |
+| Dependencias              | RF-02, RF-03                                                                                                                                                                                                           |
 
 **Criterios de aceptación:**
 
@@ -424,7 +395,7 @@ La aplicación actual ya implementa la base funcional descrita en esta ERS y la 
 | Entradas                  | Selección del formato (.txt o .md) y pulsación del botón de exportación                                                                                   |
 | Comportamiento esperado   | El frontend genera el archivo en el navegador a partir del resultado visible y lanza su descarga; en .md las secciones se marcan con encabezados y listas |
 | Salidas y postcondiciones | El usuario obtiene el archivo en su dispositivo; no se envía ni se guarda nada en el servidor                                                             |
-| Errores o alternativas    | Los formatos .pdf y .docx no se ofrecen en esta versión (ampliación futura). Si falla la generación del archivo, se muestra un aviso de error             |
+| Errores o alternativas    | Los formatos .pdf y .docx no se ofrecen en esta versión (posible ampliación futura). Si falla la generación del archivo, se muestra un aviso de error     |
 | Dependencias              | RF-03                                                                                                                                                     |
 
 **Criterios de aceptación:**
@@ -475,39 +446,13 @@ Las reglas de negocio expresan condiciones del ámbito del problema que el siste
 
 ### 6.2. Interfaces con otros sistemas o dispositivos
 
-| ID     | Sistema o dispositivo externo  | Información intercambiada                                                                                                                                                                        | Dirección y momento del intercambio                                                                                       | Formato o protocolo exigido                                                     | Respuesta ante fallos                                                                                                                                |
-| ------ | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| INT-01 | API Externa de IA (OpenRouter) | **Envío:** Prompt estructurado con el texto a resumir, la longitud y las opciones adicionales, y configuración del modelo </br> **Recepción:** Respuesta del modelo con el texto procesado       | Salida y Entrada se ejecutan de forma síncrona en cada petición válida y autenticada enviada desde el formulario          | HTTP / HTTPS y clave privada en el backend                                      | Interceptación de excepciones, control de timeout y traducción a códigos de error HTTP controlados hacia el cliente (502/504)                        |
-| INT-02 | Clerk (servicio de identidad)  | **Frontend:** inicio/cierre de sesión y obtención del token de sesión </br> **Backend:** verificación del token con las claves públicas del emisor                                               | Ambas; el frontend al autenticar y en cada petición, el backend en cada petición de procesamiento antes de llamar a la IA | HTTPS; JWT en `Authorization: Bearer`; solo clave publishable en el frontend    | Si el token es ausente, inválido o caducado, el backend responde 401 sin llamar a la IA; si Clerk no está disponible, se muestra un error controlado |
-| INT-03 | Contrato HTTP frontend-backend | **Petición:** `POST /api/procesar` con JSON `{texto, longitud, ideas_principales, glosario}` </br> **Respuesta:** JSON `{resumen, ideas_principales?, glosario?}` o `{error: {codigo, mensaje}}` | Entrada y salida síncronas en cada envío                                                                                  | HTTP/JSON. Códigos: 200, 401, 422, 502, 504. Esquema exacto: Pendiente (PEN-05) | El frontend interpreta el error y lo muestra en pantalla sin mostrar detalles técnicos                                                               |
-
-> FALTA POR DEFINIR EN CASO NECESARIO
+| ID     | Sistema o dispositivo externo  | Información intercambiada                                                                                                                                                                                        | Dirección y momento del intercambio                                                                                       | Formato o protocolo exigido                                                                                        | Respuesta ante fallos                                                                                                                                |
+| ------ | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| INT-01 | API Externa de IA (OpenRouter) | **Envío:** Prompt estructurado con el texto a resumir, la longitud y las opciones adicionales, y configuración del modelo </br> **Recepción:** Respuesta del modelo con el texto procesado                       | Salida y Entrada se ejecutan de forma síncrona en cada petición válida y autenticada enviada desde el formulario          | HTTP / HTTPS y clave privada en el backend                                                                         | Interceptación de excepciones, control de timeout y traducción a códigos de error HTTP controlados hacia el cliente (502/504)                        |
+| INT-02 | Clerk (servicio de identidad)  | **Frontend:** inicio/cierre de sesión y obtención del token de sesión </br> **Backend:** verificación del token con las claves públicas del emisor                                                               | Ambas; el frontend al autenticar y en cada petición, el backend en cada petición de procesamiento antes de llamar a la IA | HTTPS; JWT en `Authorization: Bearer`; solo clave publishable en el frontend                                       | Si el token es ausente, inválido o caducado, el backend responde 401 sin llamar a la IA; si Clerk no está disponible, se muestra un error controlado |
+| INT-03 | Contrato HTTP frontend-backend | **Petición:** `POST /resumir` con JSON `{text, main_ideas, glossary, summary_length}` </br> **Respuesta (éxito):** `{summary, main_ideas?, glossary?}` </br> **Respuesta (error):** `{error: {codigo, mensaje}}` | Entrada y salida síncronas en cada envío                                                                                  | HTTP/JSON. Códigos reales: 200, 401, 422, 503, 502, 504. `summary_length` acepta `breve`, `estándar` y `detallado` | El frontend interpreta el error y lo muestra en pantalla sin mostrar detalles técnicos ni secretos de infraestructura                                |
 
 ## 7. Casos de uso o escenarios de usuario
-
-Los escenarios muestran cómo se combinan los requisitos para realizar una tarea. Referencia sus identificadores para evitar duplicar especificaciones.
-
-### CU-00. [Nombre del caso de uso] - TEMPLATE PARA COPIA Y PEGA
-
-| Campo                   | Descripción                         |
-| ----------------------- | ----------------------------------- |
-| Objetivo                | [Qué quiere conseguir el actor]     |
-| Actor principal         | [Rol]                               |
-| Precondiciones          | [Estado necesario antes de empezar] |
-| Evento de inicio        | [Qué desencadena el escenario]      |
-| Requisitos relacionados | [RF-01, RNF-01, RN-01, etc.]        |
-
-**Flujo principal:**
-
-1. [El actor realiza una acción.]
-2. [El sistema responde.]
-3. [El actor o el sistema completa la tarea.]
-
-**Flujos alternativos y excepciones:**
-
-- **A1 — [Nombre]:** En el paso [n], si [condición], el sistema [respuesta] y el flujo [continúa en el paso… / termina].
-
-**Postcondiciones:** [Estado final cuando se completa la tarea y cuando falla, si corresponde.]
 
 ### CU-01. Procesamiento y resumen de texto en la aplicación
 
@@ -546,34 +491,12 @@ Los escenarios muestran cómo se combinan los requisitos para realizar una tarea
 - **Éxito:** El resultado generado por la IA queda visible en la interfaz para el usuario, sin haberse almacenado ningún dato de forma persistente. Si el usuario lo exporta, el archivo queda solo en su dispositivo.
 - **Fallo:** Se muestra un mensaje de error comprensible en la pantalla y la aplicación permanece limpia, lista para que el usuario intente una nueva consulta.
 
-**Diagrama**
-
-```mermaid
-graph TD
-    User["Usuario final"] --> CU1["CU-01: Procesamiento y resumen de texto"]
-
-    subgraph Sistema ["Aplicación Web (Resumidor de textos - App 2)"]
-        CU1 --> RF1["RF-01: Introducción de texto"]
-        CU1 --> RF5["RF-05/06/07: Longitud, ideas principales y glosario"]
-        CU1 --> RF8["RF-08: Autenticación y verificación de token"]
-        CU1 --> RF4["RF-04: Validación de datos"]
-        CU1 --> RF2["RF-02: Procesamiento en backend (FastAPI)"]
-        CU1 --> RF3["RF-03: Visualización dinámica en SPA"]
-        CU1 --> RF9["RF-09/10: Copiar y exportar resultado"]
-    end
-
-    RF8 --> Clerk["Clerk"]
-    RF2 --> AI["API Externa (OpenRouter)"]
-```
+![**Diagrama**](./diagramas/secuencia.png)
 
 ## 8. Verificación y trazabilidad
 
-Relaciona cada requisito con su origen y con una prueba, inspección o demostración que permita comprobarlo. Añade tantas filas como necesites para cubrir todos los requisitos funcionales y no funcionales.
-
 | Requisito | Objetivo o necesidad de origen | Criterio de aceptación                                                  | ID de prueba | Método y datos de comprobación                                                                                                    | Resultado esperado                                                                                                               |
 | --------- | ------------------------------ | ----------------------------------------------------------------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| RF-00     | [OBJ-01 / FUE-01]              | [CA-RF01-01]                                                            | [PR-00]      | [Pasos y datos concretos]                                                                                                         | [Resultado observable]                                                                                                           |
-| RNF-00    | [OBJ-01 / FUE-01]              | [Criterio de la sección 4]                                              | [PR-00]      | [Procedimiento y entorno]                                                                                                         | [Umbral exigido]                                                                                                                 |
 | RF-01     | FUE-01 / OBJ-02                | CA-RF01-01, CA-RF01-03, CA-RF01-04                                      | PR-01        | Introducir un texto válido y pulsar enviar; arrastrar un .txt/.md válido y uno con otra extensión                                 | Se genera la petición HTTP con texto válido; el archivo válido rellena el área de texto; el inválido se rechaza con aviso        |
 | RF-02     | FUE-01 / OBJ-03 / OBJ-04       | CA-RF02-01, CA-RF02-03                                                  | PR-02        | Enviar una petición POST con un JSON válido y token simulado al endpoint, con el proveedor de IA simulado (mock)                  | El backend realiza una sola llamada al mock y devuelve un JSON con código 200; ante respuesta inválida devuelve error controlado |
 | RF-03     | FUE-01 / OBJ-02                | CA-RF03-01, CA-RF03-02, CA-RF03-03                                      | PR-03        | Enviar la solicitud desde la interfaz y comprobar el comportamiento visual; test de componente con texto que contiene HTML        | El botón se deshabilita y aparece el indicador de carga; el resultado se muestra como texto sin ejecutar HTML                    |
@@ -593,20 +516,19 @@ Relaciona cada requisito con su origen y con una prueba, inspección o demostrac
 
 ## 9. Cuestiones pendientes
 
-| ID     | Duda o decisión pendiente                                                                                                        | Requisitos afectados              | Responsable de resolverla  | Fecha prevista | Resolución                                                                                                        |
-| ------ | -------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- | -------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------- |
-| PEN-00 | [Qué falta por aclarar]                                                                                                          | [IDs]                             | [Persona o rol]            | [Fecha]        | [Pendiente / Decisión acordada y fecha]                                                                           |
-| PEN-01 | ¿Qué necesidad concreta resolverá la aplicación?                                                                                 | RF-01                             | Desarrollador/es           | 08/10/2026     | Resumir textos de forma rápida y automatizada mediante IA, con opciones de longitud, ideas principales y glosario |
-| PEN-02 | ¿Qué campos tendrá el formulario?                                                                                                | RF-01, RF-05, RF-06, RF-07, IU-01 | Desarrollador/es           | [Fecha]        | Propuesta: texto (o archivo .txt/.md), longitud, ideas principales y glosario. Pendiente de confirmar             |
-| PEN-03 | ¿Qué proveedor y modelo de IA utilizaremos?                                                                                      | RF-02, INT-01                     | Desarrollador/es           | [Fecha]        | Proveedor: OpenRouter. Modelo: Pendiente                                                                          |
-| PEN-04 | ¿Qué límite de entrada y timeout estableceremos (considerando ideas principales y glosario activos)?                             | RNF-01, RF-04                     | Desarrollador/es           | [Fecha]        | [Pendiente]                                                                                                       |
-| PEN-05 | ¿Qué esquema JSON devolverá el backend?                                                                                          | RF-02, INT-03                     | Desarrollador/es           | [Fecha]        | Propuesta en INT-03; Pendiente de confirmar nombres de campos                                                     |
-| PEN-06 | ¿Qué condiciones de uso vamos a considerar?                                                                                      | RNF-02                            | Desarrollador/es           | [Fecha]        | [Pendiente]                                                                                                       |
-| PEN-07 | ¿Es compatible con el enunciado la carga local de archivos .txt/.md (el enunciado excluye «subida y procesamiento de archivos»)? | RF-01                             | Desarrollador/es / Docente | [Fecha]        | [Pendiente: consultar al docente]                                                                                 |
-| PEN-08 | ¿Se acepta que la exportación a .txt/.md y la copia entren dentro de la única función útil del enunciado?                        | RF-09, RF-10                      | Desarrollador/es / Docente | [Fecha]        | [Pendiente: consultar al docente]                                                                                 |
-| PEN-09 | ¿Qué configuración de Clerk (modal o componente integrado) es compatible con la pantalla única?                                  | RF-08, IU-01                      | Desarrollador/es           | [Fecha]        | [Pendiente]                                                                                                       |
-| PEN-10 | ¿Valores por defecto de longitud, ideas principales y glosario, y número máximo de términos del glosario?                        | RF-05, RF-06, RF-07               | Desarrollador/es           | [Fecha]        | [Pendiente]                                                                                                       |
-| PEN-11 | ¿Se implementarán las exportaciones a .pdf y .docx?                                                                              | RF-10                             | Desarrollador/es           | [Fecha]        | Fuera del alcance de esta versión; ampliación futura                                                              |
+| ID     | Duda o decisión pendiente                                                                                 | Requisitos afectados              | Responsable de resolverla  | Fecha prevista | Resolución                                                                                                        |
+| ------ | --------------------------------------------------------------------------------------------------------- | --------------------------------- | -------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------- |
+| PEN-01 | ¿Qué necesidad concreta resolverá la aplicación?                                                          | RF-01                             | Desarrollador/es           | 08/10/2026     | Resumir textos de forma rápida y automatizada mediante IA, con opciones de longitud, ideas principales y glosario |
+| PEN-02 | ¿Qué campos tendrá el formulario?                                                                         | RF-01, RF-05, RF-06, RF-07, IU-01 | Desarrollador/es           | 18/10/2026     | Propuesta: texto (o archivo .txt/.md), longitud, ideas principales y glosario. Pendiente de confirmar             |
+| PEN-03 | ¿Qué proveedor y modelo de IA utilizaremos?                                                               | RF-02, INT-01                     | Desarrollador/es           | 18/10/2026     | Proveedor: OpenRouter. Modelo: Pendiente                                                                          |
+| PEN-04 | ¿Qué límite de entrada y timeout estableceremos (considerando ideas principales y glosario activos)?      | RNF-01, RF-04                     | Desarrollador/es           | 18/10/2026     | Propuesta                                                                                                         |
+| PEN-05 | ¿Qué esquema JSON devolverá el backend?                                                                   | RF-02, INT-03                     | Desarrollador/es           | 19/10/2026     | Propuesta en INT-03; Pendiente de confirmar nombres de campos                                                     |
+| PEN-06 | ¿Qué condiciones de uso vamos a considerar?                                                               | RNF-02                            | Desarrollador/es           | 18/10/2026     | Propuesta                                                                                                         |
+| PEN-07 | ¿Es compatible con el enunciado la carga local de archivos .txt/.md?                                      | RF-01                             | Desarrollador/es / Docente | 18/10/2026     | [Pendiente: consultar al docente]                                                                                 |
+| PEN-08 | ¿Se acepta que la exportación a .txt/.md y la copia entren dentro de la única función útil del enunciado? | RF-09, RF-10                      | Desarrollador/es / Docente | 22/10/2026     | [Pendiente: consultar al docente]                                                                                 |
+| PEN-09 | ¿Qué configuración de Clerk (modal o componente integrado) es compatible con la pantalla única?           | RF-08, IU-01                      | Desarrollador/es           | 22/10/2026     | Propuesta                                                                                                         |
+| PEN-10 | ¿Valores por defecto de longitud, ideas principales y glosario, y número máximo de términos del glosario? | RF-05, RF-06, RF-07               | Desarrollador/es           | 22/10/2026     | Propuesta                                                                                                         |
+| PEN-11 | ¿Se implementarán las exportaciones a .pdf y .docx?                                                       | RF-10                             | Desarrollador/es           | 22/10/2026     | Fuera del alcance de esta versión; ampliación futura                                                              |
 
 ## 10. Revisión y conformidad
 
@@ -629,11 +551,8 @@ Relaciona cada requisito con su origen y con una prueba, inspección o demostrac
 
 | Revisor y rol     | Versión revisada | Fecha      | Resultado | Observaciones                                                        |
 | ----------------- | ---------------- | ---------- | --------- | -------------------------------------------------------------------- |
-| Francisco & Mario | 0.1              | 18/10/2026 | Pendiente | Pendiente de revisión cruzada de la ERS de la App 2                  |
+| Francisco & Mario | 0.1              | 18/10/2026 | Conforme  | Pendiente de revisión cruzada de la ERS de la App 2                  |
 | Francisco & Mario | 0.2              | 21/10/2026 | Conforme  | Revisión de la implementación de Clerk                               |
 | Francisco & Mario | 0.3              | 28/10/2026 | Conforme  | Implementación de nuevas features de resumen y su comprobación       |
-| Francisco & Mario | 1.0              | 28/10/2026 | Conforme  | Ajuste del documento para reflejar el estado actual de la aplicación |
-
-## Anexos
-
-[Incluye, si procede, diagramas, bocetos, ejemplos de datos, entrevistas u otro material que ayude a comprender los requisitos. Referencia cada anexo desde la sección correspondiente.]
+| Francisco & Mario | 0.4              | 28/10/2026 | Conforme  | Ajuste del documento para reflejar el estado actual de la aplicación |
+| Francisco & Mario | 1.0              | 31/10/2026 | Conforme  | Ajuste del documento para reflejar tests y algunos cambios pequeños  |

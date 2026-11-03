@@ -104,8 +104,44 @@ La suite de la app2 ya está implementada en el frontend y cubre el flujo princi
 | **Resultado Esperado** | Se renderizan las secciones del resumen, ideas principales y glosario, y las acciones de copiar y exportar funcionan correctamente |
 | **Resultado Obtenido** | Verificado en la suite existente para la app2                                                                                      |
 
-### Observaciones de la app2
+### APP2-PR-05
 
-- La validación se centra en flujos reales de la aplicación: autenticación con Clerk, envío autenticado a `/resumir`, manejo de errores y presentación del resultado.
-- Las pruebas están diseñadas para ejecutar localmente con Vitest y no requieren llamadas reales a servicios externos.
-- El objetivo principal es comprobar la lógica visible del usuario en la SPA y la integración del token de sesión con la petición al backend.
+| Campo                  | Descripción                                                                                                                          |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **ID de Prueba**       | APP2-PR-05                                                                                                                           |
+| **Fecha**              | 31/10/2026                                                                                                                           |
+| **Entorno**            | Local (pytest + FastAPI TestClient)                                                                                                  |
+| **Comando / Acción**   | `cd app2/backend && python -m pytest -q tests/test_services.py`                                                                      |
+| **Resultado Esperado** | El servicio maneja respuesta válida, timeout, error de conexión, respuesta vacía, JSON inválido y contenido que no cumple el esquema |
+| **Resultado Obtenido** | Verificado al ejecutar la suite de `test_services.py`                                                                                |
+
+### APP2-PR-06
+
+| Campo                  | Descripción                                                                                                                                                |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **ID de Prueba**       | APP2-PR-06                                                                                                                                                 |
+| **Fecha**              | 31/10/2026                                                                                                                                                 |
+| **Entorno**            | Local (Vite + Vitest + JSDOM)                                                                                                                              |
+| **Comando / Acción**   | `cd app2/frontend && npm exec vitest run src/__tests__/App.spec.ts`                                                                                        |
+| **Resultado Esperado** | La UI maneja texto vacío, límite de 5000 caracteres, carga efectiva de `.txt` y `.md`, rechazo de extensiones no permitidas y errores de servicio visibles |
+| **Resultado Obtenido** | Verificado al ejecutar la suite existente de la app2 y las pruebas añadidas para validación de entrada y archivo                                           |
+
+## Verificación manual de Vercel para App 2 (pendiente de completar)
+
+> Esta comprobación no se marca como realizada. Los campos quedan vacíos para que se complete manualmente en el entorno real de Vercel por la persona responsable.
+
+| Campo                        | Valor |
+| ---------------------------- | ----- |
+| **URL pública del frontend** |       |
+| **Fecha de comprobación**    |       |
+| **Resultado**                |       |
+| **Observaciones**            |       |
+
+### Checklist
+
+- [ ] Acceso a la URL pública del frontend.
+- [ ] Autenticación mediante Clerk.
+- [ ] Generación de un resumen con una entrada válida.
+- [ ] Rechazo de una petición al backend sin token.
+- [ ] Rechazo de una petición con token inválido.
+- [ ] Comprobación de errores y CORS desde el navegador.
