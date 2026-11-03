@@ -514,7 +514,87 @@ Las reglas de negocio expresan condiciones del ámbito del problema que el siste
 | RNF-05    | FUE-01 / OBJ-01                | Compilación correcta en TS, despliegue en Vercel y en EC2 con HTTPS     | PR-15        | Ejecutar la compilación, desplegar en Vercel y levantar `docker compose` en EC2; probar desde otro dispositivo                    | La SPA compila sin errores, el backend procesa peticiones y EC2 se sirve por HTTPS                                               |
 | RNF-06    | FUE-01 / OBJ-07                | 100 % de peticiones sin token válido rechazadas con 401                 | PR-16        | pytest con verificador simulado y petición directa al endpoint desplegado sin token                                               | 401 en todos los casos sin llamar a la IA                                                                                        |
 
-## 9. Cuestiones pendientes
+## 9. Modelos de datos
+
+**Frontend:**
+
+1. `GlossaryConcept`: define el conjunto de _concepto-definición_, con la palabra a definir y su correspondiente definición.
+2. `Summary`: es la respuesta de la API que contiene el resumen y, opcionalmente, las ideas principales y un glosario de términos.
+3. `UserInput`: es el input del usuario, los valores de los controles del formulario según lo que quiera generar el usuario.
+4. `SummaryLength`: define la longitud del resumen, en función de si se desea algo más breve o más detallado.
+5. `FileType`: hace referencia a los tipos de archivos permitidos para un _drag and drop_ desde el que leer el texto a resumir.
+
+```mermaid
+classDiagram
+    class GlossaryConcept {
+        +String concept
+        +String definition
+    }
+    class Summary {
+        +String summary
+        +String[] mainIdeas
+        +GlossaryConcept[] glossary
+    }
+    class UserInput {
+        +String text
+        +boolean main_ideas
+        +boolean glossary
+        +SummaryLength summaryLength
+    }
+    class SummaryLength {
+        <<enumeration>>
+        BRIEF
+        STANDARD
+        DETAILED
+    }
+    class FileType {
+        <<enumeration>>
+        TXT
+        MD
+    }
+    Summary-->GlossaryConcept
+    UserInput-->SummaryLength
+```
+
+**Backend:**
+
+1. `GlossaryConcept`: define el conjunto de _concepto-definición_, con la palabra a definir y su correspondiente definición.
+2. `ResumenResponse`: es la respuesta que será enviada al frontend que contiene el resumen y, opcionalmente, las ideas principales y un glosario de términos.
+3. `SummaryLength`: define la longitud del resumen, en función de si se desea algo más breve o más detallado. Forma parte del prompt enviado a OpenRouter.
+4. `UserInput`: es la estructura que llega del frontend, dependiendo de lo que el usuario haya elegido en el formulario.
+
+```mermaid
+classDiagram
+    class GlossaryConcept {
+        +str concept
+        +str definition
+    }
+
+    class ResumenResponse {
+        +str summary
+        +list~str~ main_ideas
+        +list~GlossaryConcept~ glossary
+    }
+
+    class SummaryLength {
+        <<enumeration>>
+        BRIEF
+        STANDARD
+        DETAILED
+    }
+
+    class UserInput {
+        +str text
+        +bool main_ideas
+        +bool glossary
+        +SummaryLength summary_length
+    }
+
+    ResumenResponse --> GlossaryConcept
+    UserInput --> SummaryLength
+```
+
+## 10. Cuestiones pendientes
 
 | ID     | Duda o decisión pendiente                                                                                 | Requisitos afectados              | Responsable de resolverla  | Fecha prevista | Resolución                                                                                                        |
 | ------ | --------------------------------------------------------------------------------------------------------- | --------------------------------- | -------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------- |
@@ -530,9 +610,9 @@ Las reglas de negocio expresan condiciones del ámbito del problema que el siste
 | PEN-10 | ¿Valores por defecto de longitud, ideas principales y glosario, y número máximo de términos del glosario? | RF-05, RF-06, RF-07               | Desarrollador/es           | 22/10/2026     | Propuesta                                                                                                         |
 | PEN-11 | ¿Se implementarán las exportaciones a .pdf y .docx?                                                       | RF-10                             | Desarrollador/es           | 22/10/2026     | Fuera del alcance de esta versión; ampliación futura                                                              |
 
-## 10. Revisión y conformidad
+## 11. Revisión y conformidad
 
-### 10.1. Lista de comprobación antes de entregar
+### 11.1. Lista de comprobación antes de entregar
 
 - [x] El problema, los objetivos y los límites del sistema están definidos.
 - [x] Se identifican los usuarios y sus permisos.
@@ -547,7 +627,7 @@ Las reglas de negocio expresan condiciones del ámbito del problema que el siste
 - [x] Se han sustituido los marcadores, eliminado los ejemplos y justificado los apartados que no aplican.
 - [x] Se han actualizado la fecha, la versión y el historial de cambios.
 
-### 10.2. Registro de revisión
+### 11.2. Registro de revisión
 
 | Revisor y rol     | Versión revisada | Fecha      | Resultado | Observaciones                                                        |
 | ----------------- | ---------------- | ---------- | --------- | -------------------------------------------------------------------- |

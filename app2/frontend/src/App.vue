@@ -163,6 +163,11 @@ async function getSummary(): Promise<void> {
     return
   }
 
+  if (!text.value.trim()) {
+    reqError.value = 'Comprueba que el texto no esté vacío.'
+    return
+  }
+
   loading.value = true
   reqError.value = null
   reauthenticationRequired.value = false
@@ -421,7 +426,7 @@ function getTimestamp(): string {
 
           <div class="flex justify-between px-4 py-3 border-t border-[#e8f1f59f] gap-4">
             <span class="text-xs text-[#e8f1f593]">{{ userTextWords }} {{ userTextWords === 1 ? 'palabra' : 'palabras'
-            }}</span>
+              }}</span>
             <span class="text-xs text-[#e8f1f593]">{{ text.length }} / {{ MAX_WORDS }}</span>
           </div>
         </div>

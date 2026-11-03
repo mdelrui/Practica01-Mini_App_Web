@@ -2,21 +2,21 @@
 
 ## Datos del documento
 
-| Campo | Valor |
-|---|---|
-| Proyecto | ResumidorIA, App 1 |
-| Autores | Francisco Luis Cara García y Mario Delgado Ruiz |
-| Asignatura | Desarrollo de Componentes Software para Sistemas de Aprendizaje Automático |
-| Fecha de revisión | 02/11/2026 |
-| Versión | 0.2 |
-| Estado | Revisada; pruebas automatizadas comprobadas y despliegue pendiente |
+| Campo             | Valor                                                                      |
+| ----------------- | -------------------------------------------------------------------------- |
+| Proyecto          | ResumidorIA, App 1                                                         |
+| Autores           | Francisco Luis Cara García y Mario Delgado Ruiz                            |
+| Asignatura        | Desarrollo de Componentes Software para Sistemas de Aprendizaje Automático |
+| Fecha de revisión | 02/11/2026                                                                 |
+| Versión           | 0.2                                                                        |
+| Estado            | Revisada; pruebas automatizadas comprobadas y despliegue pendiente         |
 
 ### Historial de cambios
 
-| Versión | Fecha | Cambios |
-|---|---|---|
-| 0.1 | 08/10/2026 | Primera versión |
-| 0.2 | 02/11/2026 | Eliminación de instrucciones de plantilla y ajuste al comportamiento implementado; definición del contrato de errores y trazabilidad de pruebas |
+| Versión | Fecha      | Cambios                                                                                                                                         |
+| ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0.1     | 08/10/2026 | Primera versión                                                                                                                                 |
+| 0.2     | 02/11/2026 | Eliminación de instrucciones de plantilla y ajuste al comportamiento implementado; definición del contrato de errores y trazabilidad de pruebas |
 
 ## 1. Introducción
 
@@ -47,14 +47,14 @@ Quedan fuera del alcance la autenticación propia, el almacenamiento persistente
 
 ### 1.4. Definiciones
 
-| Término | Definición |
-|---|---|
-| API | Interfaz de comunicación entre aplicaciones |
-| Backend | Parte del servidor que valida la petición y consulta OpenRouter |
-| Frontend | Interfaz web que utiliza el usuario |
-| IA | Inteligencia artificial |
-| JSON | Formato de intercambio de datos |
-| ERS | Especificación de Requisitos del Software |
+| Término  | Definición                                                      |
+| -------- | --------------------------------------------------------------- |
+| API      | Interfaz de comunicación entre aplicaciones                     |
+| Backend  | Parte del servidor que valida la petición y consulta OpenRouter |
+| Frontend | Interfaz web que utiliza el usuario                             |
+| IA       | Inteligencia artificial                                         |
+| JSON     | Formato de intercambio de datos                                 |
+| ERS      | Especificación de Requisitos del Software                       |
 
 ## 2. Descripción general
 
@@ -74,12 +74,12 @@ flowchart LR
 
 ### 2.2. Actores
 
-| Actor | Responsabilidad |
-|---|---|
-| Usuario final | Introduce o carga un texto y consulta el resumen |
-| Backend | Valida la entrada, llama al proveedor y devuelve el resultado |
-| OpenRouter | Procesa la solicitud de generación de texto |
-| Equipo de desarrollo | Mantiene el código, las pruebas y la documentación |
+| Actor                | Responsabilidad                                               |
+| -------------------- | ------------------------------------------------------------- |
+| Usuario final        | Introduce o carga un texto y consulta el resumen              |
+| Backend              | Valida la entrada, llama al proveedor y devuelve el resultado |
+| OpenRouter           | Procesa la solicitud de generación de texto                   |
+| Equipo de desarrollo | Mantiene el código, las pruebas y la documentación            |
 
 ### 2.3. Restricciones y dependencias
 
@@ -91,20 +91,21 @@ flowchart LR
 
 ## 3. Requisitos funcionales
 
-| ID | Requisito | Prioridad |
-|---|---|---|
-| RF-01 | Introducir texto mediante el formulario | Alta |
-| RF-02 | Cargar archivos `.txt` y `.md` mediante arrastre | Media |
-| RF-03 | Validar el texto y sus límites | Alta |
-| RF-04 | Enviar la petición al backend y generar el resumen | Alta |
-| RF-05 | Mostrar el resultado y los estados de carga y error | Alta |
-| RF-06 | Permitir borrar el texto introducido | Media |
+| ID    | Requisito                                           | Prioridad |
+| ----- | --------------------------------------------------- | --------- |
+| RF-01 | Introducir texto mediante el formulario             | Alta      |
+| RF-02 | Cargar archivos `.txt` y `.md` mediante arrastre    | Media     |
+| RF-03 | Validar el texto y sus límites                      | Alta      |
+| RF-04 | Enviar la petición al backend y generar el resumen  | Alta      |
+| RF-05 | Mostrar el resultado y los estados de carga y error | Alta      |
+| RF-06 | Permitir borrar el texto introducido                | Media     |
 
 ### RF-01. Introducción de texto
 
 El sistema permitirá escribir o pegar texto en el área de entrada.
 
 Criterios de aceptación:
+
 - CA-01. El formulario muestra un área de texto y el contador de caracteres.
 - CA-02. El botón de envío permanece deshabilitado cuando no hay texto o mientras se procesa una petición.
 
@@ -113,6 +114,7 @@ Criterios de aceptación:
 El sistema permitirá cargar por arrastre archivos con extensión `.txt` o `.md`, siempre que no superen 1 MiB.
 
 Criterios de aceptación:
+
 - CA-03. Un archivo admitido se lee y su contenido se introduce en el área de texto.
 - CA-04. Una extensión no admitida o un archivo superior a 1 MiB produce un mensaje de error visible.
 - CA-05. El contenido leído se limita a 5000 caracteres.
@@ -122,6 +124,7 @@ Criterios de aceptación:
 El backend aceptará un objeto JSON con el campo `texto`, de tipo cadena y longitud entre 1 y 5000 caracteres. También rechazará cadenas que solo contengan espacios en blanco.
 
 Criterios de aceptación:
+
 - CA-06. Una entrada válida se limpia de espacios exteriores antes de enviarse al proveedor.
 - CA-07. Una entrada vacía, compuesta solo por espacios o superior al límite se rechaza con HTTP 422.
 
@@ -130,6 +133,7 @@ Criterios de aceptación:
 El backend expondrá `POST /api/resumir`. Para una entrada válida realizará una única solicitud a OpenRouter y devolverá `{"resumen": "..."}` cuando la respuesta sea correcta.
 
 Criterios de aceptación:
+
 - CA-08. Una respuesta válida del proveedor produce HTTP 200 y un campo `resumen` no vacío.
 - CA-09. La clave de OpenRouter se utiliza exclusivamente en el backend.
 - CA-10. Una respuesta vacía o mal formada del proveedor se trata como error del proveedor.
@@ -139,6 +143,7 @@ Criterios de aceptación:
 El frontend mostrará el resumen recibido, indicará que la petición está en curso y presentará un mensaje visible cuando falle.
 
 Criterios de aceptación:
+
 - CA-11. Mientras se procesa la solicitud se muestra un estado de carga y se deshabilita el envío.
 - CA-12. Si la petición falla, se muestra un aviso de error separado del área del resumen.
 - CA-13. Al iniciar un nuevo intento se limpia el mensaje de error anterior.
@@ -148,6 +153,7 @@ Criterios de aceptación:
 El usuario podrá borrar el contenido del área de texto mediante el botón correspondiente.
 
 Criterios de aceptación:
+
 - CA-14. Al pulsar el botón de borrado, el área de texto queda vacía y el envío vuelve a estar deshabilitado.
 
 ## 4. Contrato HTTP y errores
@@ -158,7 +164,7 @@ Petición:
 
 ```json
 {
-  "texto": "Texto que se desea resumir"
+	"texto": "Texto que se desea resumir"
 }
 ```
 
@@ -166,30 +172,30 @@ Respuesta correcta, HTTP 200:
 
 ```json
 {
-  "resumen": "Resumen generado por el proveedor"
+	"resumen": "Resumen generado por el proveedor"
 }
 ```
 
 Todas las respuestas de error utilizan un objeto JSON con el campo `detail`, de tipo cadena.
 
-| Situación | HTTP | Ejemplo de respuesta |
-|---|---:|---|
-| Entrada vacía, solo espacios, tipo incorrecto o más de 5000 caracteres | 422 | `{"detail":"El campo 'texto' debe contener entre 1 y 5000 caracteres."}` |
-| Fallo del proveedor o respuesta no válida | 502 | `{"detail":"No se pudo obtener un resumen válido de OpenRouter."}` |
-| Tiempo de espera agotado | 504 | `{"detail":"El proveedor tardó demasiado en responder."}` |
+| Situación                                                              | HTTP | Ejemplo de respuesta                                                     |
+| ---------------------------------------------------------------------- | ---: | ------------------------------------------------------------------------ |
+| Entrada vacía, solo espacios, tipo incorrecto o más de 5000 caracteres |  422 | `{"detail":"El campo 'texto' debe contener entre 1 y 5000 caracteres."}` |
+| Fallo del proveedor o respuesta no válida                              |  502 | `{"detail":"No se pudo obtener un resumen válido de OpenRouter."}`       |
+| Tiempo de espera agotado                                               |  504 | `{"detail":"El proveedor tardó demasiado en responder."}`                |
 
 El formato de error evita devolver trazas internas, credenciales o detalles técnicos innecesarios. Los mensajes concretos pueden variar para errores controlados distintos, pero mantienen el campo `detail`.
 
 ## 5. Requisitos no funcionales
 
-| ID | Requisito |
-|---|---|
-| RNF-01 | La clave privada de OpenRouter no aparecerá en el código del frontend ni en las respuestas HTTP. |
-| RNF-02 | El backend aplicará un límite de 5000 caracteres a la entrada. |
-| RNF-03 | La interfaz indicará visualmente los estados de carga y error. |
+| ID     | Requisito                                                                                                                     |
+| ------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| RNF-01 | La clave privada de OpenRouter no aparecerá en el código del frontend ni en las respuestas HTTP.                              |
+| RNF-02 | El backend aplicará un límite de 5000 caracteres a la entrada.                                                                |
+| RNF-03 | La interfaz indicará visualmente los estados de carga y error.                                                                |
 | RNF-04 | Las pruebas automatizadas del backend simularán las respuestas del proveedor y no dependerán de llamadas reales a OpenRouter. |
-| RNF-05 | El proyecto incluirá instrucciones para instalar dependencias y arrancar la aplicación desde un entorno nuevo. |
-| RNF-06 | La aplicación no persistirá textos ni resúmenes en una base de datos. |
+| RNF-05 | El proyecto incluirá instrucciones para instalar dependencias y arrancar la aplicación desde un entorno nuevo.                |
+| RNF-06 | La aplicación no persistirá textos ni resúmenes en una base de datos.                                                         |
 
 ## 6. Interfaces externas
 
@@ -220,13 +226,13 @@ Si la entrada no es válida o falla el proveedor, se muestra un mensaje de error
 
 ## 8. Verificación y trazabilidad
 
-| Requisito | Evidencia de verificación |
-|---|---|
-| RF-01, RF-05, RF-06 | `app1/frontend/src/__tests__/App.spec.ts` |
-| RF-02 | Validación de archivo en `app1/frontend/src/App.vue`; suite frontend ejecutada |
-| RF-03, RF-04 | `app1/backend/tests/test_routes.py` y `app1/backend/tests/test_openrouter.py` |
-| RNF-01 | Inspección de configuración y código; verificación de despliegue pendiente |
-| RNF-04 | Pruebas de backend con mocks |
+| Requisito           | Evidencia de verificación                                                      |
+| ------------------- | ------------------------------------------------------------------------------ |
+| RF-01, RF-05, RF-06 | `app1/frontend/src/__tests__/App.spec.ts`                                      |
+| RF-02               | Validación de archivo en `app1/frontend/src/App.vue`; suite frontend ejecutada |
+| RF-03, RF-04        | `app1/backend/tests/test_routes.py` y `app1/backend/tests/test_openrouter.py`  |
+| RNF-01              | Inspección de configuración y código; verificación de despliegue pendiente     |
+| RNF-04              | Pruebas de backend con mocks                                                   |
 
 Comando de pruebas del backend:
 
@@ -237,12 +243,45 @@ uv run pytest -q
 
 El 02/11/2026 se ejecutaron 18 pruebas del backend desde `app1/`. También pasaron 8 pruebas de Vitest y la compilación del frontend desde `app1/frontend`.
 
-## 9. Pendientes de validación
+## 9. Modelos de datos
+
+Los modelos de datos utilizados para la aplicación están divididos en dos principalmente:
+
+- Los que hay en el frontend
+- Y los que existen en el backend
+
+**Frontend:**
+
+1. `Summary` se usa para almacenar la respuesta del backend que contiene el resumen del texto introducido por el usuario.
+2. `UserText` se usa para contener el texto introducido por el usuario, el que se envía al backend (API) para que el modelo sea igual y evitar problemas de modelado entre input/output.
+
+```mermaid
+classDiagram
+    class Summary {
+        +String summary
+    }
+    class UserText {
+        +String text
+    }
+```
+
+**Backend:**
+
+`TextoEntrada` se usa para recibir el texto que proviene del frontend y contiene el texto del usuario para ser resumido.
+
+```mermaid
+classDiagram
+    class TextoEntrada {
+        +str texto
+    }
+```
+
+## 10. Pendientes de validación
 
 - Verificar el flujo completo en la URL publicada de Vercel.
 - Revisar los criterios de aceptación con el equipo y el docente.
 - Adjuntar evidencias de despliegue y pruebas manuales.
 
-## 10. Revisión
+## 11. Revisión
 
 Esta versión describe el comportamiento observado en el código revisado el 02/11/2026. La suite backend se ejecutó con 18 pruebas superadas, la suite frontend con 8 pruebas superadas y la compilación terminó correctamente. La verificación del despliegue sigue pendiente.
