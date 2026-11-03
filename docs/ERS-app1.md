@@ -136,7 +136,7 @@ Criterios de aceptación:
 
 - CA-08. Una respuesta válida del proveedor produce HTTP 200 y un campo `resumen` no vacío.
 - CA-09. La clave de OpenRouter se utiliza exclusivamente en el backend.
-- CA-10. Una respuesta vacía o mal formada del proveedor se trata como error del proveedor.
+- CA-10. Una respuesta vacía, mal formada o una ausencia de clave de configuración del proveedor se trata como error del proveedor.
 
 ### RF-05. Visualización y gestión de estados
 
@@ -181,6 +181,7 @@ Todas las respuestas de error utilizan un objeto JSON con el campo `detail`, de 
 | Situación                                                              | HTTP | Ejemplo de respuesta                                                     |
 | ---------------------------------------------------------------------- | ---: | ------------------------------------------------------------------------ |
 | Entrada vacía, solo espacios, tipo incorrecto o más de 5000 caracteres |  422 | `{"detail":"El campo 'texto' debe contener entre 1 y 5000 caracteres."}` |
+| Clave de OpenRouter no configurada o respuesta no válida del proveedor |  502 | `{"detail":"Falta configurar OPENROUTER_API_KEY."}`                    |
 | Fallo del proveedor o respuesta no válida                              |  502 | `{"detail":"No se pudo obtener un resumen válido de OpenRouter."}`       |
 | Tiempo de espera agotado                                               |  504 | `{"detail":"El proveedor tardó demasiado en responder."}`                |
 
