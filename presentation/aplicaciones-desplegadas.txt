@@ -1,0 +1,57 @@
+APLICACIONES DESPLEGADAS - RESUMIDORIA
+
+Este archivo contiene un texto de demostracion de 5000 caracteres asociado al boton de descarga de la diapositiva "Aplicaciones desplegadas".
+
+App 1 - Resumidor IA v1
+https://app1-resumidor.vercel.app/
+
+App 2 - Resumidor IA v2
+https://resumidoria-v2.vercel.app/
+
+La practica presenta dos iteraciones de una aplicacion web para resumir textos mediante inteligencia artificial. La primera version implementa un flujo sencillo con Vue, Vite, FastAPI y OpenRouter. La segunda version incorpora autenticacion, opciones avanzadas de resumen, ideas principales, glosario, copia y exportacion.
+
+La aplicacion valida la entrada, mantiene las credenciales en el backend y comunica al usuario los estados de carga y error. Este contenido sirve como ejemplo descargable desde la presentacion.
+
+La aplicacion valida la entrada, mantiene las credenciales en el backend y comunica al usuario los estados de carga y error. Este contenido sirve como ejemplo descargable desde la presentacion.
+
+La aplicacion valida la entrada, mantiene las credenciales en el backend y comunica al usuario los estados de carga y error. Este contenido sirve como ejemplo descargable desde la presentacion.
+
+La aplicacion valida la entrada, mantiene las credenciales en el backend y comunica al usuario los estados de carga y error. Este contenido sirve como ejemplo descargable desde la presentacion.
+
+La aplicacion valida la entrada, mantiene las credenciales en el backend y comunica al usuario los estados de carga y error. Este contenido sirve como ejemplo descargable desde la presentacion.
+
+La aplicacion valida la entrada, mantiene las credenciales en el backend y comunica al usuario los estados de carga y error. Este contenido sirve como ejemplo descargable desde la presentacion.
+
+La aplicacion valida la entrada, mantiene las credenciales en el backend y comunica al usuario los estados de carga y error. Este contenido sirve como ejemplo descargable desde la presentacion.
+
+La aplicacion valida la entrada, mantiene las credenciales en el backend y comunica al usuario los estados de carga y error. Este contenido sirve como ejemplo descargable desde la presentacion.
+
+La aplicacion valida la entrada, mantiene las credenciales en el backend y comunica al usuario los estados de carga y error. Este contenido sirve como ejemplo descargable desde la presentacion.
+
+La aplicacion valida la entrada, mantiene las credenciales en el backend y comunica al usuario los estados de carga y error. Este contenido sirve como ejemplo descargable desde la presentacion.
+
+La aplicacion valida la entrada, mantiene las credenciales en el backend y comunica al usuario los estados de carga y error. Este contenido sirve como ejemplo descargable desde la presentacion.
+
+La aplicacion valida la entrada, mantiene las credenciales en el backend y comunica al usuario los estados de carga y error. Este contenido sirve como ejemplo descargable desde la presentacion.
+
+La aplicacion valida la entrada, mantiene las credenciales en el backend y comunica al usuario los estados de carga y error. Este contenido sirve como ejemplo descargable desde la presentacion.
+
+La aplicacion valida la entrada, mantiene las credenciales en el backend y comunica al usuario los estados de carga y error. Este contenido sirve como ejemplo descargable desde la presentacion.
+
+La aplicacion valida la entrada, mantiene las credenciales en el backend y comunica al usuario los estados de carga y error. Este contenido sirve como ejemplo descargable desde la presentacion.
+
+La aplicacion valida la entrada, mantiene las credenciales en el backend y comunica al usuario los estados de carga y error. Este contenido sirve como ejemplo descargable desde la presentacion.
+
+La aplicacion valida la entrada, mantiene las credenciales en el backend y comunica al usuario los estados de carga y error. Este contenido sirve como ejemplo descargable desde la presentacion.
+
+La aplicacion valida la entrada, mantiene las credenciales en el backend y comunica al usuario los estados de carga y error. Este contenido sirve como ejemplo descargable desde la presentacion.
+
+La aplicacion valida la entrada, mantiene las credenciales en el backend y comunica al usuario los estados de carga y error. Este contenido sirve como ejemplo descargable desde la presentacion.
+
+La aplicacion valida la entrada, mantiene las credenciales en el backend y comunica al usuario los estados de carga y error. Este contenido sirve como ejemplo descargable desde la presentacion.
+
+La aplicacion valida la entrada, mantiene las credenciales en el backend y comunica al usuario los estados de carga y error. Este contenido sirve como ejemplo descargable desde la presentacion.
+
+La aplicacion valida la entrada, mantiene las credenciales en el backend y comunica al usuario los estados de carga y error. Este contenido sirve como ejemplo descargable desde la presentacion.
+
+La aplicacion valida la entrada, mantiene las credenciales en el backend y comunica
