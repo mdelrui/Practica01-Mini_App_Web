@@ -4,9 +4,9 @@
 
 Para este caso se ha conectado Vercel con el repositorio de GitHub. El despliegue de App 1 se hizo a través de Vercel CLI, seleccionando la carpetadesde la que ejecutar la aplicación:
 
-| App   | URL                                               |
-| ----- | ------------------------------------------------- |
-| App 1 | [Resumidor IA v1](https://resumidoria.vercel.app) |
+| App   | URL                                                   |
+| ----- | ----------------------------------------------------- |
+| App 1 | [Resumidor IA v1](https://resumidoria.vercel.app)     |
 
 ## 2. Despliegue de App2 en AWS
 
@@ -16,12 +16,12 @@ Este documento recoge los procedimientos necesarios para ejecutar y desplegar la
 
 ### 2.2. Entornos de despliegue
 
-| Entorno                     | Tecnología              | Estado                                                                                         |
-| --------------------------- | ----------------------- | ---------------------------------------------------------------------------------------------- |
-| Frontend y backend en local | Vue 3 y FastAPI         | Disponible                                                                                     |
-| Aplicación 2 en Vercel      | Vercel                  | Referencia anterior; no es el despliegue objetivo de esta entrega                              |
+| Entorno                     | Tecnología              | Estado                                                                              |
+| --------------------------- | ----------------------- | ----------------------------------------------------------------------------------- |
+| Frontend y backend en local | Vue 3 y FastAPI         | Disponible                                                                          |
+| Aplicación 2 en Vercel      | Vercel                  | Referencia anterior; no es el despliegue objetivo de esta entrega |
 | Aplicación 2 con Docker     | Docker Compose y Nginx  | Configuración revisada; construcción y ejecución pendientes de validar en un equipo con Docker |
-| Aplicación 2 en AWS EC2     | Docker y Docker Compose | Pendiente, no se dispone de una URL ni de evidencias verificadas en esta revisión              |
+| Aplicación 2 en AWS EC2     | Docker y Docker Compose | Pendiente, no se dispone de una URL ni de evidencias verificadas en esta revisión |
 
 ### 2.3. Despliegue con Docker en local
 
@@ -402,13 +402,13 @@ Incluir o enlazar las siguientes evidencias:
 
 Revisión documental: 02/11/2026.
 
-| Comprobación                | Estado en esta revisión                                      | Evidencia necesaria                                                                        |
-| --------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
-| URLs de Vercel documentadas | URL anotadas en el documento                                 | Abrir cada URL y probar el flujo completo antes de darla por verificada                    |
-| Procedimiento Vercel CLI    | Comandos de login, link, preview y producción documentados   | Registrar la ejecución real y el resultado del último despliegue                           |
-| Docker Compose local        | Configuración revisada; no ejecutado en este entorno         | Capturar `docker compose config`, `ps` y pruebas funcionales en un equipo con Docker       |
-| AWS EC2                     | No desplegado o no acreditado en la documentación disponible | Registrar región, tipo de instancia, sistema operativo, URL, versión Git y comandos reales |
-| Clerk y CORS en producción  | Configuración pendiente de confirmar para el dominio de EC2  | Probar login y peticiones con/sin token desde el dominio publicado                         |
-| HTTPS                       | Pendiente de acreditar para EC2                              | URL HTTPS y comprobación desde un dispositivo externo                                      |
+| Comprobación | Estado en esta revisión | Evidencia necesaria |
+|---|---|---|
+| URLs de Vercel documentadas | URL anotadas en el documento | Abrir cada URL y probar el flujo completo antes de darla por verificada |
+| Procedimiento Vercel CLI | Comandos de login, link, preview y producción documentados | Registrar la ejecución real y el resultado del último despliegue |
+| Docker Compose local | Configuración revisada; no ejecutado en este entorno | Capturar `docker compose config`, `ps` y pruebas funcionales en un equipo con Docker |
+| AWS EC2 | No desplegado o no acreditado en la documentación disponible | Registrar región, tipo de instancia, sistema operativo, URL, versión Git y comandos reales |
+| Clerk y CORS en producción | Configuración pendiente de confirmar para el dominio de EC2 | Probar login y peticiones con/sin token desde el dominio publicado |
+| HTTPS | Pendiente de acreditar para EC2 | URL HTTPS y comprobación desde un dispositivo externo |
 
 No se deben completar los campos de AWS con valores supuestos. Tampoco se debe considerar una URL operativa solo porque aparezca escrita en este documento.
