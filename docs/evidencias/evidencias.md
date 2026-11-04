@@ -22,8 +22,8 @@ Este documento inventaría las evidencias disponibles y las que todavía deben c
 | EV-09 | App 2, resumen | Generación del resumen con las opciones disponibles | Pendiente |
 | EV-10 | App 2, rechazo sin token | Respuesta HTTP 401 ante petición no autenticada | Pendiente |
 | EV-11 | Docker Compose | Salida de `docker compose ps` con los servicios activos | Pendiente de nueva captura verificable |
-| EV-12 | Vercel | URL y flujo de las dos aplicaciones comprobados en navegador | Pendiente |
-| EV-13 | AWS EC2 | Instancia, URL HTTPS y prueba externa de la aplicación App 2 | Pendiente de despliegue |
+| EV-12 | Vercel | URL y flujo de App 1 comprobados en navegador | Pendiente |
+| EV-13 | AWS EC2 | Instancia, URL HTTPS y prueba externa de la aplicación App 2 desplegada con Docker | Pendiente |
 
 ## Cómo adjuntar una evidencia
 

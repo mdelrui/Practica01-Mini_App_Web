@@ -51,7 +51,7 @@ Esta lista reúne las tareas que quedan por revisar, completar o verificar segú
 - [✅] **P1-26 — Crear `presentation/defensa.pptx`.** Presentación propia creada con problema, alcance, arquitectura, ERS, proceso de App 1, Spec Kit, App 2, pruebas, seguridad, despliegues, comparativa y conclusiones. Revisar nombres y adaptar el contenido a la exposición del equipo.
 - [❌] **P1-27 — Preparar y ensayar la demostración.** Incluir una entrada válida y su resultado, un caso de validación o error controlado, autenticación Clerk, rechazo de una petición sin autenticación, un test con mock y un hito Git.
 - [❌] **P1-28 — Preparar evidencia de respaldo para la demo.** Tener una captura o grabación para posibles fallos externos, identificada claramente como evidencia de respaldo y no como ejecución en directo.
-- [❌] **P1-29 — Comprobar la entrega completa.** Verificar los enlaces de App 1 y App 2 en Vercel, App 2 en EC2, README, ERS, pruebas, comparativa, documentación, evidencias y presentación. Preparar el ZIP si se solicita, excluyendo secretos y carpetas de dependencias.
+- [❌] **P1-29 — Comprobar la entrega completa.** Verificar el enlace de App 1 en Vercel, el despliegue Docker de App 2 en EC2, README, ERS, pruebas, comparativa, documentación, evidencias y presentación. Preparar el ZIP si se solicita, excluyendo secretos y carpetas de dependencias.
 
 ## Criterio para marcar una tarea como terminada
 
