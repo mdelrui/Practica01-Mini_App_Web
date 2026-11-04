@@ -45,9 +45,7 @@ git clone https://github.com/mdelrui/Practica01-Mini_App_Web.git
 cd Practica01-Mini_App_Web
 ```
 
-Instala las dependencias de Python de todas las aplicaciones desde la raíz. El
-proyecto está configurado como un workspace de `uv`, por eso se usa
-`--all-packages`:
+Instala las dependencias de Python de todas las aplicaciones desde la raíz. El proyecto está configurado como un workspace de `uv`, por eso se usa `--all-packages`:
 
 ```bash
 uv sync --all-packages
@@ -64,9 +62,7 @@ cd ../..
 ```
 
 Los archivos `.env` no se guardan en Git. Hay que crearlos copiando los
-archivos `.env.example` de la aplicación que se vaya a usar y rellenarlos con
-las credenciales propias. Los comandos de instalación y despliegue están
-explicados en este README y en [`docs/despliegues.md`](docs/despliegues.md).
+archivos `.env.example` de la aplicación que se vaya a usar y rellenarlos con las credenciales propias. Los comandos de instalación y despliegue están explicados en este README y en [`docs/despliegues.md`](docs/despliegues.md).
 
 ## App 1: versión básica
 
@@ -98,7 +94,7 @@ cd ..
 Arranca la aplicación desde `app1/`:
 
 ```bash
-uv run python main.py
+uv run uvicorn main:app --reload
 ```
 
 La aplicación estará disponible en `http://127.0.0.1:8000` y la documentación de la API en `http://127.0.0.1:8000/docs`.
@@ -199,7 +195,7 @@ docker compose --env-file infra/.env -f infra/compose.yaml down
 
 ## Despliegues y documentación
 
-Las URL documentadas para Vercel y el estado del despliegue en AWS EC2 se recogen en [`docs/despliegues.md`](docs/despliegues.md). Las URL publicadas deben comprobarse manualmente antes de considerarlas operativas.
+La URL de App 1 en Vercel y la información del despliegue de App 2 mediante Docker en AWS EC2 se recogen en [`docs/despliegues.md`](docs/despliegues.md). Las URL publicadas deben comprobarse manualmente antes de considerarlas operativas.
 
 Documentación adicional:
 

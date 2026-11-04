@@ -192,9 +192,9 @@ La suite de la app2 ya está implementada en el frontend y cubre el flujo princi
 | **Resultado Esperado** | Cuando la API responde solo con el resumen y no incluye ideas principales ni glosario, la interfaz renderiza únicamente ese texto |
 | **Resultado Obtenido** | Verificado al ejecutar la suite del frontend de app2 y comprobar que no aparecen las secciones opcionales                         |
 
-## Verificación manual de Vercel para App 2 (pendiente de completar)
+## Verificación manual de App 2 en AWS EC2
 
-> Esta comprobación no se marca como realizada. Los campos quedan vacíos para que se complete manualmente en el entorno real de Vercel por la persona responsable.
+> App 2 se publica mediante Docker Compose en AWS EC2. Esta comprobación debe realizarse desde el dominio o la IP pública de la instancia.
 
 | Campo                        | Valor |
 | ---------------------------- | ----- |
