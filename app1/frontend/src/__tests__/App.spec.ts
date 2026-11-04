@@ -1,7 +1,13 @@
-import { describe, expect, it } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { describe, expect, it, vi } from 'vitest'
+import { flushPromises, mount } from '@vue/test-utils'
 import App from '../App.vue'
 import { resumirTexto } from '../services/resumen'
+
+vi.mock('../services/resumen', () => ({
+  resumirTexto: vi.fn(),
+}))
+
+const resumirTextoMock = vi.mocked(resumirTexto)
 
 describe('Aplicación', () => {
   it('muestra el título y el campo de texto', () => {
@@ -16,5 +22,77 @@ describe('Aplicación', () => {
     const boton = wrapper.find('button[type="submit"]')
 
     expect(boton.attributes('disabled')).toBeDefined()
+  })
+
+  it('activa el botón cuando escribimos texto', async () => {
+    const wrapper = mount(App)
+
+    await wrapper.find('textarea').setValue('Este es un texto de prueba')
+
+    expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeUndefined()
+  })
+
+  it('muestra el número de palabras', async () => {
+    const wrapper = mount(App)
+
+    await wrapper.find('textarea').setValue('Hola mundo desde Vitest')
+
+    expect(wrapper.text()).toContain('4 palabras')
+  })
+
+  it('borra el texto al pulsar el botón de borrar', async () => {
+    const wrapper = mount(App)
+
+    await wrapper.find('textarea').setValue('Texto que quiero borrar')
+    await wrapper.find('button[aria-label="Borrar texto"]').trigger('click')
+
+    expect((wrapper.find('textarea').element as HTMLTextAreaElement).value).toBe('')
+  })
+
+  it('muestra el resumen cuando la petición funciona', async () => {
+    resumirTextoMock.mockResolvedValueOnce('Este es el resumen')
+    const wrapper = mount(App)
+
+    await wrapper.find('textarea').setValue('Un texto largo para resumir')
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Este es el resumen')
+    expect(resumirTextoMock).toHaveBeenCalledWith('Un texto largo para resumir')
+  })
+
+  it('muestra un mensaje cuando la petición falla', async () => {
+    resumirTextoMock.mockRejectedValueOnce(new Error('Error de conexión'))
+    const wrapper = mount(App)
+
+    await wrapper.find('textarea').setValue('Texto para probar el error')
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('No se pudo generar el resumen')
+    expect(wrapper.find('[role="alert"]').exists()).toBe(true)
+  })
+
+  it('muestra el estado de carga mientras espera la respuesta', async () => {
+    let resolver!: (valor: string) => void
+    resumirTextoMock.mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolver = resolve
+      }),
+    )
+    const wrapper = mount(App)
+
+    await wrapper.find('textarea').setValue('Texto para resumir')
+    await wrapper.find('form').trigger('submit')
+
+    expect(wrapper.text()).toContain('Resumiendo...')
+    expect(wrapper.find('[role="status"]').exists()).toBe(true)
+    expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeDefined()
+
+    resolver('Resumen terminado')
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Resumen terminado')
+    expect(wrapper.find('[role="status"]').exists()).toBe(false)
   })
 })

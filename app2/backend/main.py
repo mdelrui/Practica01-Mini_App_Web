@@ -24,7 +24,13 @@ ORIGENES = [
     if origen.strip()
 ]
 
-app = FastAPI()
+app = FastAPI(title="ResumidorIA API")
+
+
+@app.get("/health", tags=["operaciones"])
+def health_check():
+    """Endpoint de salud para comprobar que el proceso FastAPI responde."""
+    return {"status": "ok"}
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ORIGENES,

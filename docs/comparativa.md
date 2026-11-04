@@ -45,7 +45,7 @@ La calidad se valora aquí por claridad del contrato, validaciones, mensajes de 
 - la interfaz presenta errores y estados de carga de forma más clara
 - la documentación técnica y las pruebas han sido revisadas con más detalle
 
-En comparación, App 1 tenía una base funcional correcta pero menos cerrada tecnicamente. App 2 presenta una mejor separación de responsabilidades y una experiencia más sólida para el usuario.
+En comparación, App 1 tenía una base funcional correcta pero menos cerrada técnicamente. App 2 presenta una mejor separación de responsabilidades y una experiencia más sólida para el usuario.
 
 ---
 
@@ -87,8 +87,7 @@ La parte que resulta más difícil de mantener es la de seguridad y autenticaci�
 La IA resulta más útil en App 2 porque la aplicación guía la respuesta con un esquema más preciso:
 
 - longitud del resumen configurable
-- extracción de ideas principales opcional
-- glosario opcional
+- extracción de ideas principales y glosario opcionales
 - validación del JSON para evitar salidas inconsistentes
 
 La IA ayuda especialmente en tareas de síntesis, pero requiere revisiones humanas para confirmar que:
@@ -104,4 +103,4 @@ La IA ayuda especialmente en tareas de síntesis, pero requiere revisiones human
 
 La evolución de App 1 a App 2 es clara: se mantiene la utilidad principal de resumir texto, pero se mejora la robustez, la seguridad y la calidad del servicio. La App 2 es más compleja de implementar, pero también es más completa desde el punto de vista técnico y más preparada para validación real, despliegue y revisión académica.
 
-La comparación no pretende decir que App 1 fuera “incorrecta”; más bien, App 2 refleja una segunda iteración mejor preparada para entorno real, autenticación y pruebas automatizadas.
+La comparación no pretende decir que App 1 fuera _incorrecta_; más bien, App 2 refleja una segunda iteración mejor preparada para entorno real, autenticación y pruebas automatizadas.

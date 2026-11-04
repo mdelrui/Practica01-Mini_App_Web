@@ -66,12 +66,13 @@ async function getSummary() {
 
   loading.value = true
   summary.value = null
+  reqError.value = null
   try {
-    // Enviamos el texto a Python y guardamos el resumen
+    // Enviamos el texto al backend y guardamos el resumen.
     summary.value = await resumirTexto(text.value)
   } catch {
-    // Mostramos un mensaje sencillo si ocurre un error.
-    summary.value = 'No se pudo generar el resumen. Comprueba la conexión e inténtalo de nuevo.'
+    // El error se muestra separado del resultado para no confundir al usuario.
+    reqError.value = 'No se pudo generar el resumen. Comprueba la conexión e inténtalo de nuevo.'
   } finally {
     loading.value = false
   }
@@ -179,7 +180,7 @@ async function getSummary() {
           </p>
         </div>
 
-        <div v-if="reqError" class="bg-[#ff7979]/20 border border-[#ff9292] rounded-lg p-4">
+        <div v-if="reqError" role="alert" class="bg-[#ff7979]/20 border border-[#ff9292] rounded-lg p-4">
           <p class="text-[#cc4f4f] font-semibold leading-relaxed whitespace-pre-line">
             {{ reqError }}
           </p>

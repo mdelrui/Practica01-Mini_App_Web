@@ -1,4 +1,4 @@
-# Registro de Pruebas de Integración Reales
+# Registro de pruebas de integración
 
 > **Nota:** Las siguientes pruebas se ejecutan de forma aislada o manual utilizando datos ficticios. No forman parte de la ejecución rutinaria de `pytest` para evitar dependencias de red o consumo de créditos de la API externa.
 
@@ -56,7 +56,40 @@ Estas pruebas están pensadas para ser sencillas, ejecutables localmente y aline
 - No dependen de una API externa real ni de créditos de OpenRouter.
 - Están diseñadas para validar la lógica visible del usuario descrita en el ERS: entrada de texto, validación básica, envío y gestión de errores.
 
-## Pruebas documentadas para la app2
+### APP1-PR-05
+
+| Campo                  | Descripción                                                                                                               |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **ID de Prueba**       | APP1-PR-05                                                                                                                |
+| **Fecha**              | 02/11/2026                                                                                                                |
+| **Entorno**            | Local (Python 3.13.5, pytest, FastAPI TestClient)                                                                         |
+| **Comando / Acción**   | `cd app1 && python -m pytest -q`                                                                                          |
+| **Resultado Esperado** | Las pruebas de rutas y del cliente OpenRouter verifican entrada válida, validación, límite, error del proveedor y timeout |
+| **Resultado Obtenido** | 18 pruebas superadas                                                                                                      |
+
+### APP1-PR-06
+
+| Campo                  | Descripción                                                                          |
+| ---------------------- | ------------------------------------------------------------------------------------ |
+| **ID de Prueba**       | APP1-PR-06                                                                           |
+| **Fecha**              | 02/11/2026                                                                           |
+| **Entorno**            | Revisión de código y pruebas HTTP locales                                            |
+| **Comando / Acción**   | Pruebas de integración añadidas en `app1/backend/tests/test_routes.py`               |
+| **Resultado Esperado** | Las respuestas de error mantienen JSON con `detail` y distinguen HTTP 422, 502 y 504 |
+| **Resultado Obtenido** | Verificado en las tres pruebas de contrato incluidas en las 18 pruebas superadas     |
+
+### Estado de ejecución del frontend de App 1
+
+Se ampliaron las pruebas de `app1/frontend/src/__tests__/App.spec.ts` para comprobar el mensaje de error y el estado de carga. El 02/11/2026 se ejecutaron 8 pruebas con Vitest y la compilación del frontend terminó correctamente. La instalación desde un entorno limpio se mantiene pendiente.
+
+```bash
+cd app1/frontend
+npm ci
+npm exec vitest run
+npm run build
+```
+
+## Pruebas documentadas para la App 2
 
 La suite de la app2 ya está implementada en el frontend y cubre el flujo principal de autenticación y resumen. A continuación se documentan de forma individual siguiendo el mismo formato del template.
 
@@ -126,6 +159,39 @@ La suite de la app2 ya está implementada en el frontend y cubre el flujo princi
 | **Resultado Esperado** | La UI maneja texto vacío, límite de 5000 caracteres, carga efectiva de `.txt` y `.md`, rechazo de extensiones no permitidas y errores de servicio visibles |
 | **Resultado Obtenido** | Verificado al ejecutar la suite existente de la app2 y las pruebas añadidas para validación de entrada y archivo                                           |
 
+### APP2-PR-07
+
+| Campo                  | Descripción                                                                                               |
+| ---------------------- | --------------------------------------------------------------------------------------------------------- |
+| **ID de Prueba**       | APP2-PR-07                                                                                                |
+| **Fecha**              | 03/11/2026                                                                                                |
+| **Entorno**            | Local (Vite + Vitest + JSDOM)                                                                             |
+| **Comando / Acción**   | `cd app2/frontend && npm exec vitest run src/__tests__/App.spec.ts`                                       |
+| **Resultado Esperado** | No se envía la petición cuando el texto está vacío o contiene únicamente espacios, saltos de línea o tabs |
+| **Resultado Obtenido** | Verificado al ejecutar la suite del frontend de app2 y comprobar que no se dispara la llamada al backend  |
+
+### APP2-PR-08
+
+| Campo                  | Descripción                                                                                                  |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **ID de Prueba**       | APP2-PR-08                                                                                                   |
+| **Fecha**              | 03/11/2026                                                                                                   |
+| **Entorno**            | Local (Vite + Vitest + JSDOM)                                                                                |
+| **Comando / Acción**   | `cd app2/frontend && npm exec vitest run src/__tests__/App.spec.ts`                                          |
+| **Resultado Esperado** | La petición no se dispara si el usuario está autenticado pero no hay token de sesión disponible              |
+| **Resultado Obtenido** | Verificado al ejecutar la suite del frontend de app2 y confirmar que la llamada a `axios.post` no se ejecuta |
+
+### APP2-PR-09
+
+| Campo                  | Descripción                                                                                                                       |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| **ID de Prueba**       | APP2-PR-09                                                                                                                        |
+| **Fecha**              | 03/11/2026                                                                                                                        |
+| **Entorno**            | Local (Vite + Vitest + JSDOM)                                                                                                     |
+| **Comando / Acción**   | `cd app2/frontend && npm exec vitest run src/__tests__/App.spec.ts`                                                               |
+| **Resultado Esperado** | Cuando la API responde solo con el resumen y no incluye ideas principales ni glosario, la interfaz renderiza únicamente ese texto |
+| **Resultado Obtenido** | Verificado al ejecutar la suite del frontend de app2 y comprobar que no aparecen las secciones opcionales                         |
+
 ## Verificación manual de Vercel para App 2 (pendiente de completar)
 
 > Esta comprobación no se marca como realizada. Los campos quedan vacíos para que se complete manualmente en el entorno real de Vercel por la persona responsable.
@@ -145,3 +211,51 @@ La suite de la app2 ya está implementada en el frontend y cubre el flujo princi
 - [ ] Rechazo de una petición al backend sin token.
 - [ ] Rechazo de una petición con token inválido.
 - [ ] Comprobación de errores y CORS desde el navegador.
+
+---
+
+## Resumen de ejecución de la revisión del 03/11/2026
+
+| Suite               | Resultado observado en este entorno    | Detalle                                                                                 |
+| ------------------- | -------------------------------------- | --------------------------------------------------------------------------------------- |
+| App 1 backend       | 18/18 pruebas superadas                | `PYTHONPATH=app1 pytest -q app1/backend/tests`                                          |
+| App 1 arranque HTTP | Correcto                               | `TestClient` obtuvo HTTP 200 en `/openapi.json` y detectó `/api/resumir`                |
+| App 1 frontend      | 8 pruebas superadas y build correcto   | `npm.cmd exec vitest run` y `npm.cmd run build` desde `app1/frontend`                   |
+| App 2 backend       | 32 pruebas superadas                   | `uv run pytest -q app2/backend/tests`                                                   |
+| App 2 frontend      | 9/9 pruebas superadas y build correcto | `npm exec vitest run src/__tests__/App.spec.ts` y `npm run build` desde `app2/frontend` |
+| Docker              | No ejecutado                           | No hay cliente Docker disponible en este entorno                                        |
+
+Comprobaciones de bloqueo de dependencias:
+
+```bash
+uv lock --check --offline --directory app1
+uv lock --check --offline --directory app2/backend
+```
+
+Ambos archivos de bloqueo se validaron correctamente. La validación del lock no equivale a instalar todas las dependencias ni a construir imágenes Docker.
+
+Para completar la verificación en un equipo con conexión y Docker:
+
+```bash
+cd app1
+uv sync --locked
+uv run pytest -q
+cd frontend
+npm ci
+npm exec vitest run
+npm run build
+
+cd ../../app2/backend
+uv sync --locked
+uv run pytest -q tests
+
+cd ../frontend
+npm ci
+npm exec vitest run
+npm run build
+
+cd ../infra
+docker compose --env-file .env -f compose.yaml config
+docker compose --env-file .env -f compose.yaml up --build -d
+docker compose --env-file .env -f compose.yaml ps
+```

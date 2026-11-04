@@ -247,4 +247,53 @@ describe('App summary flow', () => {
     expect(createObjectURL).toHaveBeenCalledTimes(2)
     expect(revokeObjectURL).toHaveBeenCalledTimes(2)
   })
+
+  it('does not send empty or whitespace-only text', async () => {
+    authState.signedIn = true
+    authState.token = 'test-session-token'
+
+    const wrapper = mountConfiguredApp()
+    const textarea = wrapper.get('textarea')
+
+    for (const value of ['', '   ', '\n\t  ']) {
+      await textarea.setValue(value)
+      await wrapper.get('form').trigger('submit')
+      await flushPromises()
+
+      expect(axios.post).not.toHaveBeenCalled()
+    }
+
+    expect(getToken).not.toHaveBeenCalled()
+  })
+
+  it('does not send the request when no session token is available', async () => {
+    authState.signedIn = true
+    getToken.mockResolvedValue(null)
+
+    const wrapper = mountConfiguredApp()
+    await wrapper.get('textarea').setValue('Texto de prueba')
+    await wrapper.get('form').trigger('submit')
+    await flushPromises()
+
+    expect(getToken).toHaveBeenCalledOnce()
+    expect(axios.post).not.toHaveBeenCalled()
+  })
+
+  it('renders only the summary when optional sections are absent', async () => {
+    authState.signedIn = true
+    authState.token = 'test-session-token'
+
+    vi.mocked(axios.post).mockResolvedValue({
+      data: { summary: 'Resumen sin secciones opcionales' },
+    })
+
+    const wrapper = mountConfiguredApp()
+    await wrapper.get('textarea').setValue('Texto de prueba')
+    await wrapper.get('form').trigger('submit')
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Resumen sin secciones opcionales')
+    expect(wrapper.text()).not.toContain('IDEAS PRINCIPALES')
+    expect(wrapper.text()).not.toContain('GLOSARIO')
+  })
 })
