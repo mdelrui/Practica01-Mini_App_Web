@@ -10,7 +10,7 @@ Esta lista reúne las tareas que quedan por revisar, completar o verificar segú
 ## Prioridad 0 — Bloqueos y reproducibilidad
 
 - [✅] **P0-01 — Verificar la instalación y el arranque de App 1 desde un entorno limpio.** Confirmar que las dependencias se pueden instalar y que la aplicación arranca siguiendo las instrucciones documentadas. Revisar el papel de `app1/backend/main.py` frente al punto de entrada que realmente se utiliza y eliminarlo o documentarlo si procede. Se corrigió el conflicto de marcadores de `app1/pyproject.toml`, se comprobó `uv lock --check --offline` y se documentó que el punto de entrada real es `app1/main.py`; falta instalar dependencias y probar el arranque desde un entorno limpio.
-- [❌] **P0-02 — Asegurar la reproducibilidad de Docker para App 2.** `app2/backend/uv.lock` existe y su consistencia se validó con `uv lock --check --offline`; también se revisaron Dockerfiles y Compose y se añadió healthcheck. Falta construir las imágenes desde un clon limpio porque Docker no está disponible en este entorno.
+- [✅] **P0-02 — Asegurar la reproducibilidad de Docker para App 2.** `app2/backend/uv.lock` existe y su consistencia se validó con `uv lock --check --offline`; también se revisaron Dockerfiles y Compose, se añadió healthcheck y se probó el despliegue con Docker.
 
 ## Prioridad 1 — Pruebas y calidad técnica
 
@@ -35,14 +35,14 @@ Esta lista reúne las tareas que quedan por revisar, completar o verificar segú
 - [✅] **P1-16 — Completar `docs/diagramas/diagramas.md`.** Incluir o enlazar un diagrama de arquitectura coherente con el código y otros diagramas que aporten valor.
 - [❌] **P1-17 — Completar `docs/evidencias/evidencias.md`.** Añadir o enlazar capturas y registros de pruebas y despliegues, indicando qué demuestra cada evidencia y evitando datos sensibles.
 - [✅] **P1-18 — Revisar `docs/proceso.md`.** Registrar decisiones e incidencias que falten, los problemas relevantes, sus soluciones y los cambios importantes del proceso.
-- [❌] **P1-19 — Revisar `docs/despliegues.md`.** Asegurar que documenta el procedimiento real de Vercel CLI, las URLs verificadas, Docker local, AWS EC2, Clerk, HTTPS, configuración no secreta y comandos de actualización y recuperación.
+- [✅] **P1-19 — Revisar `docs/despliegues.md`.** Documenta el procedimiento real de Vercel CLI, las URLs verificadas, Docker local y en servidor, AWS EC2, Clerk, HTTPS, configuración no secreta y comandos de actualización y recuperación.
 
 ## Prioridad 1 — Docker, AWS y despliegue final
 
 - [✅] **P1-20 — Revisar la configuración de producción de Docker para App 2.** Revisados Dockerfiles, Compose, Nginx, variables, puertos, red interna y política de reinicio. El backend no publica puerto al exterior; el frontend queda enlazado a `127.0.0.1:8080` para situar un proxy HTTPS delante. Se añadió healthcheck del backend y dependencia `service_healthy`. La construcción real queda en P1-21.
 - [✅] **P1-21 — Construir y probar Docker desde un clon limpio.** Confirmar que las imágenes se construyen y los servicios arrancan sin depender de archivos locales no versionados.
-- [❌] **P1-22 — Desplegar App 2 en AWS EC2.** Documentar instancia, región, sistema operativo, grupo de seguridad, instalación de Docker/Compose, obtención del código y comandos realmente utilizados.
-- [❌] **P1-23 — Configurar Clerk y CORS para producción.** Autorizar los orígenes y URLs reales y comprobar que la autenticación funciona en el dominio de EC2.
+- [✅] **P1-22 — Desplegar App 2 en AWS EC2.** Despliegue completado mediante Docker Compose en la instancia EC2.
+- [✅] **P1-23 — Configurar Clerk y CORS para producción.** Autorizados los orígenes y comprobada la autenticación en producción.
 - [❌] **P1-24 — Verificar el control de acceso a la API en EC2.** Comprobar que una solicitud autenticada puede generar un resumen y que las solicitudes sin token o con token inválido/caducado reciben 401 sin llamar a la IA.
 - [❌] **P1-25 — Ejecutar pruebas de extremo a extremo en EC2.** Desde otro dispositivo o conexión, comprobar carga de la aplicación, autenticación, generación de resumen y un error controlado. Registrar URL, versión Git y evidencias.
 - [❌] **P1-26 — Terminar de agregar información de despliegue.** Comprobar que todos los datos del despliegue han sido añadidos y no hay información faltante, como URL y demás información importante no incluida hasta el momento.
