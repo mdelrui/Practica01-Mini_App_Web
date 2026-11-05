@@ -7,7 +7,6 @@ El despliegue de App 1 se hizo a través de Vercel CLI, seleccionando la carpeta
 | App   | URL                                                   |
 | ----- | ----------------------------------------------------- |
 | App 1 | [Resumidor IA v1](https://app1-resumidor.vercel.app/) |
-
 ## 2. Despliegue de App 2 en AWS EC2 con Docker
 
 App 2 se despliega exclusivamente en una instancia AWS EC2 mediante Docker Compose.
@@ -15,7 +14,6 @@ App 2 se despliega exclusivamente en una instancia AWS EC2 mediante Docker Compo
 | App   | URL                                                   |
 | ----- | ----------------------------------------------------- |
 | App 2 | [Resumidor IA v2](52.205.88.41:8080) |
-
 
 ### 2.1. Objetivo
 
@@ -29,9 +27,47 @@ Este documento recoge los procedimientos necesarios para ejecutar y desplegar la
 | Aplicación 2 con Docker     | Docker Compose y Nginx  | Desplegada y verificada en local y producción                                       |
 | Aplicación 2 en AWS EC2     | Docker y Docker Compose | Desplegada en EC2 |
 
-### 2.3. Despliegue con Docker en local
+### 2.3. Despliegue con Vercel CLI
 
-#### 2.3.1. Arquitectura
+Se instaló vercel en el equipo de forma global con:
+
+```powershell
+npm i -g vercel
+```
+
+Después se cambia el directorio al de la aplicación 2, desde la raíz:
+
+```powershell
+cd app2
+```
+
+Se hace login:
+
+```powershell
+vercel login
+```
+
+Se inicia sesión desde el navegador y se espera a que se actualice la terminal.
+
+Tras ello, se ejecuta el comando para compilar el proyecto y crear un despliegue anterior al de producción:
+
+```powershell
+vercel
+```
+
+En caso de que falle, ya sea por alguna configuración, por el `vercel.json` o incluso por problemas con el `package.json` o `package-lock.json`, es necesario resolverlo y volver a ejecutar el comando.
+
+Cuando se ejecute sin problemas, se ejecuta el comando que permite pasar el proyecto a producción:
+
+```powershell
+vercel --prod
+```
+
+Cuando todo se haya ejecutado, hay que irse a la web de Vercel y, desde `Environment Variables`, añadir todas las variables de entorno necesarias para que el proyecto pueda funcionar de forma correcta. En caso contrario, mostrará errores en la web desplegada o simplemente mostrará una web en blanco.
+
+### 2.4. Despliegue con Docker en local
+
+#### 2.4.1. Arquitectura
 
 La aplicación 2 se ejecuta mediante dos contenedores coordinados con Docker Compose:
 
@@ -40,7 +76,7 @@ La aplicación 2 se ejecuta mediante dos contenedores coordinados con Docker Com
 - **Nginx:** sirve el frontend y actúa como proxy inverso para redirigir las peticiones a la API.
 - **Docker Compose:** configura y coordina los contenedores.
 
-#### 2.3.2. Estructura de los archivos
+#### 2.4.2. Estructura de los archivos
 
 Los archivos relacionados con Docker se encuentran en `app2/infra/`:
 
@@ -68,7 +104,7 @@ El archivo `infra/.env` se crea localmente a partir de `infra/.env.example`; no 
 - `.dockerignore`: excluye del contexto de construcción archivos, entornos virtuales, dependencias y secretos.
 - `Caddyfile.example`: ejemplo de proxy HTTPS en el host EC2, delante del puerto local de Nginx.
 
-#### 2.3.3. Requisitos previos
+#### 2.4.3. Requisitos previos
 
 Es necesario disponer de:
 
@@ -92,7 +128,7 @@ Las variables utilizadas incluyen:
 | `CLERK_JWKS_TIMEOUT`         | Tiempo límite de espera para obtener las claves de verificación.         |
 | `CORS_ORIGINS`               | Orígenes autorizados para las peticiones al backend.                     |
 
-#### 2.3.4. Construcción y ejecución
+#### 2.4.4. Construcción y ejecución
 
 Desde la raíz del repositorio, acceder al directorio de la aplicación:
 
@@ -124,7 +160,7 @@ Una vez iniciados, la aplicación está disponible en:
 
 URL local: [http://localhost:8080](http://localhost:8080). En Compose, el puerto se publica solo en `127.0.0.1`; si se necesita acceso remoto, debe hacerse a través de un proxy HTTPS en el host.
 
-#### 2.3.5. Comprobación del funcionamiento
+#### 2.4.5. Comprobación del funcionamiento
 
 Con los contenedores en ejecución, se comprueba que:
 
@@ -146,7 +182,7 @@ Para seguir los registros en tiempo real:
 docker compose --env-file infra/.env -f infra/compose.yaml logs -f
 ```
 
-#### 2.3.6. Parada de los contenedores
+#### 2.4.6. Parada de los contenedores
 
 Para detener y eliminar los contenedores creados por Docker Compose:
 
@@ -156,142 +192,247 @@ docker compose --env-file infra/.env -f infra/compose.yaml down
 
 Este comando no elimina las imágenes construidas.
 
-#### 2.3.7. Resultado
+#### 2.4.7. Resultado
 
 La configuración Docker Compose para App 2 se encuentra verificada, construida y desplegada correctamente, con ambos servicios (frontend con Nginx y backend con FastAPI) comunicándose a través de la red interna.
 
 El mapeo de Nginx se enlaza a `127.0.0.1:8080`, permitiendo que el proxy HTTPS del host publique la aplicación de forma segura sin exponer el backend directamente.
 
-### 2.4. Despliegue de la aplicación 2 en AWS EC2
+### 2.5. Despliegue de la aplicación 2 en AWS EC2
 
 > Estado: desplegada mediante Docker Compose en una instancia EC2. La URL pública y las evidencias concretas deben mantenerse actualizadas con los datos reales de la instancia.
 
 #### 2.5.1. Información de la instancia
 
-| Parámetro                   | Valor       |
-| --------------------------- | ----------- |
-| Proveedor                   | AWS Academy |
-| Servicio                    | Amazon EC2  |
-| Sistema operativo           | [Completar] |
-| Región                      | [Completar] |
-| Tipo de instancia           | [Completar] |
-| Dirección pública o dominio | [Completar] |
-| URL HTTPS de la aplicación  | [Completar] |
+| Parámetro              | Valor                                                 |
+| ---------------------- | ----------------------------------------------------- |
+| Proveedor y servicio   | AWS Academy — Amazon EC2                              |
+| Nombre de la instancia | `app2-server`                                         |
+| Sistema operativo      | Ubuntu Server 24.04 LTS                               |
+| Tipo de instancia      | `t2.micro`                                            |
+| Región                 | Región por defecto                                    |
+| Dirección pública      | Elastic IP asociada; el valor real no se incluye aquí |
+| URL utilizada          | `http://<Elastic-IP>`                                 |
+| HTTPS                  | No configurado; el acceso documentado es HTTP         |
 
-#### 2.5.2. Configuración de acceso y red
+#### 2.5.2. Pasos del despliegue en AWS (Laboratorio de AWS Academy)
 
-Documentar la configuración aplicada a la instancia:
+En esta guía recojo paso a paso cómo he realizado el despliegue de **App2** en una máquina virtual EC2 de AWS Academy utilizando Docker Compose, y cómo le he asignado una IP pública fija (Elastic IP) para que la dirección no cambie al reiniciar la máquina.
 
-- Grupo de seguridad utilizado.
-- Acceso SSH limitado a las direcciones IP autorizadas.
-- Puertos públicos necesarios para acceder a la aplicación.
-- Configuración del dominio y HTTPS.
+---
 
-No se debe publicar el puerto interno del backend directamente en Internet. El acceso web debe realizarse a través del proxy inverso.
+### ¿Cómo funciona la arquitectura?
 
-#### 2.5.3. Preparación del servidor
+Para no complicarme exponiendo puertos raros ni peleándome con CORS entre diferentes dominios, he montado la aplicación completa dentro de una sola máquina EC2 usando Docker Compose con dos servicios:
 
-Describir los pasos realizados para:
-
-1. Conectarse a la instancia mediante SSH.
-2. Instalar Docker y Docker Compose.
-3. Obtener el repositorio o la versión del código que se va a desplegar.
-4. Crear el archivo de configuración de entorno en el servidor.
-5. Verificar que las credenciales no están incluidas en el repositorio.
-
-Añadir los comandos reales utilizados durante la configuración.
-
-#### 2.5.4. Construcción y puesta en marcha
-
-Documentar los comandos ejecutados en el servidor para construir las imágenes y arrancar los contenedores.
-
-Por ejemplo, si se utiliza la misma estructura de directorios que en local, los comandos serán equivalentes a los siguientes, adaptados al sistema operativo y al método de acceso al repositorio:
-
-```
-cd app2
-
-docker compose --env-file infra/.env -f infra/compose.yaml config
-
-docker compose --env-file infra/.env -f infra/compose.yaml up --build -d
-
-docker compose --env-file infra/.env -f infra/compose.yaml ps
+```mermaid
+flowchart LR
+    Usuario["Navegador web\nhttp://MI_ELASTIC_IP"] -->|Puerto 80 HTTP| EC2
+    subgraph EC2["Instancia EC2 (Ubuntu 24.04)"]
+        Frontend["Frontend\nNginx :80"] -->|Proxy interno /api/*| Backend["Backend\nFastAPI :8000"]
+    end
+    Backend -->|HTTPS| OpenRouter["OpenRouter API"]
+    Backend -->|HTTPS| Clerk["Clerk Auth"]
 ```
 
-Registrar cualquier cambio que haya sido necesario respecto a la configuración local.
+- **Frontend (Nginx en puerto 80):** Sirve los archivos estáticos de la aplicación Vue 3. Además, cuando el navegador hace una petición a `/api/...`, Nginx actúa como proxy inverso y se la pasa internamente al backend.
+- **Backend (FastAPI en puerto interno 8000):** Procesa los resúmenes, valida los tokens de Clerk y consulta los modelos de OpenRouter. No está expuesto directamente a internet, lo cual es mucho más limpio y seguro.
 
-#### 2.5.5. Preparación recomendada de HTTPS en EC2
+---
 
-La configuración de Compose enlaza el frontend únicamente a `127.0.0.1:8080`. Para publicar la aplicación se recomienda terminar TLS en el host mediante Caddy, que obtiene y renueva certificados automáticamente cuando el dominio apunta a la instancia y los puertos 80/443 están accesibles.
+### Paso 1: Lanzar la instancia EC2 en AWS
 
-1. En el grupo de seguridad de EC2, permitir TCP 80 y 443 desde Internet. Restringir TCP 22 a la IP o red administrativa del equipo. No abrir 8000 ni 8080.
-2. Instalar Caddy siguiendo la documentación oficial correspondiente a la distribución Linux utilizada.
-3. Copiar `app2/infra/Caddyfile.example` a `/etc/caddy/Caddyfile` y sustituir el dominio de ejemplo por el dominio real.
-4. Validar y recargar Caddy con los comandos de la distribución instalada.
-5. Configurar en Clerk el dominio de producción y añadir el origen HTTPS exacto a `CORS_ORIGINS`.
-6. Verificar la renovación automática del certificado y el acceso desde una conexión externa.
+Entré en la consola de AWS Academy y creé la máquina con estos datos:
 
-Ejemplo de configuración del proxy (no es un dominio real):
+1. Fui a **EC2 → Instances → Launch Instances**.
+2. Parámetros que seleccioné:
+   - **Nombre:** `app2-server`
+   - **Sistema operativo (AMI):** **Ubuntu Server 24.04 LTS** (es el más cómodo y estable para Docker).
+   - **Tipo de instancia:** `t2.micro` (es la que entra en el lab sin gastar créditos extra).
+   - **Key pair (clave SSH):** Creé una clave nueva llamada `clave-aws.pem` y me la guardé en mi equipo.
+3. **Grupo de seguridad (Security Group):**
+   Creé un grupo nuevo abriendo únicamente dos puertos:
+   - **SSH (puerto 22):** Para poder entrar a la terminal (desde mi IP o cualquiera si cambia mi conexión).
+   - **HTTP (puerto 80):** Con origen `0.0.0.0/0` (Anywhere) para que cualquiera pueda abrir la web desde su navegador.
+4. Le di a **Launch Instance** y esperé un par de minutos hasta que estuviera en estado **Running**.
 
-```caddyfile
-resumidor.ejemplo.com {
-    encode zstd gzip
-    reverse_proxy 127.0.0.1:8080
-}
-```
+---
 
-Comandos de actualización y diagnóstico desde el directorio `app2` del servidor:
+### Paso 2: Crear y asignarle una IP fija (Elastic IP)
+
+Las máquinas de AWS Academy cambian de IP pública cada vez que las apagas o cuando reinicias la sesión del lab. Para no tener que estar reescribiendo la IP en los archivos `.env` y recompilando el frontend cada dos por tres, le asocié una **Elastic IP**:
+
+1. En el menú de la izquierda de EC2, bajé a **Network & Security → Elastic IPs**.
+2. Pulsé el botón **Allocate Elastic IP address** y le di a **Allocate** (dejando la configuración por defecto de Amazon).
+3. Con la IP seleccionada en la lista, fui a **Actions → Associate Elastic IP address**:
+   - En **Resource type** elegí **Instance**.
+   - En el desplegable **Instance** seleccioné mi máquina `app2-server`.
+   - En **Private IP address** seleccioné la IP privada de la máquina.
+   - Pulsé **Associate**.
+
+A partir de este momento, mi máquina tiene una IP pública que se queda fija (en los ejemplos la llamo `54.123.45.67`).
+
+---
+
+### Paso 3: Conectarme por SSH con Termius
+
+Como suelo usar **Termius** para gestionar mis servidores:
+
+1. Creé un nuevo Host en Termius.
+2. En **Address / Hostname** puse mi Elastic IP fija.
+3. En **Username** puse `ubuntu` (ojo, no `ec2-user`, ya que elegí Ubuntu).
+4. En **Key** cargué mi archivo `.pem`.
+5. Me conecté con doble clic y ya estaba dentro de la terminal de la máquina.
+
+_(Si alguna vez me conecto desde PowerShell en local, el comando que uso es: `ssh -i "C:\ruta\mi-clave.pem" ubuntu@54.123.45.67`)_.
+
+---
+
+### Paso 4: Instalar Docker y Docker Compose en la EC2
+
+Una vez dentro de la máquina por SSH, instalé Docker usando el script oficial para tener la versión moderna:
 
 ```bash
-docker compose --env-file infra/.env -f infra/compose.yaml pull
-docker compose --env-file infra/.env -f infra/compose.yaml up --build -d
-docker compose --env-file infra/.env -f infra/compose.yaml ps
-docker compose --env-file infra/.env -f infra/compose.yaml logs --tail=100
-docker compose --env-file infra/.env -f infra/compose.yaml down
+# 1. Actualizo la lista de paquetes
+sudo apt update -y
+
+# 2. Descargo e instalo Docker con el script oficial
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+# 3. Arranco el servicio de Docker y hago que se inicie solo si la máquina se reinicia
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# 4. Agrego mi usuario (ubuntu) al grupo docker para no tener que poner sudo todo el rato
+sudo usermod -aG docker $USER
+
+# 5. Instalo el plugin moderno de Docker Compose
+sudo apt install -y docker-compose-plugin
 ```
 
-No ejecutar `down -v` salvo que se quiera eliminar deliberadamente el almacenamiento persistente (si se añade en el futuro).
+> **Nota:** Después de hacer esto, salí de la sesión SSH con `exit` y volví a entrar desde Termius para que se aplicaran los permisos del grupo `docker`.
 
-#### 2.5.6. HTTPS, Clerk y configuración de producción
+Comprobé que todo estaba bien instalado ejecutando:
 
-Documentar:
+```bash
+docker --version
+docker compose version
+```
 
-- Dominio o URL HTTPS de acceso.
-- Método utilizado para habilitar HTTPS.
-- Configuración del dominio en Clerk.
-- Orígenes autorizados y configuración de CORS, si procede.
-- Variables de entorno específicas del entorno de producción.
+---
 
-La aplicación debe funcionar con autenticación habilitada. No se deben desactivar las comprobaciones de los tokens para facilitar el despliegue.
+### Paso 5: Subir los archivos del proyecto
 
-#### 2.5.7. Verificación del despliegue
+Para subir el código de `app2` desde mi ordenador a la EC2 usé la pestaña **SFTP de Termius**:
 
-Desde otro dispositivo o una conexión distinta a la del servidor, comprobar:
+1. Abrí la pestaña SFTP en Termius.
+2. Me conecté a la máquina EC2 en el panel derecho (se abre en `/home/ubuntu`).
+3. En el panel izquierdo navegué hasta la carpeta de mi proyecto en mi PC.
+4. Arrastré la carpeta **`app2`** completa directamente a `/home/ubuntu`.
+   _(Omití las carpetas `node_modules` y `.venv` locales para que la subida fuera rápida y limpia)_.
 
-1. Que la aplicación responde en su URL pública.
-2. Que el inicio de sesión y la autenticación funcionan.
-3. Que el backend acepta peticiones autenticadas.
-4. Que las peticiones sin autenticación válida son rechazadas.
-5. Que se puede generar un resumen correctamente.
-6. Que los errores se gestionan de forma controlada.
+---
 
-Añadir capturas de pantalla o evidencias del funcionamiento real.
+### Paso 6: Configurar las variables de entorno en la máquina
 
-#### 2.5.8. Actualización y recuperación
+Entré en la carpeta de infraestructura de la app:
 
-Documentar el procedimiento seguido para actualizar la aplicación cuando se modifica el código:
+```bash
+cd ~/app2/infra
+```
 
-1. Obtener la versión actualizada del repositorio.
-2. Reconstruir las imágenes si es necesario.
-3. Recrear los contenedores.
-4. Comprobar que los servicios vuelven a funcionar.
+Creé el archivo `.env` con mis credenciales y puse mi IP pública fija en los orígenes permitidos:
 
-Incluir también los comandos utilizados para consultar los servicios y recuperar la aplicación en caso de una interrupción.
+```bash
+nano .env
+```
 
-#### 2.5.9. Costes y eliminación de recursos
+Dentro guardé la siguiente configuración:
 
-Registrar los recursos de AWS utilizados y las precauciones necesarias para evitar costes innecesarios.
+```ini
+# Configuración del Backend
+OPENROUTER_API_KEY=tu_api_key
+OPENROUTER_MODEL=tu_modelo_openrouter
+OPENROUTER_TIMEOUT=tu_timeout_openrouter
+CLERK_ISSUER=tu_clerk_issuer
+CLERK_JWKS_URL=tu_clerk_jwks_url
+CLERK_JWKS_TIMEOUT=tu_clerk_jwks_timeout
 
-Al terminar las pruebas, seguir las indicaciones del profesorado para detener o eliminar los recursos. Comprobar también si quedan discos, direcciones IP reservadas u otros recursos que puedan seguir generando costes.
+# Origen permitido para CORS (usando la Elastic IP)
+CORS_ORIGINS=http://54.123.45.67
+
+# Clave pública de Clerk para el Frontend
+VITE_CLERK_PUBLISHABLE_KEY=tu_vite_clerk_publishable_key
+```
+
+Guardé con `Ctrl + O`, pulsé `Enter` y salí con `Ctrl + X`.
+
+---
+
+### Paso 7: Compilar y arrancar los contenedores
+
+Con todo en su sitio, lancé el despliegue con Docker Compose en segundo plano:
+
+```bash
+sudo docker compose up --build -d
+```
+
+Docker se encargó de:
+
+1. Instalar las dependencias de Python y dejar listo el servidor FastAPI.
+2. Compilar el frontend Vue con Vite inyectando la clave de Clerk.
+3. Copiar el resultado de la compilación a la imagen ligera de Nginx.
+4. Levantar ambos contenedores interconectados.
+
+Para verificar que todo había arrancado bien, comprobé el estado:
+
+```bash
+sudo docker compose ps
+```
+
+Ambos contenedores estaban activos y el backend aparecía como `Up (healthy)`.
+
+---
+
+### Paso 8: Comprobación final desde el navegador
+
+Abrí mi navegador web e introduje la dirección:
+
+```text
+http://54.123.45.67
+```
+
+La aplicación cargó inmediatamente por el puerto 80 sin necesidad de escribir puertos raros en la URL. Probé a iniciar sesión con Clerk y a generar un resumen, y la comunicación entre frontend, Nginx, backend y OpenRouter funcionó a la primera.
+
+---
+
+### Comandos que uso para el mantenimiento diario
+
+Cuando necesito ver qué está pasando o si hago algún cambio:
+
+- **Ver logs de todo en tiempo real:**
+  ```bash
+  sudo docker compose logs -f
+  ```
+- **Ver logs solo del backend:**
+  ```bash
+  sudo docker compose logs -f backend
+  ```
+- **Reiniciar los servicios:**
+  ```bash
+  sudo docker compose restart
+  ```
+- **Reconstruir tras cambiar código:**
+  ```bash
+  sudo docker compose up --build -d
+  ```
+- **Parar la aplicación:**
+  ```bash
+  sudo docker compose down
+  ```
+
+---
 
 ### 2.6. Seguridad y gestión de credenciales
 
