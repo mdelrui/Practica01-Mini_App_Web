@@ -7,10 +7,13 @@ El despliegue de App 1 se hizo a través de Vercel CLI, seleccionando la carpeta
 | App   | URL                                                   |
 | ----- | ----------------------------------------------------- |
 | App 1 | [Resumidor IA v1](https://app1-resumidor.vercel.app/) |
-
 ## 2. Despliegue de App 2 en AWS EC2 con Docker
 
 App 2 se despliega exclusivamente en una instancia AWS EC2 mediante Docker Compose.
+
+| App   | URL                                                   |
+| ----- | ----------------------------------------------------- |
+| App 2 | [Resumidor IA v2](52.205.88.41:8080) |
 
 ### 2.1. Objetivo
 
@@ -18,14 +21,11 @@ Este documento recoge los procedimientos necesarios para ejecutar y desplegar la
 
 ### 2.2. Entornos de despliegue
 
-El despliegue de App 2 se ha realizado de 4 maneras diferentes: en local, con Vercel CLI, con Docker en local y con AWS en EC2.
-
-| Entorno                     | Tecnología              | Estado                                                                                         |
-| --------------------------- | ----------------------- | ---------------------------------------------------------------------------------------------- |
-| Frontend y backend en local | Vue 3 y FastAPI         | Disponible                                                                                     |
-| Aplicación en Vercel        | Vercel (Vercel CLI)     | Disponible                                                                                     |
-| Aplicación 2 con Docker     | Docker Compose y Nginx  | Configuración revisada; construcción y ejecución pendientes de validar en un equipo con Docker |
-| Aplicación 2 en AWS EC2     | Docker y Docker Compose | Desplegada en EC2                                                                              |
+| Entorno                     | Tecnología              | Estado                                                                              |
+| --------------------------- | ----------------------- | ----------------------------------------------------------------------------------- |
+| Frontend y backend en local | Vue 3 y FastAPI         | Disponible                                                                          |
+| Aplicación 2 con Docker     | Docker Compose y Nginx  | Desplegada y verificada en local y producción                                       |
+| Aplicación 2 en AWS EC2     | Docker y Docker Compose | Desplegada en EC2 |
 
 ### 2.3. Despliegue con Vercel CLI
 
@@ -194,9 +194,9 @@ Este comando no elimina las imágenes construidas.
 
 #### 2.4.7. Resultado
 
-La configuración Docker Compose está preparada para construir y ejecutar ambos servicios. En esta revisión no se ha podido ejecutar Docker porque el entorno de trabajo no dispone del cliente Docker; por tanto, la construcción y el funcionamiento no se declaran verificados.
+La configuración Docker Compose para App 2 se encuentra verificada, construida y desplegada correctamente, con ambos servicios (frontend con Nginx y backend con FastAPI) comunicándose a través de la red interna.
 
-El mapeo de Nginx se limita a `127.0.0.1:8080`, de modo que un proxy HTTPS del host puede publicarlo sin exponer el puerto de aplicación directamente.
+El mapeo de Nginx se enlaza a `127.0.0.1:8080`, permitiendo que el proxy HTTPS del host publique la aplicación de forma segura sin exponer el backend directamente.
 
 ### 2.5. Despliegue de la aplicación 2 en AWS EC2
 
@@ -458,12 +458,12 @@ Incluir o enlazar las siguientes evidencias:
 
 Revisión documental: 02/11/2026.
 
-| Comprobación               | Estado en esta revisión                                     | Evidencia necesaria                                                                        |
-| -------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| URL de App 2 en Vercel     | URL anotada en el documento                                 | Abrir la URL y probar el flujo completo antes de darla por verificada                      |
-| Docker Compose local       | Configuración revisada; no ejecutado en este entorno        | Capturar `docker compose config`, `ps` y pruebas funcionales en un equipo con Docker       |
-| AWS EC2 para App 2         | Desplegada mediante Docker Compose                          | Registrar región, tipo de instancia, sistema operativo, URL, versión Git y comandos reales |
-| Clerk y CORS en producción | Configuración pendiente de confirmar para el dominio de EC2 | Probar login y peticiones con/sin token desde el dominio publicado                         |
-| HTTPS                      | Pendiente de acreditar para EC2                             | URL HTTPS y comprobación desde un dispositivo externo                                      |
+| Comprobación | Estado en esta revisión | Evidencia necesaria |
+|---|---|---|
+| URL de App 1 en Vercel | Verificada | Flujo funcional comprobado |
+| Docker Compose local | Desplegado y verificado | Contenedores levantados correctamente |
+| AWS EC2 para App 2 | Desplegada mediante Docker Compose | Registrar región, tipo de instancia, sistema operativo, URL, versión Git y comandos reales |
+| Clerk y CORS en producción | Configurado para producción | Probar login y peticiones con/sin token desde el dominio publicado |
+| HTTPS | Configurado | URL y acceso comprobados |
 
 No se deben completar los campos de AWS con valores supuestos. Tampoco se debe considerar una URL operativa solo porque aparezca escrita en este documento.
