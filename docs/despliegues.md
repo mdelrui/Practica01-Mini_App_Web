@@ -30,6 +30,10 @@ Este documento recoge los procedimientos necesarios para ejecutar y desplegar la
 
 ### 2.3. Despliegue con Vercel CLI
 
+| App   | URL                                                         |
+| ----- | ----------------------------------------------------------- |
+| App 1 | [Resumidor IA v1](https://resumidoria-version2.vercel.app/) |
+
 Se instaló vercel en el equipo de forma global con:
 
 ```powershell
