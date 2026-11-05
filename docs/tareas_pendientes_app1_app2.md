@@ -21,7 +21,7 @@ Esta lista reúne las tareas que quedan por revisar, completar o verificar segú
 - [✅] **P1-05 — Completar las pruebas funcionales de App 2.** Verificar límites del texto, carga de archivos `.txt` y `.md`, rechazo de tipos no permitidos, exportación, copia del resultado y comportamiento de la interfaz cuando falla el servicio.
 - [✅] **P1-06 — Revisar la política CORS de App 2.** Comprobar que solo se permiten los orígenes configurados y verificar solicitudes autenticadas, preflight y respuestas de error. Revisar especialmente la función `attach_cors_headers()` en `app2/backend/main.py`.
 - [✅] **P1-07 — Ejecutar las suites de pruebas completas.** El 02/11/2026 pasaron 50 pruebas de backend, 8 pruebas del frontend de App 1 y 6 pruebas del frontend de App 2. También pasaron las compilaciones de ambos frontends. La instalación desde un entorno limpio y Docker siguen siendo tareas separadas.
-- [❌] **P1-08 — Verificar App 1 en Vercel.** Probar desde la URL publicada el flujo real del frontend y backend.
+- [✅] **P1-08 — Verificar App 1 en Vercel.** Probar desde la URL publicada el flujo real del frontend y backend.
 
 ## Prioridad 1 — ERS, Spec Kit y documentación técnica
 
@@ -45,13 +45,14 @@ Esta lista reúne las tareas que quedan por revisar, completar o verificar segú
 - [❌] **P1-23 — Configurar Clerk y CORS para producción.** Autorizar los orígenes y URLs reales y comprobar que la autenticación funciona en el dominio de EC2.
 - [❌] **P1-24 — Verificar el control de acceso a la API en EC2.** Comprobar que una solicitud autenticada puede generar un resumen y que las solicitudes sin token o con token inválido/caducado reciben 401 sin llamar a la IA.
 - [❌] **P1-25 — Ejecutar pruebas de extremo a extremo en EC2.** Desde otro dispositivo o conexión, comprobar carga de la aplicación, autenticación, generación de resumen y un error controlado. Registrar URL, versión Git y evidencias.
+- [❌] **P1-26 — Terminar de agregar información de despliegue.** Comprobar que todos los datos del despliegue han sido añadidos y no hay información faltante, como URL y demás información importante no incluida hasta el momento.
 
 ## Prioridad 1 — Entrega y defensa
 
-- [✅] **P1-26 — Crear `presentation/defensa.pptx`.** Presentación propia creada con problema, alcance, arquitectura, ERS, proceso de App 1, Spec Kit, App 2, pruebas, seguridad, despliegues, comparativa y conclusiones. Revisar nombres y adaptar el contenido a la exposición del equipo.
-- [❌] **P1-27 — Preparar y ensayar la demostración.** Incluir una entrada válida y su resultado, un caso de validación o error controlado, autenticación Clerk, rechazo de una petición sin autenticación, un test con mock y un hito Git.
-- [❌] **P1-28 — Preparar evidencia de respaldo para la demo.** Tener una captura o grabación para posibles fallos externos, identificada claramente como evidencia de respaldo y no como ejecución en directo.
-- [❌] **P1-29 — Comprobar la entrega completa.** Verificar el enlace de App 1 en Vercel, el despliegue Docker de App 2 en EC2, README, ERS, pruebas, comparativa, documentación, evidencias y presentación. Preparar el ZIP si se solicita, excluyendo secretos y carpetas de dependencias.
+- [✅] **P1-27 — Crear `presentation/defensa.pptx`.** Presentación propia creada con problema, alcance, arquitectura, ERS, proceso de App 1, Spec Kit, App 2, pruebas, seguridad, despliegues, comparativa y conclusiones. Revisar nombres y adaptar el contenido a la exposición del equipo.
+- [❌] **P1-28 — Preparar y ensayar la demostración.** Incluir una entrada válida y su resultado, un caso de validación o error controlado, autenticación Clerk, rechazo de una petición sin autenticación, un test con mock y un hito Git.
+- [❌] **P1-29 — Preparar evidencia de respaldo para la demo.** Tener una captura o grabación para posibles fallos externos, identificada claramente como evidencia de respaldo y no como ejecución en directo.
+- [❌] **P1-30 — Comprobar la entrega completa.** Verificar el enlace de App 1 en Vercel, el despliegue Docker de App 2 en EC2, README, ERS, pruebas, comparativa, documentación, evidencias y presentación. Preparar el ZIP si se solicita, excluyendo secretos y carpetas de dependencias.
 
 ## Criterio para marcar una tarea como terminada
 
