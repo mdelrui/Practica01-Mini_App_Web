@@ -18,15 +18,56 @@ Este documento recoge los procedimientos necesarios para ejecutar y desplegar la
 
 ### 2.2. Entornos de despliegue
 
+El despliegue de App 2 se ha realizado de 4 maneras diferentes: en local, con Vercel CLI, con Docker en local y con AWS en EC2.
+
 | Entorno                     | Tecnología              | Estado                                                                                         |
 | --------------------------- | ----------------------- | ---------------------------------------------------------------------------------------------- |
 | Frontend y backend en local | Vue 3 y FastAPI         | Disponible                                                                                     |
+| Aplicación en Vercel        | Vercel (Vercel CLI)     | Disponible                                                                                     |
 | Aplicación 2 con Docker     | Docker Compose y Nginx  | Configuración revisada; construcción y ejecución pendientes de validar en un equipo con Docker |
 | Aplicación 2 en AWS EC2     | Docker y Docker Compose | Desplegada en EC2                                                                              |
 
-### 2.3. Despliegue con Docker en local
+### 2.3. Despliegue con Vercel CLI
 
-#### 2.3.1. Arquitectura
+Se instaló vercel en el equipo de forma global con:
+
+```powershell
+npm i -g vercel
+```
+
+Después se cambia el directorio al de la aplicación 2, desde la raíz:
+
+```powershell
+cd app2
+```
+
+Se hace login:
+
+```powershell
+vercel login
+```
+
+Se inicia sesión desde el navegador y se espera a que se actualice la terminal.
+
+Tras ello, se ejecuta el comando para compilar el proyecto y crear un despliegue anterior al de producción:
+
+```powershell
+vercel
+```
+
+En caso de que falle, ya sea por alguna configuración, por el `vercel.json` o incluso por problemas con el `package.json` o `package-lock.json`, es necesario resolverlo y volver a ejecutar el comando.
+
+Cuando se ejecute sin problemas, se ejecuta el comando que permite pasar el proyecto a producción:
+
+```powershell
+vercel --prod
+```
+
+Cuando todo se haya ejecutado, hay que irse a la web de Vercel y, desde `Environment Variables`, añadir todas las variables de entorno necesarias para que el proyecto pueda funcionar de forma correcta. En caso contrario, mostrará errores en la web desplegada o simplemente mostrará una web en blanco.
+
+### 2.4. Despliegue con Docker en local
+
+#### 2.4.1. Arquitectura
 
 La aplicación 2 se ejecuta mediante dos contenedores coordinados con Docker Compose:
 
@@ -35,7 +76,7 @@ La aplicación 2 se ejecuta mediante dos contenedores coordinados con Docker Com
 - **Nginx:** sirve el frontend y actúa como proxy inverso para redirigir las peticiones a la API.
 - **Docker Compose:** configura y coordina los contenedores.
 
-#### 2.3.2. Estructura de los archivos
+#### 2.4.2. Estructura de los archivos
 
 Los archivos relacionados con Docker se encuentran en `app2/infra/`:
 
@@ -63,7 +104,7 @@ El archivo `infra/.env` se crea localmente a partir de `infra/.env.example`; no 
 - `.dockerignore`: excluye del contexto de construcción archivos, entornos virtuales, dependencias y secretos.
 - `Caddyfile.example`: ejemplo de proxy HTTPS en el host EC2, delante del puerto local de Nginx.
 
-#### 2.3.3. Requisitos previos
+#### 2.4.3. Requisitos previos
 
 Es necesario disponer de:
 
@@ -87,7 +128,7 @@ Las variables utilizadas incluyen:
 | `CLERK_JWKS_TIMEOUT`         | Tiempo límite de espera para obtener las claves de verificación.         |
 | `CORS_ORIGINS`               | Orígenes autorizados para las peticiones al backend.                     |
 
-#### 2.3.4. Construcción y ejecución
+#### 2.4.4. Construcción y ejecución
 
 Desde la raíz del repositorio, acceder al directorio de la aplicación:
 
@@ -119,7 +160,7 @@ Una vez iniciados, la aplicación está disponible en:
 
 URL local: [http://localhost:8080](http://localhost:8080). En Compose, el puerto se publica solo en `127.0.0.1`; si se necesita acceso remoto, debe hacerse a través de un proxy HTTPS en el host.
 
-#### 2.3.5. Comprobación del funcionamiento
+#### 2.4.5. Comprobación del funcionamiento
 
 Con los contenedores en ejecución, se comprueba que:
 
@@ -141,7 +182,7 @@ Para seguir los registros en tiempo real:
 docker compose --env-file infra/.env -f infra/compose.yaml logs -f
 ```
 
-#### 2.3.6. Parada de los contenedores
+#### 2.4.6. Parada de los contenedores
 
 Para detener y eliminar los contenedores creados por Docker Compose:
 
@@ -151,17 +192,17 @@ docker compose --env-file infra/.env -f infra/compose.yaml down
 
 Este comando no elimina las imágenes construidas.
 
-#### 2.3.7. Resultado
+#### 2.4.7. Resultado
 
 La configuración Docker Compose está preparada para construir y ejecutar ambos servicios. En esta revisión no se ha podido ejecutar Docker porque el entorno de trabajo no dispone del cliente Docker; por tanto, la construcción y el funcionamiento no se declaran verificados.
 
 El mapeo de Nginx se limita a `127.0.0.1:8080`, de modo que un proxy HTTPS del host puede publicarlo sin exponer el puerto de aplicación directamente.
 
-### 2.4. Despliegue de la aplicación 2 en AWS EC2
+### 2.5. Despliegue de la aplicación 2 en AWS EC2
 
 > Estado: desplegada mediante Docker Compose en una instancia EC2. La URL pública y las evidencias concretas deben mantenerse actualizadas con los datos reales de la instancia.
 
-#### 2.4.1. Información de la instancia
+#### 2.5.1. Información de la instancia
 
 | Parámetro              | Valor                                                 |
 | ---------------------- | ----------------------------------------------------- |
@@ -174,7 +215,7 @@ El mapeo de Nginx se limita a `127.0.0.1:8080`, de modo que un proxy HTTPS del h
 | URL utilizada          | `http://<Elastic-IP>`                                 |
 | HTTPS                  | No configurado; el acceso documentado es HTTP         |
 
-#### 2.4.2. Pasos del despliegue en AWS (Laboratorio de AWS Academy)
+#### 2.5.2. Pasos del despliegue en AWS (Laboratorio de AWS Academy)
 
 En esta guía recojo paso a paso cómo he realizado el despliegue de **App2** en una máquina virtual EC2 de AWS Academy utilizando Docker Compose, y cómo le he asignado una IP pública fija (Elastic IP) para que la dirección no cambie al reiniciar la máquina.
 
@@ -419,7 +460,7 @@ Revisión documental: 02/11/2026.
 
 | Comprobación               | Estado en esta revisión                                     | Evidencia necesaria                                                                        |
 | -------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| URL de App 1 en Vercel     | URL anotada en el documento                                 | Abrir la URL y probar el flujo completo antes de darla por verificada                      |
+| URL de App 2 en Vercel     | URL anotada en el documento                                 | Abrir la URL y probar el flujo completo antes de darla por verificada                      |
 | Docker Compose local       | Configuración revisada; no ejecutado en este entorno        | Capturar `docker compose config`, `ps` y pruebas funcionales en un equipo con Docker       |
 | AWS EC2 para App 2         | Desplegada mediante Docker Compose                          | Registrar región, tipo de instancia, sistema operativo, URL, versión Git y comandos reales |
 | Clerk y CORS en producción | Configuración pendiente de confirmar para el dominio de EC2 | Probar login y peticiones con/sin token desde el dominio publicado                         |
