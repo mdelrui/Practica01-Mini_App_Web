@@ -4,9 +4,9 @@
 
 El despliegue de App 1 se hizo a través de Vercel CLI, seleccionando la carpeta desde la que ejecutar la aplicación:
 
-| App   | URL                                                   |
-| ----- | ----------------------------------------------------- |
-| App 1 | [Resumidor IA v1](https://app1-resumidor.vercel.app/) |
+| App   | URL                                                         |
+| ----- | ----------------------------------------------------------- |
+| App 1 | [Resumidor IA v1](https://resumidoria-version1.vercel.app/) |
 
 ## 2. Despliegue de App 2 en AWS EC2 con Docker
 
